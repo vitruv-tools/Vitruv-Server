@@ -1,18 +1,15 @@
 package src.main.java;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.xbase.lib.Functions;
 import tools.vitruv.change.interaction.InteractionResultProvider;
 import tools.vitruv.change.interaction.InternalUserInteractor;
 import tools.vitruv.change.interaction.UserInteractionListener;
 import tools.vitruv.change.interaction.builder.*;
 import tools.vitruv.framework.remote.server.VitruvServer;
-import tools.vitruv.framework.views.*;
 import tools.vitruv.framework.vsum.VirtualModelBuilder;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collection;
 
 import static tools.vitruv.framework.views.ViewTypeFactory.createIdentityMappingViewType;
 
@@ -21,8 +18,8 @@ public class VitruvServerApp {
     public static void main(String[] args) throws IOException {
         System.out.println("Server startet...");
 
-        var server = new VitruvServer(() -> {
-            var vsum = new VirtualModelBuilder();
+        VitruvServer server = new VitruvServer(() -> {
+            VirtualModelBuilder vsum = new VirtualModelBuilder();
 
             /* init vsum here */
             Path pathDir = Path.of("StorageFolder");
@@ -94,58 +91,58 @@ public class VitruvServerApp {
         };
     }
 
-    private static ViewType<ViewSelector> getNewViewType() {
-        return new ViewType<>() {
-            @Override
-            public String getName() {
-                return "ViewTypeNameBob";
-            }
-
-            @Override
-            public ViewSelector createSelector(ChangeableViewSource viewSource) {
-                return new ViewSelector() {
-                    @Override
-                    public View createView() {
-                        return null;
-                    }
-
-                    @Override
-                    public boolean isValid() {
-                        return true;
-                    }
-
-                    @Override
-                    public ViewSelection getSelection() {
-                        return null;
-                    }
-
-                    @Override
-                    public Collection<EObject> getSelectableElements() {
-                        return null;
-                    }
-
-                    @Override
-                    public boolean isSelected(EObject eObject) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean isSelectable(EObject eObject) {
-                        return false;
-                    }
-
-                    @Override
-                    public void setSelected(EObject eObject, boolean selected) {
-
-                    }
-
-                    @Override
-                    public boolean isViewObjectSelected(EObject eObject) {
-                        return false;
-                    }
-                };
-            }
-        };
-    }
+//    private static ViewType<ViewSelector> getNewViewType() {
+//        return new ViewType<>() {
+//            @Override
+//            public String getName() {
+//                return "ViewTypeNameBob";
+//            }
+//
+//            @Override
+//            public ViewSelector createSelector(ChangeableViewSource viewSource) {
+//                return new ViewSelector() {
+//                    @Override
+//                    public View createView() {
+//                        return null;
+//                    }
+//
+//                    @Override
+//                    public boolean isValid() {
+//                        return true;
+//                    }
+//
+//                    @Override
+//                    public ViewSelection getSelection() {
+//                        return null;
+//                    }
+//
+//                    @Override
+//                    public Collection<EObject> getSelectableElements() {
+//                        return null;
+//                    }
+//
+//                    @Override
+//                    public boolean isSelected(EObject eObject) {
+//                        return false;
+//                    }
+//
+//                    @Override
+//                    public boolean isSelectable(EObject eObject) {
+//                        return false;
+//                    }
+//
+//                    @Override
+//                    public void setSelected(EObject eObject, boolean selected) {
+//
+//                    }
+//
+//                    @Override
+//                    public boolean isViewObjectSelected(EObject eObject) {
+//                        return false;
+//                    }
+//                };
+//            }
+//        };
+//    }
 
 }
