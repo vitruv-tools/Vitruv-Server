@@ -1,0 +1,21 @@
+# VS Code
+.vscode/
+
+# Maven
+target/
+*.log
+*.tmp
+.mvn/wrapper/*.jar
+
+# Eclipse
+META-INF
+build.properties
+plugin.properties
+.project
+.classpath
+.settings/
+bin/
+
+# IntelliJ
+.idea/
+*.iml
