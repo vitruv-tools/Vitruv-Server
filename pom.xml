@@ -20,6 +20,28 @@
         <repo.xannotations.version>1.6.0</repo.xannotations.version>
     </properties>
 
+    <repositories>
+        <!-- for p2 dependencies, `groupId` specifies the repository -->
+        <repository>
+            <id>emf-compare</id>
+            <name>EMF Compare</name>
+            <layout>p2</layout>
+            <url>https://download.eclipse.org/modeling/emf/compare/updates/releases/${repo.emf-compare.version}</url>
+        </repository>
+        <repository>
+            <id>sdq-commons</id>
+            <name>SDQ Commons</name>
+            <url>https://kit-sdq.github.io/updatesite/release/commons/${repo.sdq-commons.version}</url>
+            <layout>p2</layout>
+        </repository>
+        <repository>
+            <id>xannotations</id>
+            <name>XAnnotations</name>
+            <layout>p2</layout>
+            <url>https://kit-sdq.github.io/updatesite/release/xannotations/${repo.xannotations.version}</url>
+        </repository>
+    </repositories>
+
     <pluginRepositories>
         <!-- Maven Central should have priority over OpenNTF Artifactory -->
         <pluginRepository>
