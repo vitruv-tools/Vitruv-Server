@@ -11,6 +11,9 @@ import tools.vitruv.framework.vsum.VirtualModelBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -21,6 +24,7 @@ public class VitruvServerApp {
     private static final String DEFAULT_STORAGE_FOLDER_NAME = "StorageFolder";
     private static final String DEFAULT_CONFIG_PROPERTIES_NAME = "config.properties";
     private static final Logger logger = LoggerFactory.getLogger(VitruvServerApp.class);
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public static void main(String[] args) throws IOException {
         logger.info("Starting the server...");
@@ -49,6 +53,7 @@ public class VitruvServerApp {
 
         System.out.println("Server started on port " + port + "."); // TODO: delete
         logger.info("Server started on port " + port + ". ");
+        scheduler.scheduleAtFixedRate(() -> logger.info("still running"), 0, 5, TimeUnit.SECONDS);
     }
 
     private static Optional<Integer> loadPortFromConfig() {
