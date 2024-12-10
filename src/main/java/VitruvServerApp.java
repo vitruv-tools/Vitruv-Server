@@ -1,4 +1,6 @@
 import org.eclipse.xtext.xbase.lib.Functions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.vitruv.change.interaction.InteractionResultProvider;
 import tools.vitruv.change.interaction.InternalUserInteractor;
 import tools.vitruv.change.interaction.UserInteractionListener;
@@ -7,6 +9,7 @@ import tools.vitruv.framework.remote.server.VitruvServer;
 import tools.vitruv.framework.vsum.VirtualModelBuilder;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Properties;
@@ -15,19 +18,22 @@ import static tools.vitruv.framework.views.ViewTypeFactory.createIdentityMapping
 
 public class VitruvServerApp {
     private static final int DEFAULT_PORT = 8080;
+    private static final String DEFAULT_STORAGE_FOLDER_NAME = "StorageFolder";
     private static final String DEFAULT_CONFIG_PROPERTIES_NAME = "config.properties";
-
+    private static final Logger logger = LoggerFactory.getLogger(VitruvServerApp.class);
 
     public static void main(String[] args) throws IOException {
-        final int port = loadPortFromConfig().orElse(DEFAULT_PORT);
+        logger.info("Starting the server...");
+        System.out.println("Starting the server..."); // TODO: delete
 
-        System.out.println("Starting the server...");
+
+        final int port = loadPortFromConfig().orElse(DEFAULT_PORT);
 
         VitruvServer server = new VitruvServer(() -> {
             VirtualModelBuilder vsum = new VirtualModelBuilder();
 
             /* init vsum here */
-            Path pathDir = Path.of("StorageFolder");
+            Path pathDir = Path.of(DEFAULT_STORAGE_FOLDER_NAME);
             vsum.withStorageFolder(pathDir);
 
             InternalUserInteractor userInteractor = getInternalUserInteractor();
@@ -35,26 +41,28 @@ public class VitruvServerApp {
 
             // TODO: remove following test code
             vsum.withViewType(createIdentityMappingViewType("MyViewTypeBob"));
+            ////
 
             return vsum.buildAndInitialize();
         }, port);
         server.start();
 
-        System.out.println("Server started on port " + port + ".");
+        System.out.println("Server started on port " + port + "."); // TODO: delete
+        logger.info("Server started on port " + port + ". ");
     }
 
     private static Optional<Integer> loadPortFromConfig() {
-        try (final var inputStream = VitruvServerApp.class.getClassLoader().getResourceAsStream(DEFAULT_CONFIG_PROPERTIES_NAME)) {
+        try (final InputStream inputStream = VitruvServerApp.class.getClassLoader().getResourceAsStream(DEFAULT_CONFIG_PROPERTIES_NAME)) {
             if (inputStream != null) {
-                final var properties = new Properties();
+                final Properties properties = new Properties();
                 properties.load(inputStream);
                 String portStr = properties.getProperty("server.port");
                 if (portStr != null) {
                     return Optional.of(Integer.parseInt(portStr));
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception err) {
+            logger.error("Could not read " + DEFAULT_CONFIG_PROPERTIES_NAME + ". Error message: {}", err.getMessage(), err);
         }
         return Optional.empty();
     }
