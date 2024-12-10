@@ -8,13 +8,20 @@ import tools.vitruv.framework.vsum.VirtualModelBuilder;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Optional;
+import java.util.Properties;
 
 import static tools.vitruv.framework.views.ViewTypeFactory.createIdentityMappingViewType;
 
 public class VitruvServerApp {
+    private static final int DEFAULT_PORT = 8080;
+    private static final String DEFAULT_CONFIG_PROPERTIES_NAME = "config.properties";
+
 
     public static void main(String[] args) throws IOException {
-        System.out.println("Server startet...");
+        final int port = loadPortFromConfig().orElse(DEFAULT_PORT);
+
+        System.out.println("Starting the server...");
 
         VitruvServer server = new VitruvServer(() -> {
             VirtualModelBuilder vsum = new VirtualModelBuilder();
@@ -26,15 +33,30 @@ public class VitruvServerApp {
             InternalUserInteractor userInteractor = getInternalUserInteractor();
             vsum.withUserInteractor(userInteractor);
 
-            // testing
+            // TODO: remove following test code
             vsum.withViewType(createIdentityMappingViewType("MyViewTypeBob"));
 
             return vsum.buildAndInitialize();
-        });
+        }, port);
         server.start();
 
+        System.out.println("Server started on port " + port + ".");
+    }
 
-        System.out.println("Vitruv Server gestartet!");
+    private static Optional<Integer> loadPortFromConfig() {
+        try (final var inputStream = VitruvServerApp.class.getClassLoader().getResourceAsStream(DEFAULT_CONFIG_PROPERTIES_NAME)) {
+            if (inputStream != null) {
+                final var properties = new Properties();
+                properties.load(inputStream);
+                String portStr = properties.getProperty("server.port");
+                if (portStr != null) {
+                    return Optional.of(Integer.parseInt(portStr));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
 
 
