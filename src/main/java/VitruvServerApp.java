@@ -20,7 +20,8 @@ import java.util.Properties;
 import static tools.vitruv.framework.views.ViewTypeFactory.createIdentityMappingViewType;
 
 public class VitruvServerApp {
-    private static final int DEFAULT_PORT = 8080;
+    // this is just a fallback value. The desired port is configured in src/main/resources/config.properties
+    private static final int FALLBACK_PORT = 8080;
     private static final String DEFAULT_STORAGE_FOLDER_NAME = "StorageFolder";
     private static final String DEFAULT_CONFIG_PROPERTIES_NAME = "config.properties";
     private static final Logger logger = LoggerFactory.getLogger(VitruvServerApp.class);
@@ -31,7 +32,7 @@ public class VitruvServerApp {
         System.out.println("Starting the server..."); // TODO: delete
 
 
-        final int port = loadPortFromConfig().orElse(DEFAULT_PORT);
+        final int port = loadPortFromConfig().orElse(FALLBACK_PORT);
 
         VitruvServer server = new VitruvServer(() -> {
             VirtualModelBuilder vsum = new VirtualModelBuilder();
@@ -52,10 +53,17 @@ public class VitruvServerApp {
         server.start();
 
         System.out.println("Server started on port " + port + "."); // TODO: delete
-        logger.info("Server started on port " + port + ". ");
+        logger.info("Server started on port " + port + ".");
+
         scheduler.scheduleAtFixedRate(() -> logger.info("still running"), 0, 5, TimeUnit.SECONDS);
     }
 
+    /**
+     * Loads the server port configuration from the default properties file.
+     *
+     * @return an {@link Optional} containing the port number if successfully loaded,
+     *         or an empty {@link Optional} if the property is not present or cannot be read.
+     */
     private static Optional<Integer> loadPortFromConfig() {
         try (final InputStream inputStream = VitruvServerApp.class.getClassLoader().getResourceAsStream(DEFAULT_CONFIG_PROPERTIES_NAME)) {
             if (inputStream != null) {
