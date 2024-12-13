@@ -227,47 +227,47 @@ public class VitruvServerApp {
         return new InternalUserInteractor() {
             @Override
             public NotificationInteractionBuilder getNotificationDialogBuilder() {
-                System.out.println("xx");
+                logger.warn("getNotificationDialogBuilder() is not implemented.");
                 return null;
             }
 
             @Override
             public ConfirmationInteractionBuilder getConfirmationDialogBuilder() {
-                System.out.println("xx");
+                logger.warn("getConfirmationDialogBuilder() is not implemented.");
                 return null;
             }
 
             @Override
             public TextInputInteractionBuilder getTextInputDialogBuilder() {
-                System.out.println("xx");
+                logger.warn("getTextInputDialogBuilder() is not implemented.");
                 return null;
             }
 
             @Override
             public MultipleChoiceSingleSelectionInteractionBuilder getSingleSelectionDialogBuilder() {
-                System.out.println("xx");
+                logger.warn("getSingleSelectionDialogBuilder() is not implemented.");
                 return null;
             }
 
             @Override
             public MultipleChoiceMultiSelectionInteractionBuilder getMultiSelectionDialogBuilder() {
-                System.out.println("xx");
+                logger.warn("getMultiSelectionDialogBuilder() is not implemented.");
                 return null;
             }
 
             @Override
             public void registerUserInputListener(UserInteractionListener userInteractionListener) {
-                System.out.println("xx");
+                logger.warn("registerUserInputListener() is not implemented.");
             }
 
             @Override
             public void deregisterUserInputListener(UserInteractionListener userInteractionListener) {
-                System.out.println("xx");
+                logger.warn("deregisterUserInputListener() is not implemented.");
             }
 
             @Override
             public AutoCloseable replaceUserInteractionResultProvider(Functions.Function1<? super InteractionResultProvider, ? extends InteractionResultProvider> function1) {
-                System.out.println("xx");
+                logger.warn("replaceUserInteractionResultProvider() is not implemented.");
                 return null;
             }
         };
