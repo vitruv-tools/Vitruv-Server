@@ -137,7 +137,7 @@ public class VitruvServerApp {
 
         // check if servers are still running (TODO)
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(() -> logger.info("still running.."), 0, 5, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(() -> logger.info("still running.."), 0, 10, TimeUnit.SECONDS);
     }
 
     /**
