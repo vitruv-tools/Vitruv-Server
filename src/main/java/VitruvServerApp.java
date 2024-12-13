@@ -149,7 +149,7 @@ public class VitruvServerApp {
      */
     private static void handleRequest(HttpExchange exchange, int port) throws IOException {
         logger.info("redirect to VitruvServer at port {}", port);
-        logger.info("getRequestURI: {}", exchange.getRequestURI().toString());
+        logger.info("Request URI: {}", exchange.getRequestURI().toString());
 
         // connect to intern http VitruvServer
         String vitruvHost = "http://localhost:" + port; // TODO: configure domain
