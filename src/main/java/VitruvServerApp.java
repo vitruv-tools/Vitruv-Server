@@ -15,7 +15,6 @@ import tools.vitruv.framework.vsum.VirtualModelBuilder;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -35,23 +34,36 @@ import static tools.vitruv.framework.views.ViewTypeFactory.createIdentityMapping
 
 public class VitruvServerApp {
     /**
-     * These are fallback values. The desired ports should be configured in the properties file located at src/main/resources/config.properties
+     * Fallback value of the vitruv server port.
+     * The desired port should be configured in the properties file located at src/main/resources/config.properties
      */
     private static final int FALLBACK_VITRUV_SERVER_PORT = 8080;
+    /**
+     * Fallback value of the HTTPS server port.
+     * The desired port should be configured in the properties file located at src/main/resources/config.properties
+     */
     private static final int FALLBACK_HTTPS_PORT = 8443;
-
+    /**
+     * Default name of the storage folder containing vitruv specific files.
+     */
     private static final String DEFAULT_STORAGE_FOLDER_NAME = "StorageFolder";
+    /**
+     * Default name of the configuration file containing the server ports.
+     */
     private static final String DEFAULT_CONFIG_PROPERTIES_NAME = "config.properties";
-    private static final Logger logger = LoggerFactory.getLogger(VitruvServerApp.class);
 
     /**
-     * The path to the keystore file containing the self-signed certificate.
+     * Default name of the keystore file containing the self-signed certificate.
      */
-    private static final String KEYSTORE_PATH = "keystore/keystore.p12";
+    private static final String DEFAULT_KEYSTORE_NAME = "keystore.p12";
     /**
-     * The password for the keystore containing the self-signed certificate.
+     * Default password for the keystore containing the self-signed certificate.
      */
-    private static final String KEYSTORE_PASSWORD = "password";
+    private static final String DEFAULT_KEYSTORE_PASSWORD = "password";
+    /**
+     * The SLF4J logger.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(VitruvServerApp.class);
 
     public static void main(String[] args) throws Exception {
         System.out.println("App started"); // TODO: delete
@@ -74,7 +86,7 @@ public class VitruvServerApp {
             InternalUserInteractor userInteractor = getInternalUserInteractor();
             vsum.withUserInteractor(userInteractor);
 
-            vsum.withViewType(createIdentityMappingViewType("MyViewTypeBob2"));
+            vsum.withViewType(createIdentityMappingViewType("MyViewTypeBob17"));
             /////////////////////////////////////////////////////////////////////////////////
 
             return vsum.buildAndInitialize();
@@ -84,12 +96,15 @@ public class VitruvServerApp {
         // prepare HTTPS server (with self-signed certificate)
         SSLContext sslContext = SSLContext.getInstance("TLS");
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
-        try (FileInputStream keyStoreStream = new FileInputStream(KEYSTORE_PATH)) {
-            keyStore.load(keyStoreStream, KEYSTORE_PASSWORD.toCharArray());
+        try (final InputStream inputStream = VitruvServerApp.class.getClassLoader().getResourceAsStream(DEFAULT_KEYSTORE_NAME)) {
+            assert inputStream != null;
+            keyStore.load(inputStream, DEFAULT_KEYSTORE_PASSWORD.toCharArray());
+        } catch (Exception e) {
+            logger.error("Could not read " + DEFAULT_KEYSTORE_NAME + ". Error message: {}", e.getMessage(), e);
         }
 
         KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-        kmf.init(keyStore, KEYSTORE_PASSWORD.toCharArray());
+        kmf.init(keyStore, DEFAULT_KEYSTORE_PASSWORD.toCharArray());
         sslContext.init(kmf.getKeyManagers(), null, null);
 
         HttpsServer httpsServer = HttpsServer.create(new InetSocketAddress(httpsServerPort), 0);
@@ -133,8 +148,8 @@ public class VitruvServerApp {
      * @throws IOException if an I/O error occurs while processing the request
      */
     private static void handleRequest(HttpExchange exchange, int port) throws IOException {
+        logger.info("redirect to VitruvServer at port {}", port);
         logger.info("getRequestURI: {}", exchange.getRequestURI().toString());
-        logger.info("port: {}", port);
 
         // connect to intern http VitruvServer
         String vitruvHost = "http://localhost:" + port; // TODO: configure domain
@@ -170,13 +185,12 @@ public class VitruvServerApp {
         }
     }
 
-
     /**
      * Loads the server port configuration for both the VitruvServer and the HTTPS server
      * from the default properties file.
      *
-     * @return a {@link Map} containing the port numbers with keys "vitruv-server.port" and "https-server.port",
-     *         or an empty {@link Map} if the properties cannot be read.
+     * @return a Map containing the port numbers with keys "vitruv-server.port" and "https-server.port",
+     * or an empty Map if the properties cannot be read.
      */
     private static Map<String, Integer> loadPortsFromConfig() {
         Map<String, Integer> ports = new HashMap<>();
