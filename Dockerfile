@@ -8,8 +8,6 @@ RUN ./mvnw clean verify
 
 FROM eclipse-temurin:17-jre
 WORKDIR /app
-#COPY --from=builder /app/target/vitruvserver-1.0-SNAPSHOT.jar app.jar
 COPY --from=builder /app/target/vitruvserver-1.0-SNAPSHOT.jar /app/app.jar
 COPY --from=builder /app/target/libs /app/libs
-#ENTRYPOINT ["java", "-jar", "app.jar"]
 ENTRYPOINT ["java", "-cp", "/app/app.jar:/app/libs/*", "VitruvServerApp"]
