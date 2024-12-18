@@ -22,7 +22,7 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.nio.file.Path;
-import java.security.KeyStore;
+import java.security.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -60,21 +60,32 @@ public class VitruvServerApp {
      * Default password for the keystore containing the self-signed certificate.
      */
     private static final String DEFAULT_KEYSTORE_PASSWORD = "password";
+
+    private static final Map<String, Integer> ports = loadPortsFromConfig();
     /**
      * The SLF4J logger.
      */
     private static final Logger logger = LoggerFactory.getLogger(VitruvServerApp.class);
 
     public static void main(String[] args) throws Exception {
-        System.out.println("App started"); // TODO: delete
+        System.out.println("App started");
         logger.info("Starting the server...");
 
-        // read server ports
-        Map<String, Integer> ports = loadPortsFromConfig();
-        int vitruvServerPort = ports.getOrDefault("vitruv-server.port", FALLBACK_VITRUV_SERVER_PORT);
-        int httpsServerPort = ports.getOrDefault("https-server.port", FALLBACK_HTTPS_PORT);
+        final int vitruvServerPort = ports.getOrDefault("vitruv-server.port", FALLBACK_VITRUV_SERVER_PORT);
+        final int httpsServerPort = ports.getOrDefault("https-server.port", FALLBACK_HTTPS_PORT);
 
-        // create and start VitruvServer
+        startVitruvServer(vitruvServerPort);
+        startHTTPSServer(httpsServerPort, vitruvServerPort);
+
+        logger.info("HTTPS server started on port " + httpsServerPort + ".");
+        logger.info("Vitruv server started on port " + vitruvServerPort + ".");
+
+        // check if servers are still running
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(() -> logger.info("still running.."), 0, 10, TimeUnit.SECONDS);
+    }
+
+    private static void startVitruvServer(int vitruvServerPort) throws IOException {
         VitruvServer vitruvServer = new VitruvServer(() -> {
             VirtualModelBuilder vsum = new VirtualModelBuilder();
 
@@ -92,7 +103,9 @@ public class VitruvServerApp {
             return vsum.buildAndInitialize();
         }, vitruvServerPort);
         vitruvServer.start();
+    }
 
+    private static void startHTTPSServer(final int httpsServerPort, final int vitruvServerPort) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException, KeyManagementException, IOException {
         // prepare HTTPS server (with self-signed certificate)
         SSLContext sslContext = SSLContext.getInstance("TLS");
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
@@ -131,28 +144,21 @@ public class VitruvServerApp {
         // start https server
         httpsServer.setExecutor(Executors.newFixedThreadPool(10));
         httpsServer.start();
-
-        logger.info("HTTPS server started on port " + httpsServerPort + ".");
-        logger.info("Vitruv server started on port " + vitruvServerPort + ".");
-
-        // check if servers are still running (TODO)
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(() -> logger.info("still running.."), 0, 10, TimeUnit.SECONDS);
     }
 
     /**
      * Handles an HTTPS request by forwarding it to the internal HTTP VitruvServer.
      *
      * @param exchange the HTTP exchange object containing the request and response details
-     * @param port     the port number of the internal VitruvServer
+     * @param vitruvServerPort     the port number of the internal VitruvServer
      * @throws IOException if an I/O error occurs while processing the request
      */
-    private static void handleRequest(HttpExchange exchange, int port) throws IOException {
-        logger.info("redirect to VitruvServer at port {}", port);
+    private static void handleRequest(HttpExchange exchange, int vitruvServerPort) throws IOException {
+        logger.info("redirect to VitruvServer at port {}", vitruvServerPort);
         logger.info("Request URI: {}", exchange.getRequestURI().toString());
 
         // connect to intern http VitruvServer
-        String vitruvHost = "http://localhost:" + port; // TODO: configure domain
+        String vitruvHost = "http://localhost:" + vitruvServerPort; // TODO: configure domain
         String fullUri = vitruvHost + exchange.getRequestURI().toString();
 
         // redirect HTTP request to Vitruv

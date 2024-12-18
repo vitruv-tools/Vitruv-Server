@@ -165,6 +165,7 @@
 <!--            <version>1.5.12</version>-->
 <!--&lt;!&ndash;            <version>1.4.x</version>&ndash;&gt;-->
 <!--        </dependency>-->
+
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
