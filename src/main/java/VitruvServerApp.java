@@ -189,6 +189,7 @@ public class VitruvServerApp {
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(responseStream.readAllBytes());
         }
+        logger.info("Response code: {}", responseCode);
     }
 
     /**
