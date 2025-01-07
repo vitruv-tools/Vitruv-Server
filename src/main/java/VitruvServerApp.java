@@ -81,23 +81,24 @@ public class VitruvServerApp {
         logger.info("Vitruv server started on port " + vitruvServerPort + ".");
 
         // check if servers are still running
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> logger.info("still running.."), 0, 10, TimeUnit.SECONDS);
     }
 
-    private static void startVitruvServer(int vitruvServerPort) throws IOException {
-        VitruvServer vitruvServer = new VitruvServer(() -> {
-            VirtualModelBuilder vsum = new VirtualModelBuilder();
+    private static void startVitruvServer(final int vitruvServerPort) throws IOException {
+        final VitruvServer vitruvServer = new VitruvServer(() -> {
+            final VirtualModelBuilder vsum = new VirtualModelBuilder();
 
             /////////////////////////////////////////////////////////////////////////////////
             // TODO: init vsum here (testing area)
-            Path pathDir = Path.of(DEFAULT_STORAGE_FOLDER_NAME);
+            final Path pathDir = Path.of(DEFAULT_STORAGE_FOLDER_NAME);
             vsum.withStorageFolder(pathDir);
 
-            InternalUserInteractor userInteractor = getInternalUserInteractor();
+            final InternalUserInteractor userInteractor = getInternalUserInteractor();
             vsum.withUserInteractor(userInteractor);
 
             vsum.withViewType(createIdentityMappingViewType("MyViewTypeBob17"));
+            vsum.withViewType(createIdentityMappingViewType("MyViewTypeBob18"));
             /////////////////////////////////////////////////////////////////////////////////
 
             return vsum.buildAndInitialize();
@@ -107,8 +108,8 @@ public class VitruvServerApp {
 
     private static void startHTTPSServer(final int httpsServerPort, final int vitruvServerPort) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException, KeyManagementException, IOException {
         // prepare HTTPS server (with self-signed certificate)
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+        final SSLContext sslContext = SSLContext.getInstance("TLS");
+        final KeyStore keyStore = KeyStore.getInstance("PKCS12");
         try (final InputStream inputStream = VitruvServerApp.class.getClassLoader().getResourceAsStream(DEFAULT_KEYSTORE_NAME)) {
             assert inputStream != null;
             keyStore.load(inputStream, DEFAULT_KEYSTORE_PASSWORD.toCharArray());
@@ -116,11 +117,11 @@ public class VitruvServerApp {
             logger.error("Could not read " + DEFAULT_KEYSTORE_NAME + ". Error message: {}", e.getMessage(), e);
         }
 
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+        final KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
         kmf.init(keyStore, DEFAULT_KEYSTORE_PASSWORD.toCharArray());
         sslContext.init(kmf.getKeyManagers(), null, null);
 
-        HttpsServer httpsServer = HttpsServer.create(new InetSocketAddress(httpsServerPort), 0);
+        final HttpsServer httpsServer = HttpsServer.create(new InetSocketAddress(httpsServerPort), 0);
         httpsServer.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
             @Override
             public void configure(HttpsParameters params) {
@@ -153,16 +154,16 @@ public class VitruvServerApp {
      * @param vitruvServerPort     the port number of the internal VitruvServer
      * @throws IOException if an I/O error occurs while processing the request
      */
-    private static void handleRequest(HttpExchange exchange, int vitruvServerPort) throws IOException {
+    private static void handleRequest(final HttpExchange exchange, final int vitruvServerPort) throws IOException {
         logger.info("redirect to VitruvServer at port {}", vitruvServerPort);
         logger.info("Request URI: {}", exchange.getRequestURI().toString());
 
         // connect to intern http VitruvServer
-        String vitruvHost = "http://localhost:" + vitruvServerPort; // TODO: configure domain
-        String fullUri = vitruvHost + exchange.getRequestURI().toString();
+        final String vitruvHost = "http://localhost:" + vitruvServerPort; // TODO: configure domain
+        final String fullUri = vitruvHost + exchange.getRequestURI().toString();
 
         // redirect HTTP request to Vitruv
-        HttpURLConnection connection = (HttpURLConnection) new URL(fullUri).openConnection();
+        final HttpURLConnection connection = (HttpURLConnection) new URL(fullUri).openConnection();
         connection.setRequestMethod(exchange.getRequestMethod());
         exchange.getRequestHeaders().forEach((key, values) -> {
             for (String value : values) {
@@ -179,7 +180,7 @@ public class VitruvServerApp {
         }
 
         // read answer
-        int responseCode = connection.getResponseCode();
+        final int responseCode = connection.getResponseCode();
         InputStream responseStream = responseCode >= 400
                 ? connection.getErrorStream()
                 : connection.getInputStream();
@@ -200,7 +201,7 @@ public class VitruvServerApp {
      * or an empty Map if the properties cannot be read.
      */
     private static Map<String, Integer> loadPortsFromConfig() {
-        Map<String, Integer> ports = new HashMap<>();
+        final Map<String, Integer> ports = new HashMap<>();
         try (final InputStream inputStream =
                      VitruvServerApp.class.getClassLoader().getResourceAsStream(DEFAULT_CONFIG_PROPERTIES_NAME)) {
             if (inputStream != null) {
@@ -208,13 +209,13 @@ public class VitruvServerApp {
                 properties.load(inputStream);
 
                 // Load VitruvServer port
-                String vitruvPortStr = properties.getProperty("vitruv-server.port");
+                final String vitruvPortStr = properties.getProperty("vitruv-server.port");
                 if (vitruvPortStr != null) {
                     ports.put("vitruv-server.port", Integer.parseInt(vitruvPortStr));
                 }
 
                 // Load HTTPS server port
-                String httpsPortStr = properties.getProperty("https-server.port");
+                final String httpsPortStr = properties.getProperty("https-server.port");
                 if (httpsPortStr != null) {
                     ports.put("https-server.port", Integer.parseInt(httpsPortStr));
                 }
