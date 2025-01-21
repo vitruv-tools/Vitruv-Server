@@ -6,11 +6,15 @@ import com.sun.net.httpserver.HttpsServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import server.HttpsRequestHandler;
+import server.CallbackEndpointHandler;
 
 import javax.net.ssl.*;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
+
+import app.VitruvServerApp;
+
 
 public class HttpsServerManager {
     private static final Logger logger = LoggerFactory.getLogger(HttpsServerManager.class);
@@ -47,11 +51,29 @@ public class HttpsServerManager {
             }
         });
 
+        // Vitruv endpoints
         server.createContext("/", new HttpsRequestHandler(forwardPort));
+
+        // VitruvServer endpoints
+        server.createContext("/callback", new CallbackEndpointHandler());
+        server.createContext("/auth", exchange -> {
+            try {
+                String authorizationUrl = VitruvServerApp.getOidcClient().getAuthorizationRequestURI().toString();
+                String response = "Visit the following URL to authorize: " + authorizationUrl;
+                exchange.sendResponseHeaders(200, response.getBytes().length);
+                exchange.getResponseBody().write(response.getBytes());
+            } catch (Exception e) {
+                logger.error("Error generating authorization URL: {}", e.getMessage());
+                exchange.sendResponseHeaders(500, 0);
+            } finally {
+                exchange.close();
+            }
+        });
+
         server.setExecutor(null);
         server.start();
-        logger.info("HTTPS server started on port " + port);
 
+        logger.info("HTTPS server started on port " + port);
     }
 
     public void stop() {
