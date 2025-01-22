@@ -17,28 +17,25 @@ public class CallbackEndpointHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         logger.info("Handling callback endpoint: {}", exchange.getRequestURI());
 
-//        String response = "Hey :) You wanna call me back?";
-//        exchange.sendResponseHeaders(200, response.getBytes().length);
-//        exchange.getResponseBody().write(response.getBytes());
-//        exchange.close();
-
-
         String query = exchange.getRequestURI().getQuery();
         String code = getQueryParam(query, "code");
 
         if (code == null) {
             String response = "Authorization code not found in the callback request.";
+            logger.info(response);
             exchange.sendResponseHeaders(400, response.getBytes().length);
             exchange.getResponseBody().write(response.getBytes());
             exchange.close();
             return;
         }
+        logger.info("Access code received: {}", code);
 
         try {
             Tokens tokens = VitruvServerApp.getOidcClient().exchangeAuthorizationCode(code);
-            logger.info("Access Token received: {}", tokens.getAccessToken().getValue());
+            logger.info("Access token received: {}", tokens.getAccessToken().getValue());
+            logger.info("Access refresh token received: {}", tokens.getRefreshToken().getValue());
 
-            String response = "Authorization successful! Access Token: " + tokens.getAccessToken().getValue();
+            String response = "Authorization successful! Access token: " + tokens.getAccessToken().getValue();
             exchange.sendResponseHeaders(200, response.getBytes().length);
             exchange.getResponseBody().write(response.getBytes());
         } catch (Exception e) {

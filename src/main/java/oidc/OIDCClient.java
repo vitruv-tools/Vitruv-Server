@@ -67,6 +67,7 @@ public class OIDCClient {
         TokenResponse response = TokenResponse.parse(request.toHTTPRequest().send());
 
         if (!response.indicatesSuccess()) {
+            logger.error("Token request failed: " + response.toErrorResponse().getErrorObject().getDescription());
             throw new Exception("Token request failed: " + response.toErrorResponse().getErrorObject().getDescription());
         }
 
