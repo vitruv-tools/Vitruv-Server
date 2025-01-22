@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import server.AuthEndpointHandler;
 import server.HttpsRequestHandler;
 import server.CallbackEndpointHandler;
 
@@ -55,20 +56,8 @@ public class HttpsServerManager {
         server.createContext("/", new HttpsRequestHandler(forwardPort));
 
         // VitruvServer endpoints
+        server.createContext("/auth", new AuthEndpointHandler());
         server.createContext("/callback", new CallbackEndpointHandler());
-        server.createContext("/auth", exchange -> {
-            try {
-                String authorizationUrl = VitruvServerApp.getOidcClient().getAuthorizationRequestURI().toString();
-                String response = "Visit the following URL to authorize: " + authorizationUrl;
-                exchange.sendResponseHeaders(200, response.getBytes().length);
-                exchange.getResponseBody().write(response.getBytes());
-            } catch (Exception e) {
-                logger.error("Error generating authorization URL: {}", e.getMessage());
-                exchange.sendResponseHeaders(500, 0);
-            } finally {
-                exchange.close();
-            }
-        });
 
         server.setExecutor(null);
         server.start();
