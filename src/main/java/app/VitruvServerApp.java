@@ -19,17 +19,21 @@ public class VitruvServerApp {
 
 
     public static void main(String[] args) throws Exception {
+        logger.info("Initialize client and servers");
+
+
         final ConfigManager config = new ConfigManager("config.properties");
         final int vitruvPort = config.getVitruvServerPort();
         final int httpsPort = config.getHttpsServerPort();
-
-        oidcClient = new OIDCClient("vitruvserver-maven-dev", "A5MqhxujnpAQC0zzN0BW5pZKQ5t27C8P", "https://localhost/callback");
 
         final VitruvServerManager vitruvServerManager = new VitruvServerManager(vitruvPort);
         vitruvServerManager.start();
 
         final HttpsServerManager httpsServerManager = new HttpsServerManager(httpsPort, vitruvPort);
         httpsServerManager.start();
+
+        oidcClient = new OIDCClient("vitruvserver-maven-dev", "A5MqhxujnpAQC0zzN0BW5pZKQ5t27C8P", "https://localhost:8443/callback");
+
 
         logger.info("Authorization URL: {}", oidcClient.getAuthorizationRequestURI());
 
