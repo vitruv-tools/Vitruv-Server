@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import server.AuthEndpointHandler;
 import server.HttpsRequestHandler;
 import server.CallbackEndpointHandler;
+import server.TokenValidationHandler;
 
 import javax.net.ssl.*;
 import java.io.InputStream;
@@ -16,13 +17,7 @@ import java.security.KeyStore;
 
 public class HttpsServerManager {
     private static final Logger logger = LoggerFactory.getLogger(HttpsServerManager.class);
-    /**
-     * Default name of the keystore file containing the self-signed certificate.
-     */
     private static final String DEFAULT_KEYSTORE_NAME = "keystore.p12";
-    /**
-     * Default password for the keystore containing the self-signed certificate.
-     */
     private static final String DEFAULT_KEYSTORE_PASSWORD = "password";
     private final int port;
     private final int forwardPort;
@@ -50,7 +45,7 @@ public class HttpsServerManager {
         });
 
         // Vitruv endpoints
-        server.createContext("/", new HttpsRequestHandler(forwardPort));
+        server.createContext("/", new TokenValidationHandler(new HttpsRequestHandler(forwardPort)));
 
         // VitruvServer endpoints
         server.createContext("/auth", new AuthEndpointHandler());
