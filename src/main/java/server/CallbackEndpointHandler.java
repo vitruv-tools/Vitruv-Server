@@ -54,7 +54,10 @@ public class CallbackEndpointHandler implements HttpHandler {
             exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=" + refreshToken + "; HttpOnly; SameSite=Strict; Path=/auth");
 
             // set body
-            String response = "Authorization successful! Access token: " + accessToken;
+            String response = "Authorization successful!" + "\n\n"
+                    + "Access Token: " + accessToken + "\n\n"
+                    + "ID Token: " + idToken + "\n\n"
+                    + "Refresh Token: " + refreshToken;
             exchange.sendResponseHeaders(200, response.getBytes().length);
             exchange.getResponseBody().write(response.getBytes());
         } catch (Exception e) {
