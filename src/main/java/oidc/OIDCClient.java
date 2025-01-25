@@ -14,7 +14,6 @@ import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
 import com.nimbusds.oauth2.sdk.auth.Secret;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.Issuer;
-import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderConfigurationRequest;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import org.slf4j.Logger;
@@ -93,8 +92,7 @@ public class OIDCClient {
         );
         jwtProcessor.setJWSKeySelector(keySelector);
         // verify idToken & extract JWTClaimsSet
-        SecurityContext context = null; // Set a context if needed, otherwise null
-        JWTClaimsSet claimsSet = jwtProcessor.process(idToken, context);
+        JWTClaimsSet claimsSet = jwtProcessor.process(idToken, null);
         // validate claims: issuer
         String issuer = claimsSet.getIssuer();
         if (!issuer.equals(providerMetadata.getIssuer().toString())) {
