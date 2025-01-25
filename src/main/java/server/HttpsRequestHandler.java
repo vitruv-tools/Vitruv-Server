@@ -61,7 +61,7 @@ public class HttpsRequestHandler implements HttpHandler {
             logger.info("Response code: {}", responseCode);
         }
         catch (Exception e) {
-            logger.error("An error occurred while handling the HTTP request: {}", e.getMessage(), e);
+            logger.error("An error occurred while handling the HTTP request: {}", e.getMessage());
         }
     }
 }

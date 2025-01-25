@@ -96,13 +96,11 @@ public class OIDCClient {
         // validate claims: issuer
         String issuer = claimsSet.getIssuer();
         if (!issuer.equals(providerMetadata.getIssuer().toString())) {
-            logger.error("Invalid ID Token issuer: " + issuer);
             throw new Exception("Invalid ID Token issuer: " + issuer);
         }
         // validate claims: audience
         String audience = claimsSet.getAudience().get(0);
         if (!audience.equals(clientId)) {
-            logger.error("Invalid ID Token audience: " + audience);
             throw new Exception("Invalid ID Token audience: " + audience);
         }
         String email = claimsSet.getClaim("email").toString();
