@@ -14,9 +14,6 @@ import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
 
-import app.VitruvServerApp;
-
-
 public class HttpsServerManager {
     private static final Logger logger = LoggerFactory.getLogger(HttpsServerManager.class);
     /**
