@@ -1,7 +1,12 @@
 package oidc;
 
-import com.nimbusds.jose.jwk.source.RemoteJWKSet;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import com.nimbusds.jose.proc.JWSKeySelector;
+import com.nimbusds.jose.proc.JWSVerificationKeySelector;
 import com.nimbusds.jose.proc.SecurityContext;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import com.nimbusds.oauth2.sdk.*;
@@ -10,11 +15,8 @@ import com.nimbusds.oauth2.sdk.auth.Secret;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.Issuer;
 import com.nimbusds.oauth2.sdk.token.Tokens;
-import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
-
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderConfigurationRequest;
-import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
-
+import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +47,9 @@ public class OIDCClient {
         OIDCProviderConfigurationRequest request = new OIDCProviderConfigurationRequest(issuer);
         OIDCProviderMetadata metadata = OIDCProviderMetadata.parse(request.toHTTPRequest().send().getContentAsJSONObject());
         this.providerMetadata = metadata;
-        logger.info("Provider Metadata discovered: {}", metadata.getIssuer());
+
+        logger.info("Metadata Issuer: {}", issuer);
+        logger.info("Provider Metadata discovered: {}", metadata);
     }
 
     public URI getAuthorizationRequestURI() {
@@ -71,17 +75,46 @@ public class OIDCClient {
             throw new Exception("Token request failed: " + response.toErrorResponse().getErrorObject().getDescription());
         }
 
-        return response.toSuccessResponse().getTokens();
+        AccessTokenResponse accessTokenResponse = response.toSuccessResponse();
+        String idToken = accessTokenResponse.getCustomParameters().get("id_token").toString();
+        logger.info("ID Token: {}", idToken);
+        validateIDToken(idToken);
+
+        return accessTokenResponse.getTokens();
     }
 
     public void validateIDToken(String idTokenString) throws Exception {
         SignedJWT idToken = SignedJWT.parse(idTokenString);
+        // Create the JWT processor for validating signature & claims
         DefaultJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
+        // Load the JWK set from "https://oidc.scc.kit.edu/auth/realms/kit/protocol/openid-connect/certs"
+        URL jwkSetURL = new URL(providerMetadata.getJWKSetURI().toString());
+        JWKSet jwkSet = JWKSet.load(jwkSetURL);
+        ImmutableJWKSet<SecurityContext> jwkSource = new ImmutableJWKSet<>(jwkSet);
+        // Set up JWS key selector with RS256
+        JWSKeySelector<SecurityContext> keySelector = new JWSVerificationKeySelector<>(
+                JWSAlgorithm.RS256,
+                jwkSource
+        );
+        jwtProcessor.setJWSKeySelector(keySelector);
+        // verify idToken & extract JWTClaimsSet
+        SecurityContext context = null; // Set a context if needed, otherwise null
+        JWTClaimsSet claimsSet = jwtProcessor.process(idToken, context);
+        // validate claims: issuer
+        String issuer = claimsSet.getIssuer();
+        if (!issuer.equals(providerMetadata.getIssuer().toString())) {
+            logger.error("Invalid ID Token issuer: " + issuer);
+            throw new Exception("Invalid ID Token issuer: " + issuer);
+        }
+        // validate claims: audience
+        String audience = claimsSet.getAudience().get(0);
+        if (!audience.equals(clientId)) {
+            logger.error("Invalid ID Token audience: " + audience);
+            throw new Exception("Invalid ID Token audience: " + audience);
+        }
+        String email = claimsSet.getClaim("email").toString();
+        logger.info("Email of user: " + email);
 
-        RemoteJWKSet<SecurityContext> jwkSet = new RemoteJWKSet<>(new URL(providerMetadata.getJWKSetURI().toString()));
-        IDTokenValidator validator = new IDTokenValidator(providerMetadata.getIssuer(), new ClientID(clientId));
-
-        validator.validate(idToken, null);
-        logger.info("ID Token is valid.");
+        logger.info("ID Token is valid. Claims: " + claimsSet.toJSONObject());
     }
 }
