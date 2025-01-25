@@ -21,7 +21,6 @@ public class VitruvServerApp {
     public static void main(String[] args) throws Exception {
         logger.info("Initialize client and servers");
 
-
         final ConfigManager config = new ConfigManager("config.properties");
         final int vitruvPort = config.getVitruvServerPort();
         final int httpsPort = config.getHttpsServerPort();
@@ -34,11 +33,8 @@ public class VitruvServerApp {
 
         oidcClient = new OIDCClient("vitruvserver-maven-dev", "A5MqhxujnpAQC0zzN0BW5pZKQ5t27C8P", "https://localhost:8443/callback");
 
-
-        logger.info("Authorization URL: {}", oidcClient.getAuthorizationRequestURI());
-
         final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(() -> logger.info("still running.."), 0, 20, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(() -> logger.info("still running.."), 0, 1, TimeUnit.MINUTES);
     }
 
     public static OIDCClient getOidcClient() {
