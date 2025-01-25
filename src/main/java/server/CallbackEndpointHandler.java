@@ -35,7 +35,16 @@ public class CallbackEndpointHandler implements HttpHandler {
             logger.info("Access token received: {}", tokens.getAccessToken().getValue());
             logger.info("Access refresh token received: {}", tokens.getRefreshToken().getValue());
 
-            String response = "Authorization successful! Access token: " + tokens.getAccessToken().getValue();
+            String accessToken = tokens.getAccessToken().getValue();
+
+            // TODO: set 'Secure' flag -> Cookie can only be sent with HTTPS
+//            exchange.getResponseHeaders().add("Set-Cookie", "id_token=" + "TODO" + "; HttpOnly; Secure; SameSite=Strict");
+//            exchange.getResponseHeaders().add("Set-Cookie", "access_token=" + accessToken+ "; HttpOnly; Secure; SameSite=Strict");
+
+            exchange.getResponseHeaders().add("Set-Cookie", "id_token=" + "TODO" + "; HttpOnly; SameSite=Strict");
+            exchange.getResponseHeaders().add("Set-Cookie", "access_token=" + accessToken + "; HttpOnly; SameSite=Strict");
+
+            String response = "Authorization successful! Access token: " + accessToken;
             exchange.sendResponseHeaders(200, response.getBytes().length);
             exchange.getResponseBody().write(response.getBytes());
         } catch (Exception e) {
