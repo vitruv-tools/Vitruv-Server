@@ -30,7 +30,7 @@ public class TokenValidationHandler implements HttpHandler {
             try {
                 VitruvServerApp.getOidcClient().validateIDToken(idToken);
             } catch (Exception e) {
-                logger.error("ID Token validation failed: {}", e.getMessage());
+                logger.error("ID Token validation failed: {} -> Redirecting to SSO.", e.getMessage());
                 authEndpointHandler.handle(exchange);
                 return;
             }
@@ -77,6 +77,7 @@ public class TokenValidationHandler implements HttpHandler {
                 logger.error("Access Token expired");
                 return false;
             }
+            logger.info("Access Token is valid");
             return true;
         } catch (ParseException e) {
             logger.error("Error parsing Access Token: {}", e.getMessage());
