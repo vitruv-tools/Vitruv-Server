@@ -10,4 +10,4 @@ FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=builder /app/target/vitruvserver-1.0-SNAPSHOT.jar /app/app.jar
 COPY --from=builder /app/target/libs /app/libs
-ENTRYPOINT ["java", "-cp", "/app/app.jar:/app/libs/*", "VitruvServerApp"]
+ENTRYPOINT ["java", "-cp", "/app/app.jar:/app/libs/*", "app.VitruvServerApp"]
