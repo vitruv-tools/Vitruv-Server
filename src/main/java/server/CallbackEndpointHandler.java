@@ -1,6 +1,7 @@
 package server;
 
 import app.VitruvServerApp;
+import com.nimbusds.oauth2.sdk.AccessTokenResponse;
 import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -31,19 +32,28 @@ public class CallbackEndpointHandler implements HttpHandler {
         logger.info("Access code received: {}", code);
 
         try {
-            Tokens tokens = VitruvServerApp.getOidcClient().exchangeAuthorizationCode(code);
-            logger.info("Access token received: {}", tokens.getAccessToken().getValue());
-            logger.info("Access refresh token received: {}", tokens.getRefreshToken().getValue());
+            // get ID Token and Access Token
+            AccessTokenResponse tokenResponse = VitruvServerApp.getOidcClient().exchangeAuthorizationCode(code);
 
+            String idToken = tokenResponse.getCustomParameters().get("id_token").toString();
+            logger.info("ID Token: {}", idToken);
+
+            Tokens tokens = tokenResponse.getTokens();
             String accessToken = tokens.getAccessToken().getValue();
+            String refreshToken = tokens.getRefreshToken().getValue();
 
-            // TODO: set 'Secure' flag -> Cookie can only be sent with HTTPS
-//            exchange.getResponseHeaders().add("Set-Cookie", "id_token=" + "TODO" + "; HttpOnly; Secure; SameSite=Strict");
-//            exchange.getResponseHeaders().add("Set-Cookie", "access_token=" + accessToken+ "; HttpOnly; Secure; SameSite=Strict");
+            logger.info("Access Token: {}", accessToken);
+            logger.info("Refresh Token: {}", refreshToken);
 
-            exchange.getResponseHeaders().add("Set-Cookie", "id_token=" + "TODO" + "; HttpOnly; SameSite=Strict");
+            // validate ID Token
+            VitruvServerApp.getOidcClient().validateIDToken(idToken);
+
+            // set cookie (TODO: set 'Secure;' flag -> Cookie can only be sent with HTTPS)
+            exchange.getResponseHeaders().add("Set-Cookie", "id_token=" + idToken + "; HttpOnly; SameSite=Strict");
             exchange.getResponseHeaders().add("Set-Cookie", "access_token=" + accessToken + "; HttpOnly; SameSite=Strict");
+            exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=" + refreshToken + "; HttpOnly; SameSite=Strict; Path=/auth");
 
+            // set body
             String response = "Authorization successful! Access token: " + accessToken;
             exchange.sendResponseHeaders(200, response.getBytes().length);
             exchange.getResponseBody().write(response.getBytes());

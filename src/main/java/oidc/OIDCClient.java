@@ -61,7 +61,7 @@ public class OIDCClient {
         return request.toURI();
     }
 
-    public Tokens exchangeAuthorizationCode(String code) throws Exception {
+    public AccessTokenResponse exchangeAuthorizationCode(String code) throws Exception {
         AuthorizationCode authorizationCode = new AuthorizationCode(code);
         TokenRequest request = new TokenRequest(
                 providerMetadata.getTokenEndpointURI(),
@@ -75,12 +75,7 @@ public class OIDCClient {
             throw new Exception("Token request failed: " + response.toErrorResponse().getErrorObject().getDescription());
         }
 
-        AccessTokenResponse accessTokenResponse = response.toSuccessResponse();
-        String idToken = accessTokenResponse.getCustomParameters().get("id_token").toString();
-        logger.info("ID Token: {}", idToken);
-        validateIDToken(idToken);
-
-        return accessTokenResponse.getTokens();
+        return response.toSuccessResponse();
     }
 
     public void validateIDToken(String idTokenString) throws Exception {
