@@ -23,9 +23,17 @@ public class TokenValidationHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) {
         try {
-            String accessToken = extractToken(exchange, "access_token");
-            String idToken = extractToken(exchange, "id_token");
+            String accessToken;
+            String idToken;
 
+            try {
+                accessToken = extractToken(exchange, "access_token");
+                idToken = extractToken(exchange, "id_token");
+            } catch (Exception e) {
+                logger.error("Token extraction from cookies failed: {} -> Redirecting to SSO.", e.getMessage());
+                authEndpointHandler.handle(exchange);
+                return;
+            }
 
             try {
                 VitruvServerApp.getOidcClient().validateIDToken(idToken);
@@ -42,7 +50,8 @@ public class TokenValidationHandler implements HttpHandler {
             }
             logger.info("Tokens of client are valid.");
             next.handle(exchange);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             logger.error("An error occurred while validating Access and ID Tokens: {}", e.getMessage(), e);
         }
     }
