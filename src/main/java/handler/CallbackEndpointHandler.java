@@ -48,10 +48,10 @@ public class CallbackEndpointHandler implements HttpHandler {
             // validate ID Token
             VitruvServerApp.getOidcClient().validateIDToken(idToken);
 
-            // set cookie (TODO: set 'Secure;' flag -> Cookie can only be sent with HTTPS)
+            // set cookies (TODO: set 'Secure;' flag -> Cookie can only be sent with HTTPS)
             exchange.getResponseHeaders().add("Set-Cookie", "id_token=" + idToken + "; HttpOnly; SameSite=Strict");
             exchange.getResponseHeaders().add("Set-Cookie", "access_token=" + accessToken + "; HttpOnly; SameSite=Strict");
-            exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=" + refreshToken + "; HttpOnly; SameSite=Strict; Path=/auth");
+            exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=" + refreshToken + "; HttpOnly; SameSite=Strict");
 
             // set body
             String response = "Authorization successful!" + "\n\n"
