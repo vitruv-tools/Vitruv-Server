@@ -44,7 +44,7 @@ public class HttpsServerManager {
             }
         });
 
-        // Vitruv endpoints
+        // Vitruv endpoints (secured through TokenValidationHandler wrapper)
         server.createContext("/", new TokenValidationHandler(new HttpsRequestHandler(forwardPort)));
 
         // VitruvServer endpoints

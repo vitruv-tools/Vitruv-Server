@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 public class VitruvServerApp {
 
     public static final Logger logger = LoggerFactory.getLogger(VitruvServerApp.class);
-
     private static OIDCClient oidcClient;
 
     public static void main(String[] args) throws Exception {
