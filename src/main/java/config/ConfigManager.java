@@ -26,4 +26,12 @@ public class ConfigManager {
     public int getHttpsServerPort() {
         return Integer.parseInt(properties.getProperty("https-server.port", "8443"));
     }
+
+    public String getClientId() {
+        return properties.getProperty("client-id");
+    }
+
+    public String getClientSecret() {
+        return properties.getProperty("client-secret");
+    }
 }
