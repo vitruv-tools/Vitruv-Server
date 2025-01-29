@@ -1,4 +1,4 @@
-package server;
+package handler;
 
 import app.VitruvServerApp;
 import com.nimbusds.jwt.JWTClaimsSet;

@@ -1,8 +1,8 @@
 package app;
 
 import config.ConfigManager;
-import handler.HttpsServerManager;
-import handler.VitruvServerManager;
+import server.HttpsServerManager;
+import server.VitruvServerManager;
 import oidc.OIDCClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

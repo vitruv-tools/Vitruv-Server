@@ -1,14 +1,14 @@
-package handler;
+package server;
 
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import server.AuthEndpointHandler;
-import server.HttpsRequestHandler;
-import server.CallbackEndpointHandler;
-import server.TokenValidationHandler;
+import handler.AuthEndpointHandler;
+import handler.HttpsRequestHandler;
+import handler.CallbackEndpointHandler;
+import handler.TokenValidationHandler;
 
 import javax.net.ssl.*;
 import java.io.InputStream;
