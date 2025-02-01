@@ -14,6 +14,7 @@ import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
 import com.nimbusds.oauth2.sdk.auth.Secret;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.Issuer;
+import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderConfigurationRequest;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import org.slf4j.Logger;
@@ -108,4 +109,20 @@ public class OIDCClient {
 
         logger.info("ID Token is valid. Claims: " + claimsSet.toJSONObject());
     }
+
+    public AccessTokenResponse refreshAccessToken(String refreshToken) throws Exception {
+        TokenRequest request = new TokenRequest(
+                providerMetadata.getTokenEndpointURI(),
+                new ClientSecretBasic(new ClientID(clientId), new Secret(clientSecret)),
+                new RefreshTokenGrant(new RefreshToken(refreshToken))
+        );
+
+        TokenResponse response = TokenResponse.parse(request.toHTTPRequest().send());
+
+        if (!response.indicatesSuccess()) {
+             throw new Exception(response.toErrorResponse().getErrorObject().getDescription());
+        }
+        return response.toSuccessResponse();
+    }
+
 }
