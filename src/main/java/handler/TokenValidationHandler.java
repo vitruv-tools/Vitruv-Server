@@ -3,13 +3,16 @@ package handler;
 import app.VitruvServerApp;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import com.nimbusds.oauth2.sdk.AccessTokenResponse;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 
 public class TokenValidationHandler implements HttpHandler {
     private static final Logger logger = LoggerFactory.getLogger(TokenValidationHandler.class);
@@ -21,43 +24,33 @@ public class TokenValidationHandler implements HttpHandler {
     }
 
     @Override
-    public void handle(HttpExchange exchange) {
+    public void handle(HttpExchange exchange) throws IOException {
+        logger.info("\nNew Request: '{}'", exchange.getRequestURI());
         try {
-            String accessToken;
-            String idToken;
+            String accessToken = extractToken(exchange, "access_token");
 
-            try {
-                accessToken = extractToken(exchange, "access_token");
-                idToken = extractToken(exchange, "id_token");
-            } catch (Exception e) {
-                logger.error("Token extraction from cookies failed: {} -> Redirecting to SSO.", e.getMessage());
-                authEndpointHandler.handle(exchange);
-                return;
+            // check if Access Token is valid
+            if (accessToken != null && isValidAccessToken(accessToken)) {
+                logger.info("Access Token is valid. Processing request.");
+                next.handle(exchange);
+            } else { // Access Token is not valid
+                handleTokenRefresh(exchange);
             }
-
-            try {
-                VitruvServerApp.getOidcClient().validateIDToken(idToken);
-            } catch (Exception e) {
-                logger.error("ID Token validation failed: {} -> Redirecting to SSO.", e.getMessage());
-                authEndpointHandler.handle(exchange);
-                return;
-            }
-
-            if (accessToken == null || !isValidAccessToken(accessToken)) {
-                logger.warn("Invalid or missing Access Token. Redirecting to SSO.");
-                authEndpointHandler.handle(exchange);
-                return;
-            }
-            logger.info("Tokens of client are valid.");
-            next.handle(exchange);
-        }
-        catch (Exception e) {
-            logger.error("An error occurred while validating Access and ID Tokens: {}", e.getMessage(), e);
+        } catch (Exception e) {
+            logger.error("An error occurred while validating Access Token: {} -> Redirecting to SSO.", e.getMessage());
+            authEndpointHandler.handle(exchange);
         }
     }
 
     private String extractToken(HttpExchange exchange, String tokenType) {
-        String[] tokens = exchange.getRequestHeaders().get("Cookie").get(0).split(";");
+        List<String> cookieHeaders = exchange.getRequestHeaders().get("Cookie");
+
+        if (cookieHeaders == null || cookieHeaders.isEmpty()) {
+            logger.warn("No cookies found in request.");
+            return null;
+        }
+
+        String[] tokens = cookieHeaders.get(0).split(";");
 
         for (String token : tokens) {
             token = token.trim();
@@ -91,6 +84,42 @@ public class TokenValidationHandler implements HttpHandler {
         } catch (ParseException e) {
             logger.error("Error parsing Access Token: {}", e.getMessage());
             return false;
+        }
+    }
+
+    private void handleTokenRefresh(HttpExchange exchange) throws IOException {
+        String refreshToken = extractToken(exchange, "refresh_token");
+
+        if (refreshToken == null) {
+            logger.warn("No valid Access Token and no Refresh Token found. Redirecting to SSO.");
+            authEndpointHandler.handle(exchange);
+            return;
+        }
+
+        // try to refresh Access Token and Refresh Token
+        try {
+            AccessTokenResponse newTokens = VitruvServerApp.getOidcClient().refreshAccessToken(refreshToken);
+            String newAccessToken = newTokens.getTokens().getAccessToken().getValue();
+            String newRefreshToken = newTokens.getTokens().getRefreshToken().getValue();
+
+            // remove old tokens
+            exchange.getResponseHeaders().add("Set-Cookie", "access_token=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict");
+            exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict");
+
+            // set new tokens (TODO: set 'Secure;' flag -> Cookie can only be sent with HTTPS)
+            exchange.getResponseHeaders().add("Set-Cookie", "access_token=" + newAccessToken + "; Path=/; HttpOnly; SameSite=Strict");
+            if (newRefreshToken != null) {
+                exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=" + newRefreshToken + "; Path=/; HttpOnly; SameSite=Strict");
+            } else {
+                logger.warn("No new Refresh Token returned. Keeping the old one.");
+            }
+
+            logger.info("Access Token successfully refreshed. Processing request.");
+            next.handle(exchange);
+
+        } catch (Exception e) {
+            logger.error("Failed to refresh Access Token: {} -> Redirecting to SSO.", e.getMessage());
+            authEndpointHandler.handle(exchange);
         }
     }
 }
