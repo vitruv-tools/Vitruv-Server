@@ -25,19 +25,23 @@ public class TokenValidationHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        logger.info("\nNew Request: '{}'", exchange.getRequestURI());
+        if (exchange.getRequestURI().toString().equals("/favicon.ico")) {
+            logger.info("Ignore '/favicon.ico' request.");
+            return;
+        }
+
+        logger.info("\nNew Request: '{}'", exchange.getRequestURI().toString());
         try {
             String accessToken = extractToken(exchange, "access_token");
 
             // check if Access Token is valid
             if (accessToken != null && isValidAccessToken(accessToken)) {
-                logger.info("Access Token is valid. Processing request.");
                 next.handle(exchange);
             } else { // Access Token is not valid
                 handleTokenRefresh(exchange);
             }
         } catch (Exception e) {
-            logger.error("An error occurred while validating Access Token: {} -> Redirecting to SSO.", e.getMessage());
+            logger.error("An error occurred while validating Access Token: {}\n-> Redirecting to SSO.", e.getMessage());
             authEndpointHandler.handle(exchange);
         }
     }
@@ -91,7 +95,7 @@ public class TokenValidationHandler implements HttpHandler {
         String refreshToken = extractToken(exchange, "refresh_token");
 
         if (refreshToken == null) {
-            logger.warn("No valid Access Token and no Refresh Token found. Redirecting to SSO.");
+            logger.warn("No valid Access Token and no Refresh Token found.\n-> Redirecting to SSO.");
             authEndpointHandler.handle(exchange);
             return;
         }
@@ -118,7 +122,7 @@ public class TokenValidationHandler implements HttpHandler {
             next.handle(exchange);
 
         } catch (Exception e) {
-            logger.error("Failed to refresh Access Token: {} -> Redirecting to SSO.", e.getMessage());
+            logger.error("Failed to refresh Access Token: {}\n-> Redirecting to SSO.", e.getMessage());
             authEndpointHandler.handle(exchange);
         }
     }

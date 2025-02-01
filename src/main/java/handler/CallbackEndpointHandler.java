@@ -29,21 +29,21 @@ public class CallbackEndpointHandler implements HttpHandler {
             exchange.close();
             return;
         }
-        logger.info("Access code received: {}", code);
+        logger.debug("Access code received: {}", code);
 
         try {
             // get ID Token and Access Token
             AccessTokenResponse tokenResponse = VitruvServerApp.getOidcClient().exchangeAuthorizationCode(code);
 
             String idToken = tokenResponse.getCustomParameters().get("id_token").toString();
-            logger.info("ID Token: {}", idToken);
+            logger.debug("ID Token: {}", idToken);
 
             Tokens tokens = tokenResponse.getTokens();
             String accessToken = tokens.getAccessToken().getValue();
             String refreshToken = tokens.getRefreshToken().getValue();
 
-            logger.info("Access Token: {}", accessToken);
-            logger.info("Refresh Token: {}", refreshToken);
+            logger.debug("Access Token: {}", accessToken);
+            logger.debug("Refresh Token: {}", refreshToken);
 
             // validate ID Token
             VitruvServerApp.getOidcClient().validateIDToken(idToken);
