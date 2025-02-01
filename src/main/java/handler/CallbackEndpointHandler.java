@@ -49,15 +49,15 @@ public class CallbackEndpointHandler implements HttpHandler {
             VitruvServerApp.getOidcClient().validateIDToken(idToken);
 
             // set cookies (TODO: set 'Secure;' flag -> Cookie can only be sent with HTTPS)
-            exchange.getResponseHeaders().add("Set-Cookie", "id_token=" + idToken + "; HttpOnly; SameSite=Strict");
-            exchange.getResponseHeaders().add("Set-Cookie", "access_token=" + accessToken + "; HttpOnly; SameSite=Strict");
-            exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=" + refreshToken + "; HttpOnly; SameSite=Strict");
+            exchange.getResponseHeaders().add("Set-Cookie", "id_token=" + idToken + "; Path=/; HttpOnly; SameSite=Strict");
+            exchange.getResponseHeaders().add("Set-Cookie", "access_token=" + accessToken + "; Path=/; HttpOnly; SameSite=Strict");
+            exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=" + refreshToken + "; Path=/; HttpOnly; SameSite=Strict");
 
             // set body
-            String response = "Authorization successful!" + "\n\n"
-                    + "Access Token: " + accessToken + "\n\n"
+            String response = "Authorization successful! You can send new requests now." + "\n\n"
+                    + "Access Token (expires in 5 min): " + accessToken + "\n\n"
                     + "ID Token: " + idToken + "\n\n"
-                    + "Refresh Token: " + refreshToken;
+                    + "Refresh Token (expires in 30 min): " + refreshToken;
             exchange.sendResponseHeaders(200, response.getBytes().length);
             exchange.getResponseBody().write(response.getBytes());
         } catch (Exception e) {
