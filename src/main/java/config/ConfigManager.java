@@ -28,18 +28,18 @@ public class ConfigManager {
     }
 
     public String getClientId() {
-        return properties.getProperty("client-id");
+        return properties.getProperty("client.id");
     }
 
     public String getClientSecret() {
-        return properties.getProperty("client-secret");
+        return properties.getProperty("client.secret");
     }
 
     public String getDomainProtocol() {
-        return properties.getProperty("domain-protocol");
+        return properties.getProperty("domain.protocol");
     }
 
     public String getDomainName() {
-        return properties.getProperty("domain-name", "localhost:" + getHttpsServerPort());
+        return properties.getProperty("domain.name", "localhost:" + getHttpsServerPort());
     }
 }
