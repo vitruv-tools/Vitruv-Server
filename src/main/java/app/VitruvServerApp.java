@@ -29,7 +29,9 @@ public class VitruvServerApp {
         final HttpsServerManager httpsServerManager = new HttpsServerManager(httpsPort, vitruvPort);
         httpsServerManager.start();
 
-        oidcClient = new OIDCClient(config.getClientId(), config.getClientSecret(), "https://localhost:8443/callback");
+        final String redirectURI = config.getDomainProtocol() + "://" + config.getDomainName() + "/callback";
+        logger.debug("redirectURI: {}", redirectURI);
+        oidcClient = new OIDCClient(config.getClientId(), config.getClientSecret(), redirectURI);
 
         final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> logger.info("still running.."), 0, 1, TimeUnit.MINUTES);

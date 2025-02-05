@@ -34,4 +34,12 @@ public class ConfigManager {
     public String getClientSecret() {
         return properties.getProperty("client-secret");
     }
+
+    public String getDomainProtocol() {
+        return properties.getProperty("domain-protocol");
+    }
+
+    public String getDomainName() {
+        return properties.getProperty("domain-name", "localhost:" + getHttpsServerPort());
+    }
 }

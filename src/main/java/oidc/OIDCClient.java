@@ -26,7 +26,6 @@ import java.net.URL;
 public class OIDCClient {
 
     private static final Logger logger = LoggerFactory.getLogger(OIDCClient.class);
-
     private final String clientId;
     private final String clientSecret;
     private final URI redirectUri;
