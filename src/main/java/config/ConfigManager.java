@@ -42,4 +42,12 @@ public class ConfigManager {
     public String getDomainName() {
         return properties.getProperty("domain.name", "localhost:" + getHttpsServerPort());
     }
+
+    public String getCertChainPath() {
+        return properties.getProperty("cert.chain.path");
+    }
+
+    public String getCertKeyPath() {
+        return properties.getProperty("cert.key.path");
+    }
 }
