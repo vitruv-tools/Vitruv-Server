@@ -16,10 +16,12 @@ public class VitruvServerApp {
     public static final Logger logger = LoggerFactory.getLogger(VitruvServerApp.class);
     private static OIDCClient oidcClient;
 
+    private static ConfigManager config;
+
     public static void main(String[] args) throws Exception {
         logger.info("Initialize client and servers");
 
-        final ConfigManager config = new ConfigManager("config.properties");
+        config = new ConfigManager("config.properties");
         final int vitruvPort = config.getVitruvServerPort();
         final int httpsPort = config.getHttpsServerPort();
 
@@ -29,7 +31,9 @@ public class VitruvServerApp {
         final HttpsServerManager httpsServerManager = new HttpsServerManager(httpsPort, vitruvPort);
         httpsServerManager.start();
 
-        oidcClient = new OIDCClient(config.getClientId(), config.getClientSecret(), "https://localhost:8443/callback");
+        final String redirectURI = config.getDomainProtocol() + "://" + config.getDomainName() + "/callback";
+        logger.debug("redirectURI: {}", redirectURI);
+        oidcClient = new OIDCClient(config.getClientId(), config.getClientSecret(), redirectURI);
 
         final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> logger.info("still running.."), 0, 1, TimeUnit.MINUTES);
@@ -37,5 +41,8 @@ public class VitruvServerApp {
 
     public static OIDCClient getOidcClient() {
         return oidcClient;
+    }
+    public static ConfigManager getServerConfig() {
+        return config;
     }
 }
