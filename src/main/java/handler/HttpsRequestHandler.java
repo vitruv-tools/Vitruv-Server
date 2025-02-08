@@ -23,7 +23,22 @@ public class HttpsRequestHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) {
         try {
-            logger.info("Redirect request '{}' to VitruvServer at port {}", exchange.getRequestURI().toString(), this.forwardPort);
+            String requestURI = exchange.getRequestURI().toString();
+
+            // handle root request
+            if (requestURI.equals("/")) {
+                String response = "Welcome to Vitruv-Server :)\n\n"
+                        + "Important information can be found here: https://github.com/vitruv-tools/Vitruv";
+                exchange.getResponseHeaders().set("Content-Type", "text/plain; charset=UTF-8");
+                exchange.sendResponseHeaders(200, response.getBytes().length);
+
+                try (OutputStream os = exchange.getResponseBody()) {
+                    os.write(response.getBytes());
+                }
+                return;
+            }
+
+            logger.info("Redirect request '{}' to VitruvServer at port {}", requestURI, this.forwardPort);
 
             // connect to intern http VitruvServer
             final String vitruvHost = "http://localhost:" + this.forwardPort; // TODO: configure domain
