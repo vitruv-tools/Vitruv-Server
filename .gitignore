@@ -22,3 +22,8 @@ bin/
 
 # Project VitruvServer
 zIgnore
+
+# Let's Encrypt
+certs/
+*.pem
+*.der
