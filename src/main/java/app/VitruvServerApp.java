@@ -16,10 +16,12 @@ public class VitruvServerApp {
     public static final Logger logger = LoggerFactory.getLogger(VitruvServerApp.class);
     private static OIDCClient oidcClient;
 
+    private static ConfigManager config;
+
     public static void main(String[] args) throws Exception {
         logger.info("Initialize client and servers");
 
-        final ConfigManager config = new ConfigManager("config.properties");
+        config = new ConfigManager("config.properties");
         final int vitruvPort = config.getVitruvServerPort();
         final int httpsPort = config.getHttpsServerPort();
 
@@ -39,5 +41,8 @@ public class VitruvServerApp {
 
     public static OIDCClient getOidcClient() {
         return oidcClient;
+    }
+    public static ConfigManager getServerConfig() {
+        return config;
     }
 }
