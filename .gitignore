@@ -1,6 +1,13 @@
 # Compiled class file
 *.class
 
+# vscode class file
+*.vscode
+
+
+# vscode class file
+*.mvn
+
 # Log file
 *.log
 
@@ -22,3 +29,15 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# Maven
+target/
+*.log
+.mvn/wrapper/*.jar
+.flattened-pom.xml
+dependency-reduced-pom.xml
+
+# Eclipse
+META-INF
+build.properties
+plugin.properties
