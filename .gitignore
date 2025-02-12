@@ -4,10 +4,6 @@
 # vscode class file
 *.vscode
 
-
-# vscode class file
-*.mvn
-
 # Log file
 *.log
 
