@@ -8,41 +8,36 @@ import io.micrometer.core.instrument.Metrics;
 /**
  * This class allows controlling the Vitruvius monitoring.
  */
-public class VitruvApmController {
-    
-	private static VitruvStepMeterRegistry activeRegistry;
+public final class VitruvApmController {
+  private static VitruvStepMeterRegistry activeRegistry; // Use the same variable name consistently
 
-    /**
-     * Constructor to initialize the monitoring.
-     * 
-     * @param output Path to a file in which all measurements are stored.
-     */
-    private  VitruvApmController(Path output) {
-         if (ACTIVE_REGISTRY == null) {
-            ACTIVE_REGISTRY = new VitruvStepMeterRegistry(new VitruvStepRegistryConfig(), Clock.SYSTEM, output);
-        }
+  /**
+   * Constructor to initialize the monitoring (No initialization needed here, since we're using static methods).
+   */
+  private VitruvApmController() {
+    // Private constructor to prevent instantiation
+  }
+
+  /**
+   * Enables the monitoring for Vitruvius.
+   * 
+   * @param output Path to a file in which all measurements are stored.
+   */
+  public static void enable(Path output) {
+    if (activeRegistry == null) { // Use the correct variable name here
+      activeRegistry = new VitruvStepMeterRegistry(new VitruvStepRegistryConfig(), Clock.SYSTEM, output);
+      Metrics.globalRegistry.add(activeRegistry); // Register the registry globally
     }
-    
-    /**
-     * Enables the monitoring for Vitruvius.
-     * 
-     * @param output Path to a file in which all measurements are stored.
-     */
-    public static void enable(Path output) {
-        if (activeRegistry == null) {
-            new VitruvApmController(output);  // This calls the private constructor
-            Metrics.globalRegistry.add(activeRegistry);
-        }
+  }
+
+  /**
+   * Disables the monitoring for Vitruvius.
+   */
+  public static void disable() {
+    if (activeRegistry != null) {
+      activeRegistry.stop(); // Stop the active registry
+      Metrics.globalRegistry.remove(activeRegistry); // Remove the registry from global registry
+      activeRegistry = null; // Nullify the reference to indicate it's disabled
     }
-    
-    /**
-     * Disables the monitoring for Vitruvius.
-     */
-    public static void disable() {
-        if (activeRegistry != null) {
-            activeRegistry.stop();
-            Metrics.globalRegistry.remove(activeRegistry);
-            activeRegistry = null;
-        }
-    }
+  }
 }
