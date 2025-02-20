@@ -6,7 +6,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 
 import tools.vitruv.change.composite.description.TransactionalChange;
-import tools.vitruv.change.composite.description.VitruviusChangeResolver;
+import tools.vitruv.change.composite.description.VitruviusChangeResolverFactory;
 import tools.vitruv.change.composite.recording.ChangeRecorder;
 import tools.vitruv.change.interaction.UserInteractionBase;
 import tools.vitruv.framework.views.CommittableView;
@@ -121,7 +121,7 @@ public class ChangeRecordingRemoteView implements CommittableView {
     public void commitChanges() {
         base.checkNotClosed();
         var recordedChange = changeRecorder.endRecording();
-        var changeResolver = VitruviusChangeResolver.forHierarchicalIds(base.viewSource);
+        var changeResolver = VitruviusChangeResolverFactory.forHierarchicalIds(base.viewSource);
         var unresolvedChanges = changeResolver.assignIds(recordedChange);
         base.remoteConnection.propagateChanges(base.uuid, unresolvedChanges);
         base.modified = false;
@@ -131,7 +131,7 @@ public class ChangeRecordingRemoteView implements CommittableView {
     public void commitChanges(Iterable<UserInteractionBase> userInputs) {
     	 base.checkNotClosed();
          var recordedChange = changeRecorder.endRecording();
-         var changeResolver = VitruviusChangeResolver.forHierarchicalIds(base.viewSource);
+         var changeResolver = VitruviusChangeResolverFactory.forHierarchicalIds(base.viewSource);
          var unresolvedChanges = changeResolver.assignIds(recordedChange);
          ((TransactionalChange<?>) unresolvedChanges).setUserInteractions(userInputs);
          base.remoteConnection.propagateChanges(base.uuid, unresolvedChanges);
