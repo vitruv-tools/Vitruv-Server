@@ -41,7 +41,8 @@ public class OIDCClient {
     }
 
     private void discoverProviderMetadata() throws Exception {
-        URI discoveryUri = new URI("https://oidc.scc.kit.edu/auth/realms/kit");
+        URI discoveryUri = new URI("https://fels.scc.kit.edu/oidc/realms/fels");
+
         Issuer issuer = new Issuer(discoveryUri);
         OIDCProviderConfigurationRequest request = new OIDCProviderConfigurationRequest(issuer);
         OIDCProviderMetadata metadata = OIDCProviderMetadata.parse(request.toHTTPRequest().send().getContentAsJSONObject());
