@@ -23,7 +23,7 @@ import tools.vitruv.framework.remote.common.json.JsonMapper;
 import tools.vitruv.framework.remote.common.util.ResourceUtil;
 
 public class VitruviusChangeDeserializer extends JsonDeserializer<VitruviusChange<?>> {
-	private transient final IdTransformation transformation;
+	private final IdTransformation transformation;
 	private final JsonMapper mapper;
 	
     public VitruviusChangeDeserializer(JsonMapper mapper, IdTransformation transformation) {

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import tools.vitruv.framework.remote.common.json.IdTransformation;
 
 public class ReferenceSerializerModifier extends BeanSerializerModifier {
-	private final IdTransformation transformation;
+	private final transient IdTransformation transformation;
 	
 	public ReferenceSerializerModifier(IdTransformation transformation) {
 		this.transformation = transformation;
