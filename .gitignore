@@ -27,3 +27,6 @@ zIgnore
 certs/
 *.pem
 *.der
+
+# OIDC-Provider data
+*.env

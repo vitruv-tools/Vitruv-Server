@@ -28,11 +28,12 @@ public class ConfigManager {
     }
 
     public String getClientId() {
-        return properties.getProperty("client.id");
+        logger.debug("CLIENT_ID: {}", System.getenv("CLIENT_ID"));
+        return System.getenv("CLIENT_ID");
     }
 
     public String getClientSecret() {
-        return properties.getProperty("client.secret");
+        return System.getenv("CLIENT_SECRET");
     }
 
     public String getDomainProtocol() {
