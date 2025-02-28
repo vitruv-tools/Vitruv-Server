@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.type.ReferenceType;
 import tools.vitruv.framework.remote.common.json.IdTransformation;
 
 public class ReferenceDeserializerModifier extends BeanDeserializerModifier {
-	private final IdTransformation transformation;
+	private transient final IdTransformation transformation;
 	
 	public ReferenceDeserializerModifier(IdTransformation transformation) {
 		this.transformation = transformation;

@@ -39,6 +39,11 @@ import tools.vitruv.framework.views.ViewType;
  * server. This enables the ability to perform actions on this remote Vitruvius instance.
  */
 public class VitruvRemoteConnection implements VitruvClient {
+    private static final String SUCCESS = "success";
+    private static final String EXCEPTION = "exception";
+    private static final String RESULT = "result";
+    private static final String METHOD = "method";
+    private static final String ENDPOINT = "endpoint";
     private static final String METRIC_CLIENT_NAME = "vitruv.client.rest.client";
     private final int port;
     private final String hostOrIp;
@@ -276,20 +281,20 @@ public class VitruvRemoteConnection implements VitruvClient {
         try {
             var response = client.send(request, BodyHandlers.ofString());
             if (response.statusCode() != HttpURLConnection.HTTP_OK) {
-                timer.stop(Metrics.timer(METRIC_CLIENT_NAME, "endpoint", request.uri().getPath(),
-                        "method", request.method(), "result", "" + response.statusCode()));
+                timer.stop(Metrics.timer(METRIC_CLIENT_NAME, ENDPOINT, request.uri().getPath(),
+                        METHOD, request.method(), RESULT, "" + response.statusCode()));
                 throw new BadServerResponseException(response.body(), response.statusCode());
             }
-            timer.stop(Metrics.timer(METRIC_CLIENT_NAME, "endpoint", request.uri().getPath(),
-                    "method", request.method(), "result", "success"));
+            timer.stop(Metrics.timer(METRIC_CLIENT_NAME, ENDPOINT, request.uri().getPath(),
+                    METHOD, request.method(), RESULT, SUCCESS));
             return response;
         } catch (IOException e) {
-            timer.stop(Metrics.timer(METRIC_CLIENT_NAME, "endpoint", request.uri().getPath(),
-                    "method", request.method(), "result", "exception"));
+            timer.stop(Metrics.timer(METRIC_CLIENT_NAME, ENDPOINT, request.uri().getPath(),
+                    METHOD, request.method(), RESULT, EXCEPTION));
             throw new BadServerResponseException(e);
         } catch (InterruptedException e) {
-            timer.stop(Metrics.timer(METRIC_CLIENT_NAME, "endpoint", request.uri().getPath(),
-                    "method", request.method(), "result", "exception"));
+            timer.stop(Metrics.timer(METRIC_CLIENT_NAME, ENDPOINT, request.uri().getPath(),
+                    METHOD, request.method(), RESULT, EXCEPTION));
             Thread.currentThread().interrupt(); // Re-interrupt the current thread
             throw new BadServerResponseException(e);
         }
