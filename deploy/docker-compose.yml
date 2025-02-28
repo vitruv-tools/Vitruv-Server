@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  vitruvserver:
+    container_name: vitruvserver
+    image: vitruvserver:v2.3.cert.resources.test
+    environment:
+      - CLIENT_ID=${CLIENT_ID}
+      - CLIENT_SECRET=${CLIENT_SECRET}
+    ports:
+      - "443:8443"
+    restart: unless-stopped
