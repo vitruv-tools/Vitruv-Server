@@ -36,7 +36,7 @@ public class VitruvServerApp {
         oidcClient = new OIDCClient(config.getClientId(), config.getClientSecret(), redirectURI);
 
         final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(() -> logger.info("still running.."), 0, 1, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(() -> logger.info("still running.."), 0, 10, TimeUnit.MINUTES);
     }
 
     public static OIDCClient getOidcClient() {
