@@ -64,13 +64,6 @@ public class HttpsServerManager {
         logger.info("HTTPS server started on port " + port);
     }
 
-    public void stop() {
-        if (server != null) {
-            server.stop(0);
-            logger.info("HTTPS Server stopped.");
-        }
-    }
-
     public SSLContext createSSLContext() throws Exception {
         try {
             // load certificate

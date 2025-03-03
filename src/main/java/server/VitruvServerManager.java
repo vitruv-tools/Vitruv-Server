@@ -47,11 +47,4 @@ public class VitruvServerManager {
         server.start();
         logger.info("VitruvServer started on port " + port);
     }
-
-    public void stop() {
-        if (server != null) {
-            server.stop();
-            logger.info("VitruvServer stopped.");
-        }
-    }
 }
