@@ -1,4 +1,4 @@
-package utiil;
+package util;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;

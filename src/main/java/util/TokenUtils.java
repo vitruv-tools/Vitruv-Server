@@ -1,4 +1,4 @@
-package utiil;
+package util;
 
 import com.sun.net.httpserver.HttpExchange;
 

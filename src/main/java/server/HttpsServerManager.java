@@ -10,7 +10,7 @@ import handler.HttpsRequestHandler;
 import handler.TokenValidationHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utiil.SSLUtils;
+import util.SSLUtils;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
