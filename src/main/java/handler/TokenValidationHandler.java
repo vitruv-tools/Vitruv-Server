@@ -1,18 +1,14 @@
 package handler;
 
 import app.VitruvServerApp;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.oauth2.sdk.AccessTokenResponse;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utiil.TokenUtils;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
 
 public class TokenValidationHandler implements HttpHandler {
     private static final Logger logger = LoggerFactory.getLogger(TokenValidationHandler.class);
@@ -32,12 +28,14 @@ public class TokenValidationHandler implements HttpHandler {
 
         logger.info("\nNew Request: '{}'", exchange.getRequestURI().toString());
         try {
-            String accessToken = extractToken(exchange, "access_token");
+            String accessToken = TokenUtils.extractToken(exchange, "access_token");
 
             // check if Access Token is valid
-            if (accessToken != null && isValidAccessToken(accessToken)) {
+            if (accessToken != null && VitruvServerApp.getOidcClient().isAccessTokenValid(accessToken)) {
                 next.handle(exchange);
-            } else { // Access Token is not valid
+            }
+            // try to refresh token
+            else {
                 handleTokenRefresh(exchange);
             }
         } catch (Exception e) {
@@ -46,53 +44,8 @@ public class TokenValidationHandler implements HttpHandler {
         }
     }
 
-    private String extractToken(HttpExchange exchange, String tokenType) {
-        List<String> cookieHeaders = exchange.getRequestHeaders().get("Cookie");
-
-        if (cookieHeaders == null || cookieHeaders.isEmpty()) {
-            logger.warn("No cookies found in request.");
-            return null;
-        }
-
-        String[] tokens = cookieHeaders.get(0).split(";");
-
-        for (String token : tokens) {
-            token = token.trim();
-            if (token.startsWith(tokenType + "=")) {
-                return token.substring((tokenType + "=").length());
-            }
-        }
-        logger.warn("{} is empty", tokenType);
-        return null;
-    }
-
-    private boolean isValidAccessToken(String accessToken) {
-        try {
-            JWTClaimsSet jwtClaimsSet = SignedJWT.parse(accessToken).getJWTClaimsSet();
-
-            // check if Access Token is expired
-            String scopedAffiliation = jwtClaimsSet.getClaim("eduperson_scoped_affiliation").toString();
-            if (!scopedAffiliation.contains("member@kit.edu")) {
-                logger.error("Client is no member of KIT");
-                return false;
-            }
-
-            // check if Access Token is expired
-            Date expiration = jwtClaimsSet.getExpirationTime();
-            if (expiration == null || expiration.before(new Date())) {
-                logger.error("Access Token expired");
-                return false;
-            }
-            logger.info("Access Token is valid");
-            return true;
-        } catch (ParseException e) {
-            logger.error("Error parsing Access Token: {}", e.getMessage());
-            return false;
-        }
-    }
-
     private void handleTokenRefresh(HttpExchange exchange) throws IOException {
-        String refreshToken = extractToken(exchange, "refresh_token");
+        String refreshToken = TokenUtils.extractToken(exchange, "refresh_token");
 
         if (refreshToken == null) {
             logger.warn("No valid Access Token and no Refresh Token found.\n-> Redirecting to SSO.");
