@@ -1,5 +1,6 @@
 package server;
 
+import app.VitruvServerApp;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
@@ -9,10 +10,12 @@ import handler.HttpsRequestHandler;
 import handler.TokenValidationHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utiil.SSLUtils;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.security.GeneralSecurityException;
@@ -22,7 +25,11 @@ import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class HttpsServerManager {
     private static final Logger logger = LoggerFactory.getLogger(HttpsServerManager.class);
@@ -72,44 +79,50 @@ public class HttpsServerManager {
     }
 
     public SSLContext createSSLContext() throws Exception {
-        // load certificate
-        CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-        X509Certificate certificate;
-        // TODO: mount certificate in container instead using 'resources'
-//        try (InputStream certChainStream = new FileInputStream(VitruvServerApp.getServerConfig().getCertChainPath())) {
-        //
-        try (InputStream certChainStream = getClass().getClassLoader().getResourceAsStream("fullchain.pem")) {
+        try {
+            // load certificate
+            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+            X509Certificate certificate;
+            // TODO: mount certificate in container instead using 'resources'
+            try (InputStream certChainStream = new FileInputStream(VitruvServerApp.getServerConfig().getCertChainPath())) {
 
-            certificate = (X509Certificate) certificateFactory.generateCertificate(certChainStream);
+//        try (InputStream certChainStream = getClass().getClassLoader().getResourceAsStream("fullchain.pem")) {
+
+                logger.debug("certChainStream: {}", certChainStream);
+
+                certificate = (X509Certificate) certificateFactory.generateCertificate(certChainStream);
+            }
+
+            // Load private key
+            // TODO: mount key in container instead using 'resources'
+            try (InputStream keyStream = new FileInputStream(VitruvServerApp.getServerConfig().getCertKeyPath())) {
+//        try (InputStream keyStream = getClass().getClassLoader().getResourceAsStream("privkey.der")) {
+                logger.debug("keyStream: {}", keyStream);
+
+                assert keyStream != null;
+                byte[] keyBytes = keyStream.readAllBytes();
+                PrivateKey privateKey = SSLUtils.streamToPrivateKey(keyBytes);
+
+                logger.debug("Private Key Algorithm: {}", privateKey.getAlgorithm());
+                logger.debug("Private Key Format: {}", privateKey.getFormat());
+
+                KeyStore ks = KeyStore.getInstance("PKCS12");
+                ks.load(null, null); // TODO: use password
+
+                // add certificate and private key to key store
+                ks.setKeyEntry("alias", privateKey, null, new Certificate[]{certificate});
+
+                KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+                kmf.init(ks, null);
+
+                // create new ssl context
+                SSLContext sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(kmf.getKeyManagers(), null, null);
+                return sslContext;
+            }
+        } catch (Exception e) {
+            logger.error("Error occurred while trying to load SSL context: {}", e.getMessage());
+            throw new Exception("Failed to initialize SSL context", e);
         }
-
-        // Load private key
-        // TODO: mount key in container instead using 'resources'
-//        try (InputStream keyStream = new FileInputStream(VitruvServerApp.getServerConfig().getCertKeyPath())) {
-        try (InputStream keyStream = getClass().getClassLoader().getResourceAsStream("privkey.der")) {
-            assert keyStream != null;
-            byte[] keyBytes = keyStream.readAllBytes();
-            PrivateKey privateKey = streamToPrivateKey(keyBytes);
-
-            KeyStore ks = KeyStore.getInstance("PKCS12");
-            ks.load(null, null); // TODO: use password
-
-            // add certificate and private key to key store
-            ks.setKeyEntry("alias", privateKey, null, new Certificate[] { certificate });
-
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-            kmf.init(ks, null);
-
-            // create new ssl context
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(kmf.getKeyManagers(), null, null);
-            return sslContext;
-        }
-    }
-
-    public PrivateKey streamToPrivateKey(byte[] pkcs8key) throws GeneralSecurityException {
-        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(pkcs8key);
-        KeyFactory factory = KeyFactory.getInstance("EC");
-        return factory.generatePrivate(spec);
     }
 }
