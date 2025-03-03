@@ -55,9 +55,9 @@ public class CallbackEndpointHandler implements HttpHandler {
 
             // set body
             String response = "Authorization successful! You can send new requests now." + "\n\n"
-                    + "Access Token (expires in 5 min): " + accessToken + "\n\n"
-                    + "ID Token: " + idToken + "\n\n"
-                    + "Refresh Token (expires in 30 min): " + refreshToken;
+                    + "Access Token (JWT, expires in 1 hour):\n" + accessToken + "\n\n"
+                    + "ID Token (JWT; expires in 1 hour):\n" + idToken + "\n\n"
+                    + "Refresh Token (Opaque; no expiration information):\n" + refreshToken;
             exchange.sendResponseHeaders(200, response.getBytes().length);
             exchange.getResponseBody().write(response.getBytes());
         } catch (Exception e) {
