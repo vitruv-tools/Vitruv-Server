@@ -1,6 +1,10 @@
 package oidc;
 
+import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.proc.JWSKeySelector;
@@ -20,8 +24,12 @@ import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.security.interfaces.RSAPublicKey;
+import java.text.ParseException;
+import java.util.Date;
 
 public class OIDCClient {
 
@@ -121,9 +129,60 @@ public class OIDCClient {
         TokenResponse response = TokenResponse.parse(request.toHTTPRequest().send());
 
         if (!response.indicatesSuccess()) {
-             throw new Exception(response.toErrorResponse().getErrorObject().getDescription());
+            throw new Exception(response.toErrorResponse().getErrorObject().getDescription());
         }
         return response.toSuccessResponse();
+    }
+
+    public boolean isAccessTokenValid(String accessToken) {
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(accessToken);
+            Date expiration = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+            // check if token is expired
+            if (expiration == null || expiration.before(new Date())) {
+                logger.error("Access Token expired");
+                return false;
+            }
+
+            // check if signature is valid
+            return validateSignature(accessToken);
+        } catch (ParseException e) {
+            logger.error("Error parsing Access Token: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean validateSignature(String token) {
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+
+            // fetch JWKS URI and find matching key
+            URL jwkSetURL = new URL(providerMetadata.getJWKSetURI().toString());
+            JWKSet jwkSet = JWKSet.load(jwkSetURL);
+            JWK key = jwkSet.getKeyByKeyId(signedJWT.getHeader().getKeyID());
+
+            if (key == null) {
+                logger.error("No matching key found for kid={}.", signedJWT.getHeader().getKeyID());
+                return false;
+            }
+
+            // verify signature
+            RSAPublicKey publicKey = (RSAPublicKey) key.toRSAKey().toPublicKey();
+            JWSVerifier verifier = new RSASSAVerifier(publicKey);
+            boolean isValid = signedJWT.verify(verifier);
+
+            if (!isValid) {
+                logger.error("Invalid JWT signature.");
+            } else {
+                logger.info("Valid JWT signature.");
+            }
+            return isValid;
+
+        } catch (ParseException | IOException | JOSEException e) {
+            logger.error("Signature validation failed: {}", e.getMessage());
+            return false;
+        }
     }
 
 }
