@@ -18,18 +18,11 @@ import javax.net.ssl.SSLEngine;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
-import java.security.GeneralSecurityException;
-import java.security.KeyFactory;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Base64;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class HttpsServerManager {
     private static final Logger logger = LoggerFactory.getLogger(HttpsServerManager.class);
@@ -101,7 +94,7 @@ public class HttpsServerManager {
 
                 assert keyStream != null;
                 byte[] keyBytes = keyStream.readAllBytes();
-                PrivateKey privateKey = SSLUtils.streamToPrivateKey(keyBytes);
+                PrivateKey privateKey = SSLUtils.extractPrivateKey(keyBytes);
 
                 logger.debug("Private Key Algorithm: {}", privateKey.getAlgorithm());
                 logger.debug("Private Key Format: {}", privateKey.getFormat());
