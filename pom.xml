@@ -10,7 +10,6 @@
     <packaging>jar</packaging>
 
     <name>VitruvServer</name>
-    <description>Ein Maven-Projekt für VitruvServer</description>
 
     <!-- Additional Repositories -->
     <properties>
@@ -155,28 +154,6 @@
             <artifactId>nimbus-jose-jwt</artifactId>
             <version>10.0.1</version>
         </dependency>
-
-
-        <!--&lt;!&ndash;         SLF4J API &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.slf4j</groupId>-->
-<!--            <artifactId>slf4j-api</artifactId>-->
-<!--            <version>2.0.9</version>-->
-<!--        </dependency>-->
-
-<!--        &lt;!&ndash; Logback classic as SLF4J implementation &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>ch.qos.logback</groupId>-->
-<!--            <artifactId>logback-classic</artifactId>-->
-<!--            <version>1.5.12</version>-->
-<!--&lt;!&ndash;            <version>1.4.x</version>&ndash;&gt;-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>ch.qos.logback</groupId>-->
-<!--            <artifactId>logback-core</artifactId>-->
-<!--            <version>1.5.12</version>-->
-<!--&lt;!&ndash;            <version>1.4.x</version>&ndash;&gt;-->
-<!--        </dependency>-->
 
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

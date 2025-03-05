@@ -22,13 +22,11 @@ public class VitruvServerApp {
         logger.info("Initialize client and servers");
 
         config = new ConfigManager("config.properties");
-        final int vitruvPort = config.getVitruvServerPort();
-        final int httpsPort = config.getHttpsServerPort();
 
-        final VitruvServerManager vitruvServerManager = new VitruvServerManager(vitruvPort);
+        final VitruvServerManager vitruvServerManager = new VitruvServerManager(config.getVitruvServerPort());
         vitruvServerManager.start();
 
-        final HttpsServerManager httpsServerManager = new HttpsServerManager(httpsPort, vitruvPort);
+        final HttpsServerManager httpsServerManager = new HttpsServerManager(config.getHttpsServerPort(), config.getVitruvServerPort());
         httpsServerManager.start();
 
         final String redirectURI = config.getDomainProtocol() + "://" + config.getDomainName() + "/callback";
@@ -36,7 +34,7 @@ public class VitruvServerApp {
         oidcClient = new OIDCClient(config.getClientId(), config.getClientSecret(), redirectURI);
 
         final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(() -> logger.info("still running.."), 0, 10, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(() -> logger.info("still running.."), 0, 1, TimeUnit.DAYS);
     }
 
     public static OIDCClient getOidcClient() {
