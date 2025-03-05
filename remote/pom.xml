@@ -42,10 +42,7 @@
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.framework.vsum</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.micrometer</groupId>
-      <artifactId>micrometer-core</artifactId>
-    </dependency>
+
 
     <!-- external dependencies -->
     <dependency>
@@ -71,6 +68,10 @@
     <dependency>
       <groupId>org.eclipse.emfcloud</groupId>
       <artifactId>emfjson-jackson</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-core</artifactId>
     </dependency>
     <!-- external test dependencies -->
     <dependency>
