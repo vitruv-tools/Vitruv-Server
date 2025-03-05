@@ -43,6 +43,7 @@
       <artifactId>tools.vitruv.framework.vsum</artifactId>
     </dependency>
 
+
     <!-- external dependencies -->
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -72,7 +73,6 @@
       <groupId>io.micrometer</groupId>
       <artifactId>micrometer-core</artifactId>
     </dependency>
-
     <!-- external test dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -99,7 +99,6 @@
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
-
     <!-- p2 compile dependencies -->
     <dependency>
       <groupId>${project.groupId}</groupId>
