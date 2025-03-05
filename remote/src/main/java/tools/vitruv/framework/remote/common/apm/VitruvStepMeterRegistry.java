@@ -16,13 +16,17 @@ import io.micrometer.core.instrument.step.StepMeterRegistry;
 import io.micrometer.core.instrument.step.StepRegistryConfig;
 import io.micrometer.core.instrument.util.NamedThreadFactory;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Provides a specialized {@link StepMeterRegistry} for Vitruvius, which stores measurements in a file.
  */
 class VitruvStepMeterRegistry extends StepMeterRegistry {
 	private Path output;
 	private StepRegistryConfig config;
-	
+	private static final Logger LOGGER = LogManager.getLogger(VitruvStepMeterRegistry.class);
+
 	VitruvStepMeterRegistry(StepRegistryConfig config, Clock clock, Path output) {
 		super(config, clock);
 		this.output = output.toAbsolutePath();
@@ -46,7 +50,7 @@ class VitruvStepMeterRegistry extends StepMeterRegistry {
 				}
 			}
 		} catch (IOException e) {
-			System.err.println("Could not write metrics because: " + e.getMessage());
+			LOGGER.error("Could not write metrics because: {}", e.getMessage());
 		}
 	}
 
