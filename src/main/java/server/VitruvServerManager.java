@@ -14,11 +14,7 @@ import static tools.vitruv.framework.views.ViewTypeFactory.createIdentityMapping
 public class VitruvServerManager {
 
     private static final Logger logger = LoggerFactory.getLogger(VitruvServerManager.class);
-    /**
-     * Default name of the storage folder containing vitruv specific files.
-     */
     private static final String DEFAULT_STORAGE_FOLDER_NAME = "StorageFolder";
-
     private final int port;
     private VitruvServer server;
 

@@ -66,26 +66,19 @@ public class HttpsServerManager {
 
     public SSLContext createSSLContext() throws Exception {
         try {
-            // load certificate
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             X509Certificate certificate;
-            // TODO: mount certificate in container instead using 'resources'
+
+            // load certificate
             try (InputStream certChainStream = new FileInputStream(VitruvServerApp.getServerConfig().getCertChainPath())) {
-
-//        try (InputStream certChainStream = getClass().getClassLoader().getResourceAsStream("fullchain.pem")) {
-
                 logger.debug("certChainStream: {}", certChainStream);
-
                 certificate = (X509Certificate) certificateFactory.generateCertificate(certChainStream);
             }
 
-            // Load private key
-            // TODO: mount key in container instead using 'resources'
+            // load private key
             try (InputStream keyStream = new FileInputStream(VitruvServerApp.getServerConfig().getCertKeyPath())) {
-//        try (InputStream keyStream = getClass().getClassLoader().getResourceAsStream("privkey.der")) {
                 logger.debug("keyStream: {}", keyStream);
 
-                assert keyStream != null;
                 byte[] keyBytes = keyStream.readAllBytes();
                 PrivateKey privateKey = SSLUtils.extractPrivateKey(keyBytes);
 
