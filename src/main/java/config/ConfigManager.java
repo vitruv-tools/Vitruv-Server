@@ -44,7 +44,6 @@ public class ConfigManager {
     }
 
     public String getClientId() {
-        logger.debug("CLIENT_ID: {}", System.getenv("CLIENT_ID"));
         return System.getenv("CLIENT_ID");
     }
 

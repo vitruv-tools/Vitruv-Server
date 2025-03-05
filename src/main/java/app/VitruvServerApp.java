@@ -15,11 +15,10 @@ public class VitruvServerApp {
 
     public static final Logger logger = LoggerFactory.getLogger(VitruvServerApp.class);
     private static OIDCClient oidcClient;
-
     private static ConfigManager config;
 
     public static void main(String[] args) throws Exception {
-        logger.info("Initialize client and servers");
+        logger.info("Start initialization of servers and OIDC client...");
 
         config = new ConfigManager("config.properties");
 
@@ -33,6 +32,8 @@ public class VitruvServerApp {
         final String redirectURI = config.getDomainProtocol() + "://" + config.getDomainName() + "/callback";
         logger.debug("redirectURI: {}", redirectURI);
         oidcClient = new OIDCClient(config.getClientId(), config.getClientSecret(), redirectURI);
+
+        logger.info("Initialization completed.");
 
         final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> logger.info("still running.."), 0, 1, TimeUnit.DAYS);
