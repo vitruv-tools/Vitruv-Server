@@ -13,18 +13,34 @@ public class ConfigManager {
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(configFileName)) {
             if (input == null) {
                 logger.error("Config file not found: " + configFileName);
-                throw new Exception("Config file not found: " + configFileName); // TODO: exception not necessary
+                throw new Exception("Config file not found: " + configFileName);
             }
             properties.load(input);
         }
     }
 
     public int getVitruvServerPort() {
-        return Integer.parseInt(properties.getProperty("vitruv-server.port", "8080"));
+        return Integer.parseInt(properties.getProperty("vitruv-server.port"));
     }
 
     public int getHttpsServerPort() {
-        return Integer.parseInt(properties.getProperty("https-server.port", "8443"));
+        return Integer.parseInt(properties.getProperty("https-server.port"));
+    }
+
+    public String getDomainProtocol() {
+        return properties.getProperty("domain.protocol");
+    }
+
+    public String getDomainName() {
+        return properties.getProperty("domain.name");
+    }
+
+    public String getCertChainPath() {
+        return properties.getProperty("cert.chain.path");
+    }
+
+    public String getCertKeyPath() {
+        return properties.getProperty("cert.key.path");
     }
 
     public String getClientId() {
@@ -36,19 +52,7 @@ public class ConfigManager {
         return System.getenv("CLIENT_SECRET");
     }
 
-    public String getDomainProtocol() {
-        return properties.getProperty("domain.protocol");
-    }
-
-    public String getDomainName() {
-        return properties.getProperty("domain.name", "localhost:" + getHttpsServerPort());
-    }
-
-    public String getCertChainPath() {
-        return properties.getProperty("cert.chain.path");
-    }
-
-    public String getCertKeyPath() {
-        return properties.getProperty("cert.key.path");
+    public String getSslPassword() {
+        return System.getenv("SSL_PASSWORD");
     }
 }

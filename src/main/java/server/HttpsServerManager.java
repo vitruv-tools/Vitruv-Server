@@ -28,11 +28,13 @@ public class HttpsServerManager {
     private static final Logger logger = LoggerFactory.getLogger(HttpsServerManager.class);
     private final int port;
     private final int forwardPort;
+    private final char[] sslPassword;
     private HttpsServer server;
 
-    public HttpsServerManager(int port, int forwardPort) {
+    public HttpsServerManager(int port, int forwardPort, String sslPassword) {
         this.port = port;
         this.forwardPort = forwardPort;
+        this.sslPassword = sslPassword == null ? null : sslPassword.toCharArray();
     }
 
     public void start() throws Exception {
@@ -64,7 +66,7 @@ public class HttpsServerManager {
         logger.info("HTTPS server started on port " + port);
     }
 
-    public SSLContext createSSLContext() throws Exception {
+    private SSLContext createSSLContext() throws Exception {
         try {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             X509Certificate certificate;
@@ -86,13 +88,13 @@ public class HttpsServerManager {
                 logger.debug("Private Key Format: {}", privateKey.getFormat());
 
                 KeyStore ks = KeyStore.getInstance("PKCS12");
-                ks.load(null, null); // TODO: use password
+                ks.load(null, sslPassword);
 
                 // add certificate and private key to key store
-                ks.setKeyEntry("alias", privateKey, null, new Certificate[]{certificate});
+                ks.setKeyEntry("alias", privateKey, sslPassword, new Certificate[]{certificate});
 
                 KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-                kmf.init(ks, null);
+                kmf.init(ks, sslPassword);
 
                 // create new ssl context
                 SSLContext sslContext = SSLContext.getInstance("TLS");

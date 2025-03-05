@@ -26,7 +26,8 @@ public class VitruvServerApp {
         final VitruvServerManager vitruvServerManager = new VitruvServerManager(config.getVitruvServerPort());
         vitruvServerManager.start();
 
-        final HttpsServerManager httpsServerManager = new HttpsServerManager(config.getHttpsServerPort(), config.getVitruvServerPort());
+        final HttpsServerManager httpsServerManager =
+                new HttpsServerManager(config.getHttpsServerPort(), config.getVitruvServerPort(), config.getSslPassword());
         httpsServerManager.start();
 
         final String redirectURI = config.getDomainProtocol() + "://" + config.getDomainName() + "/callback";
