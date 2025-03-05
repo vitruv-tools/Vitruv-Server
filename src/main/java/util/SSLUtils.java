@@ -26,16 +26,11 @@ public class SSLUtils {
             // convert to PKCS8
             PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
 
-            // use correct algorithm (should be EC)
             try {
                 return KeyFactory.getInstance("EC").generatePrivate(spec);
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                throw new GeneralSecurityException("Unsupported key format: {}", e);
             }
-            try {
-                return KeyFactory.getInstance("RSA").generatePrivate(spec);
-            } catch (Exception ignored) {
-            }
-            throw new GeneralSecurityException("Unsupported key format");
         } catch (Exception e) {
             throw new GeneralSecurityException("Failed to parse private key", e);
         }
