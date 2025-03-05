@@ -81,7 +81,11 @@
         <artifactId>tools.vitruv.framework.vsum</artifactId>
         <version>${vitruv.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-core</artifactId>
+        <version>1.14.4</version>
+      </dependency>
       <!-- external dependencies -->
       <dependency>
         <groupId>com.google.guava</groupId>
@@ -140,12 +144,8 @@
         <artifactId>mockito-core</artifactId>
         <version>5.16.0</version>
       </dependency>
-      <dependency>
-        <groupId>io.micrometer</groupId>
-        <artifactId>micrometer-core</artifactId>
-        <version>1.14.4</version>
-      </dependency>
     </dependencies>
+
   </dependencyManagement>
 
   <repositories>
