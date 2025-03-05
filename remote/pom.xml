@@ -71,6 +71,7 @@
     <dependency>
       <groupId>io.micrometer</groupId>
       <artifactId>micrometer-core</artifactId>
+      <version>1.14.4</version>
     </dependency>
 
     <!-- external test dependencies -->
@@ -99,13 +100,6 @@
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>io.micrometer</groupId>
-      <artifactId>micrometer-core</artifactId>
-      <version>1.14.4</version>
-    </dependency>
-
-
     <!-- p2 compile dependencies -->
     <dependency>
       <groupId>${project.groupId}</groupId>
