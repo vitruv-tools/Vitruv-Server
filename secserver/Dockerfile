@@ -3,7 +3,7 @@ WORKDIR /app
 COPY pom.xml ./
 COPY src ./src
 COPY mvnw ./
-COPY .mvn ./.mvn
+COPY ../.mvn ./.mvn
 RUN ./mvnw clean verify
 
 FROM eclipse-temurin:17-jre

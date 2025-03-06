@@ -17,7 +17,7 @@ plugin.properties
 bin/
 
 # IntelliJ
-.idea/
+../.idea/
 *.iml
 
 # Project VitruvServer
