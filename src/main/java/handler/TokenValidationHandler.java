@@ -63,9 +63,9 @@ public class TokenValidationHandler implements HttpHandler {
             exchange.getResponseHeaders().add("Set-Cookie", "access_token=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict");
             exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict");
 
-            // set new tokens (TODO: set 'Secure;' flag -> Cookie can only be sent with HTTPS)
-            exchange.getResponseHeaders().add("Set-Cookie", "access_token=" + newAccessToken + "; Path=/; HttpOnly; SameSite=Strict");
-            exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=" + newRefreshToken + "; Path=/; HttpOnly; SameSite=Strict");
+            // set new tokens
+            exchange.getResponseHeaders().add("Set-Cookie", "access_token=" + newAccessToken + "; Path=/; HttpOnly; Secure; SameSite=Strict");
+            exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=" + newRefreshToken + "; Path=/; HttpOnly; Secure; SameSite=Strict");
 
 
             logger.info("Access Token successfully refreshed. Processing request.");

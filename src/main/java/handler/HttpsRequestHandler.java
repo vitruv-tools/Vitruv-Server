@@ -41,7 +41,7 @@ public class HttpsRequestHandler implements HttpHandler {
             logger.info("Redirect request '{}' to VitruvServer at port {}", requestURI, this.forwardPort);
 
             // connect to intern http VitruvServer
-            final String vitruvHost = "http://localhost:" + this.forwardPort; // TODO: configure domain
+            final String vitruvHost = "http://localhost:" + this.forwardPort;
             final String fullUri = vitruvHost + exchange.getRequestURI().toString();
 
             // redirect HTTP request to Vitruv
