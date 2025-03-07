@@ -3,7 +3,8 @@ version: "3.8"
 services:
   vitruvserver:
     container_name: vitruvserver
-    image: vitruvserver:v4.0
+    # TODO: adjust version (tag)
+    image: vitruvserver:vX.Y
     environment:
       - CLIENT_ID=${CLIENT_ID}
       - CLIENT_SECRET=${CLIENT_SECRET}
@@ -11,6 +12,7 @@ services:
     ports:
       - "443:8443"
     restart: unless-stopped
+    # TODO: adjust domain
     volumes:
       - /etc/letsencrypt/live/vitruv-server.org/fullchain.pem:/app/certs/fullchain.pem:ro
       - /etc/letsencrypt/live/vitruv-server.org/privkey.pem:/app/certs/privkey.pem:ro
