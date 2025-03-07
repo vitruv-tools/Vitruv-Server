@@ -90,7 +90,7 @@ public class OIDCClient {
         SignedJWT idToken = SignedJWT.parse(idTokenString);
         // Create the JWT processor for validating signature & claims
         DefaultJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
-        // Load the JWK set from "https://oidc.scc.kit.edu/auth/realms/kit/protocol/openid-connect/certs"
+        // Load the JWK set from "https://fels.scc.kit.edu/oidc/realms/fels/protocol/openid-connect/certs"
         URL jwkSetURL = new URL(providerMetadata.getJWKSetURI().toString());
         JWKSet jwkSet = JWKSet.load(jwkSetURL);
         ImmutableJWKSet<SecurityContext> jwkSource = new ImmutableJWKSet<>(jwkSet);

@@ -23,7 +23,7 @@ A cron job automatically renews the required TLS certificate from Let’s Encryp
 ## **How to Deploy**
 
 This guide explains how to deploy the **Vitruv Security Server**.
-Important files are located in the [`deployment`](./deployment/) folder.
+Important files are located in the [`deployment`](./deployment) folder.
 Note that these files are linked.
 
 ### **1. Build a new Docker Image (optional)**
@@ -54,7 +54,7 @@ docker pull bluesbird/vitruvserver:vX.Y
 certbot certonly --standalone -d vitruv-server.org
 ```
 _Note: `standalone` mode is used since no web server is running._  
-_Note: This command generates `fullchain.pem` and `privkey.pem` at `/etc/letsencrypt/live/vitruv-server.org`._
+_Note: This generates the certificate `fullchain.pem` and `privkey.pem` at `/etc/letsencrypt/live/vitruv-server.org`._
 
 ---
 

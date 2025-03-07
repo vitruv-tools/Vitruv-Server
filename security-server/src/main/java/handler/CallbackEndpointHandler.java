@@ -19,7 +19,7 @@ public class CallbackEndpointHandler implements HttpHandler {
         logger.info("Handling callback endpoint: {}", exchange.getRequestURI());
 
         String query = exchange.getRequestURI().getQuery();
-        String code = getQueryParam(query, "code");
+        String code = getCode(query);
 
         if (code == null) {
             String response = "Authorization code not found in the callback request.";
@@ -70,11 +70,11 @@ public class CallbackEndpointHandler implements HttpHandler {
         }
     }
 
-    private String getQueryParam(String query, String param) {
-        if (query == null || param == null) return null;
+    private String getCode(String query) {
+        if (query == null) return null;
         for (String pair : query.split("&")) {
             String[] keyValue = pair.split("=");
-            if (keyValue.length == 2 && keyValue[0].equals(param)) {
+            if (keyValue.length == 2 && keyValue[0].equals("code")) {
                 return keyValue[1];
             }
         }
