@@ -1,8 +1,18 @@
 # Vitruv Security Server
+Vitruv Security Server is a Java-based server application that handles HTTPS requests from clients 
+(members of the DFN-AAI federation), validates them, and forwards them to an internal Vitruv server. 
+The implementation avoids frameworks like Spring, opting for a lightweight and direct architecture instead.
+
+The system consists of two cooperating servers:
+- HTTPS server (port 8433) that ensures secure communication.
+- Vitruv server (port 8080) that processes requests based on the integrated Vitruv project.
+
+The application runs containerized in a Docker environment on a bwCloud instance.
+A cron job automatically renews the required TLS certificate from Let’s Encrypt via Certbot.
 
 ---
 
-### Useful Links
+## Useful Links
 - **Live Server:** [www.vitruv-server.org](https://www.vitruv-server.org) (Hosted on [bwCloud](https://www.bw-cloud.org/))
 - **Docker Images:** [Docker Hub - Vitruv Server](https://hub.docker.com/r/bluesbird/vitruvserver/tags)
 - **OIDC Client Configuration:** [FeLS Project](https://fels.scc.kit.edu/project)
