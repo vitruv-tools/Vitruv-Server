@@ -4,12 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>tools.vitruv</groupId>
-    <artifactId>vitruvserver</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <parent>
+        <groupId>tools.vitruv</groupId>
+        <artifactId>tools.vitruv.server</artifactId>
+        <version>3.2.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>secserver</artifactId>
     <packaging>jar</packaging>
 
-    <name>VitruvServer</name>
+    <name>Vitruv-Security-Server</name>
 
     <!-- Additional Repositories -->
     <properties>
@@ -63,6 +67,14 @@
     </pluginRepositories>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -112,38 +124,38 @@
         </plugins>
     </build>
 
+    <!-- Vitruvius dependencies -->
     <dependencies>
         <dependency>
             <groupId>tools.vitruv</groupId>
             <artifactId>tools.vitruv.framework.remote</artifactId>
-            <version>3.1.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>tools.vitruv</groupId>
             <artifactId>tools.vitruv.framework.views</artifactId>
-            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>tools.vitruv</groupId>
             <artifactId>tools.vitruv.framework.vsum</artifactId>
-            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>tools.vitruv</groupId>
             <artifactId>tools.vitruv.framework.testutils.integration</artifactId>
-            <version>3.1.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>tools.vitruv</groupId>
             <artifactId>tools.vitruv.framework.testutils.deprecated</artifactId>
-            <version>3.1.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>tools.vitruv</groupId>
             <artifactId>tools.vitruv.framework.applications</artifactId>
-            <version>3.1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
+        <!-- OIDC protocol specific -->
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>oauth2-oidc-sdk</artifactId>
@@ -155,6 +167,7 @@
             <version>10.0.1</version>
         </dependency>
 
+        <!-- Logging specific-->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -177,5 +190,28 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <!-- Additional required dependencies after integration into project 'Vitruv-Server' -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.emf</groupId>
+            <artifactId>org.eclipse.emf.common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.emfcloud</groupId>
+            <artifactId>emfjson-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>commons-io</groupId>-->
+        <!--            <artifactId>commons-io</artifactId>-->
+        <!--            <version>2.16.1</version>-->
+        <!--        </dependency>-->
     </dependencies>
 </project>
