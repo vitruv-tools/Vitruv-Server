@@ -3,10 +3,14 @@ version: "3.8"
 services:
   vitruvserver:
     container_name: vitruvserver
-    image: vitruvserver:v2.3.cert.resources.test
+    image: vitruvserver:v4.0
     environment:
       - CLIENT_ID=${CLIENT_ID}
       - CLIENT_SECRET=${CLIENT_SECRET}
+      - SSL_PASSWORD=${SSL_PASSWORD}
     ports:
       - "443:8443"
     restart: unless-stopped
+    volumes:
+      - /etc/letsencrypt/live/vitruv-server.org/fullchain.pem:/app/certs/fullchain.pem:ro
+      - /etc/letsencrypt/live/vitruv-server.org/privkey.pem:/app/certs/privkey.pem:ro
