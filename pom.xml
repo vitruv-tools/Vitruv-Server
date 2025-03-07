@@ -38,6 +38,7 @@
   <modules>
     <module>remote</module>
     <module>p2wrappers</module>
+    <module>secserver</module>
   </modules>
 
   <properties>
