@@ -22,52 +22,63 @@ public class CallbackEndpointHandler implements HttpHandler {
         String code = getCode(query);
 
         if (code == null) {
-            String response = "Authorization code not found in the callback request.";
-            logger.info(response);
-            exchange.sendResponseHeaders(400, response.getBytes().length);
-            exchange.getResponseBody().write(response.getBytes());
-            exchange.close();
+            handleMissingAuthCode(exchange);
             return;
         }
         logger.debug("Access code received: {}", code);
 
         try {
-            // get ID Token and Access Token
+            // get tokens
             AccessTokenResponse tokenResponse = VitruvServerApp.getOidcClient().exchangeAuthorizationCode(code);
+            Tokens tokens = tokenResponse.getTokens();
 
             String idToken = tokenResponse.getCustomParameters().get("id_token").toString();
-            logger.debug("ID Token: {}", idToken);
-
-            Tokens tokens = tokenResponse.getTokens();
             String accessToken = tokens.getAccessToken().getValue();
             String refreshToken = tokens.getRefreshToken().getValue();
-
+            logger.debug("ID Token: {}", idToken);
             logger.debug("Access Token: {}", accessToken);
             logger.debug("Refresh Token: {}", refreshToken);
 
             // validate ID Token
             VitruvServerApp.getOidcClient().validateIDToken(idToken);
 
-            // set cookies
-            exchange.getResponseHeaders().add("Set-Cookie", "id_token=" + idToken + "; Path=/; HttpOnly; Secure; SameSite=Strict");
-            exchange.getResponseHeaders().add("Set-Cookie", "access_token=" + accessToken + "; Path=/; HttpOnly; Secure; SameSite=Strict");
-            exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=" + refreshToken + "; Path=/; HttpOnly; Secure; SameSite=Strict");
+            handleSuccessResponse(exchange, idToken, accessToken, refreshToken);
 
-            // set body
-            String response = "Authorization successful! You can send new requests now." + "\n\n"
-                    + "Access Token (JWT, expires in 1 hour):\n" + accessToken + "\n\n"
-                    + "ID Token (JWT; expires in 1 hour):\n" + idToken + "\n\n"
-                    + "Refresh Token (Opaque; no expiration information):\n" + refreshToken;
-            exchange.sendResponseHeaders(200, response.getBytes().length);
-            exchange.getResponseBody().write(response.getBytes());
         } catch (Exception e) {
             logger.error("Error during token exchange: {}", e.getMessage());
-            String response = "Token exchange failed.";
-            exchange.sendResponseHeaders(500, response.getBytes().length);
-            exchange.getResponseBody().write(response.getBytes());
+            handleUnsuccessfulResponse(exchange);
         } finally {
             exchange.close();
         }
+    }
+
+    private void handleMissingAuthCode(HttpExchange exchange) throws IOException {
+        String response = "Authorization code not found in the callback request.";
+        logger.info(response);
+        exchange.sendResponseHeaders(400, response.getBytes().length);
+        exchange.getResponseBody().write(response.getBytes());
+        exchange.close();
+    }
+
+    private void handleSuccessResponse(HttpExchange exchange, String idToken, String accessToken, String refreshToken) throws IOException {
+        // set cookies
+        exchange.getResponseHeaders().add("Set-Cookie", "id_token=" + idToken + "; Path=/; HttpOnly; Secure; SameSite=Strict");
+        exchange.getResponseHeaders().add("Set-Cookie", "access_token=" + accessToken + "; Path=/; HttpOnly; Secure; SameSite=Strict");
+        exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=" + refreshToken + "; Path=/; HttpOnly; Secure; SameSite=Strict");
+
+        // set body
+        String response = "Authorization successful! You can send new requests now." + "\n\n"
+                + "Access Token (JWT, expires in 1 hour):\n" + accessToken + "\n\n"
+                + "ID Token (JWT; expires in 1 hour):\n" + idToken + "\n\n"
+                + "Refresh Token (Opaque; no expiration information):\n" + refreshToken;
+        exchange.sendResponseHeaders(200, response.getBytes().length);
+        exchange.getResponseBody().write(response.getBytes());
+    }
+
+    private void handleUnsuccessfulResponse(HttpExchange exchange) throws IOException {
+        String response = "Token exchange failed.";
+        exchange.sendResponseHeaders(500, response.getBytes().length);
+        exchange.getResponseBody().write(response.getBytes());
     }
 
     private String getCode(String query) {
