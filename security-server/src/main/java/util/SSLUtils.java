@@ -9,11 +9,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SSLUtils {
+
+    private static final String PRIVATE_KEY_PATTERN = "-----BEGIN PRIVATE KEY-----([A-Za-z0-9+/=\\s]+)-----END PRIVATE KEY-----";
+
     public static PrivateKey extractPrivateKey(byte[] pemKey) throws GeneralSecurityException {
         try {
             // extract private key
             String pem = new String(pemKey);
-            Pattern pattern = Pattern.compile("-----BEGIN PRIVATE KEY-----([A-Za-z0-9+/=\\s]+)-----END PRIVATE KEY-----", Pattern.DOTALL);
+            Pattern pattern = Pattern.compile(PRIVATE_KEY_PATTERN, Pattern.DOTALL);
             Matcher matcher = pattern.matcher(pem);
 
             if (!matcher.find()) {
@@ -29,7 +32,7 @@ public class SSLUtils {
             try {
                 return KeyFactory.getInstance("EC").generatePrivate(spec);
             } catch (Exception e) {
-                throw new GeneralSecurityException("Unsupported key format: {}", e);
+                throw new GeneralSecurityException("Unsupported key format: " + e.getMessage(), e);
             }
         } catch (Exception e) {
             throw new GeneralSecurityException("Failed to parse private key", e);
