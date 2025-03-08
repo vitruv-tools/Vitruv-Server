@@ -34,8 +34,8 @@ public class TokenValidationHandler implements HttpHandler {
             if (accessToken != null && VitruvServerApp.getOidcClient().isAccessTokenValid(accessToken)) {
                 next.handle(exchange);
             }
-            // try to refresh token
             else {
+                // try to refresh Access Token
                 handleTokenRefresh(exchange);
             }
         } catch (Exception e) {
@@ -55,17 +55,7 @@ public class TokenValidationHandler implements HttpHandler {
 
         // try to refresh Access Token and Refresh Token
         try {
-            AccessTokenResponse newTokens = VitruvServerApp.getOidcClient().refreshAccessToken(refreshToken);
-            String newAccessToken = newTokens.getTokens().getAccessToken().getValue();
-            String newRefreshToken = newTokens.getTokens().getRefreshToken().getValue();
-
-            // remove old tokens
-            exchange.getResponseHeaders().add("Set-Cookie", "access_token=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict");
-            exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict");
-
-            // set new tokens
-            exchange.getResponseHeaders().add("Set-Cookie", "access_token=" + newAccessToken + "; Path=/; HttpOnly; Secure; SameSite=Strict");
-            exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=" + newRefreshToken + "; Path=/; HttpOnly; Secure; SameSite=Strict");
+            replaceTokens(exchange, refreshToken);
 
             logger.info("Access Token successfully refreshed. Processing request.");
             next.handle(exchange);
@@ -74,5 +64,19 @@ public class TokenValidationHandler implements HttpHandler {
             logger.error("Failed to refresh Access Token: {}\n-> Redirecting to SSO.", e.getMessage());
             authEndpointHandler.handle(exchange);
         }
+    }
+
+    private void replaceTokens(HttpExchange exchange, String refreshToken) throws Exception {
+        AccessTokenResponse newTokens = VitruvServerApp.getOidcClient().refreshAccessToken(refreshToken);
+        String newAccessToken = newTokens.getTokens().getAccessToken().getValue();
+        String newRefreshToken = newTokens.getTokens().getRefreshToken().getValue();
+
+        // remove old tokens
+        exchange.getResponseHeaders().add("Set-Cookie", "access_token=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict");
+        exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict");
+
+        // set new tokens
+        exchange.getResponseHeaders().add("Set-Cookie", "access_token=" + newAccessToken + "; Path=/; HttpOnly; Secure; SameSite=Strict");
+        exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=" + newRefreshToken + "; Path=/; HttpOnly; Secure; SameSite=Strict");
     }
 }
