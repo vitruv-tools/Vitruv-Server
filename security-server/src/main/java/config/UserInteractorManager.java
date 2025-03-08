@@ -1,12 +1,12 @@
 package config;
 
+import org.eclipse.xtext.xbase.lib.Functions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.vitruv.change.interaction.InteractionResultProvider;
 import tools.vitruv.change.interaction.InternalUserInteractor;
 import tools.vitruv.change.interaction.UserInteractionListener;
 import tools.vitruv.change.interaction.builder.*;
-import org.eclipse.xtext.xbase.lib.Functions;
 
 // TODO: adjust or remove
 public class UserInteractorManager {

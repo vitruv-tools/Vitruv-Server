@@ -1,11 +1,11 @@
 package app;
 
 import config.ConfigManager;
-import server.HttpsServerManager;
-import server.VitruvServerManager;
 import oidc.OIDCClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import server.HttpsServerManager;
+import server.VitruvServerManager;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
