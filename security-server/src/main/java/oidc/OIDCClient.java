@@ -38,6 +38,7 @@ public class OIDCClient {
     private final String clientSecret;
     private final URI redirectUri;
     private OIDCProviderMetadata providerMetadata;
+    private static final String DISCOVERY_URI = "https://fels.scc.kit.edu/oidc/realms/fels";
 
     public OIDCClient(String clientId, String clientSecret, String redirectUri) throws Exception {
         this.clientId = clientId;
@@ -49,7 +50,7 @@ public class OIDCClient {
     }
 
     private void discoverProviderMetadata() throws Exception {
-        URI discoveryUri = new URI("https://fels.scc.kit.edu/oidc/realms/fels");
+        URI discoveryUri = new URI(DISCOVERY_URI);
 
         Issuer issuer = new Issuer(discoveryUri);
         OIDCProviderConfigurationRequest request = new OIDCProviderConfigurationRequest(issuer);
@@ -104,20 +105,24 @@ public class OIDCClient {
         JWTClaimsSet claimsSet = jwtProcessor.process(idToken, null);
         logger.debug("Claims: {}", claimsSet.toJSONObject());
 
-        // validate claims: issuer
+        validateClaims(claimsSet);
+
+        logger.debug("Email of user: " + claimsSet.getClaim("email").toString());
+        logger.info("ID Token is valid.");
+    }
+
+    private void validateClaims(JWTClaimsSet claimsSet) throws Exception {
+        // validate issuer
         String issuer = claimsSet.getIssuer();
         if (!issuer.equals(providerMetadata.getIssuer().toString())) {
             throw new Exception("Invalid ID Token issuer: " + issuer);
         }
 
-        // validate claims: audience
+        // validate audience
         String audience = claimsSet.getAudience().get(0);
         if (!audience.equals(clientId)) {
             throw new Exception("Invalid ID Token audience: " + audience);
         }
-
-        logger.debug("Email of user: " + claimsSet.getClaim("email").toString());
-        logger.info("ID Token is valid.");
     }
 
     public AccessTokenResponse refreshAccessToken(String refreshToken) throws Exception {
@@ -147,17 +152,15 @@ public class OIDCClient {
             }
 
             // check if signature is valid
-            return validateSignature(accessToken);
+            return validateSignature(signedJWT);
         } catch (ParseException e) {
             logger.error("Error parsing Access Token: {}", e.getMessage());
             return false;
         }
     }
 
-    private boolean validateSignature(String token) {
+    private boolean validateSignature(SignedJWT signedJWT) {
         try {
-            SignedJWT signedJWT = SignedJWT.parse(token);
-
             // fetch JWKS URI and find matching key
             URL jwkSetURL = new URL(providerMetadata.getJWKSetURI().toString());
             JWKSet jwkSet = JWKSet.load(jwkSetURL);
