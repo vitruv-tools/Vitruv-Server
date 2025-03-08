@@ -27,6 +27,8 @@ public class VitruvServerManager {
             final VirtualModelBuilder vsumBuilder = new VirtualModelBuilder();
 
             /////////////////////////////////////////////////////////////////////////////////
+            /////// Testing Area ///////
+            // TODO: I think you should remove/adjust this ;)
             // TODO: init vsumBuilder here (testing area)
             final Path pathDir = Path.of(DEFAULT_STORAGE_FOLDER_NAME);
             vsumBuilder.withStorageFolder(pathDir);

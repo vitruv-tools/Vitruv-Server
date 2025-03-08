@@ -8,6 +8,7 @@ import tools.vitruv.change.interaction.UserInteractionListener;
 import tools.vitruv.change.interaction.builder.*;
 import org.eclipse.xtext.xbase.lib.Functions;
 
+// TODO: adjust or remove
 public class UserInteractorManager {
 
     private static final Logger logger = LoggerFactory.getLogger(UserInteractorManager.class);
