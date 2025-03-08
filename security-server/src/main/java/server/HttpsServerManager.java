@@ -44,15 +44,11 @@ public class HttpsServerManager {
         server.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
             @Override
             public void configure(HttpsParameters params) {
-                SSLContext c = getSSLContext();
-                SSLEngine engine = c.createSSLEngine();
-                params.setNeedClientAuth(false);
-                params.setCipherSuites(engine.getEnabledCipherSuites());
-                params.setProtocols(engine.getEnabledProtocols());
-                params.setSSLParameters(c.getDefaultSSLParameters());
+                configureHttpsParameters(params, getSSLContext());
             }
         });
 
+        //// Endpoints ////
         // Vitruv endpoints (secured through TokenValidationHandler wrapper)
         server.createContext("/", new TokenValidationHandler(new HttpsRequestHandler(forwardPort)));
 
@@ -64,6 +60,14 @@ public class HttpsServerManager {
         server.start();
 
         logger.info("HTTPS server started on port " + port);
+    }
+
+    private void configureHttpsParameters(HttpsParameters params, SSLContext sslContext) {
+        SSLEngine engine = sslContext.createSSLEngine();
+        params.setNeedClientAuth(false);
+        params.setCipherSuites(engine.getEnabledCipherSuites());
+        params.setProtocols(engine.getEnabledProtocols());
+        params.setSSLParameters(sslContext.getDefaultSSLParameters());
     }
 
     private SSLContext createSSLContext() throws Exception {
@@ -96,7 +100,7 @@ public class HttpsServerManager {
                 KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
                 kmf.init(ks, sslPassword);
 
-                // create new ssl context
+                // create new SSL (TLS) context
                 SSLContext sslContext = SSLContext.getInstance("TLS");
                 sslContext.init(kmf.getKeyManagers(), null, null);
                 return sslContext;
