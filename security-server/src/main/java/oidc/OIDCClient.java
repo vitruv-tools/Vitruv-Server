@@ -103,19 +103,20 @@ public class OIDCClient {
         // verify idToken & extract JWTClaimsSet
         JWTClaimsSet claimsSet = jwtProcessor.process(idToken, null);
         logger.debug("Claims: {}", claimsSet.toJSONObject());
+
         // validate claims: issuer
         String issuer = claimsSet.getIssuer();
         if (!issuer.equals(providerMetadata.getIssuer().toString())) {
             throw new Exception("Invalid ID Token issuer: " + issuer);
         }
+
         // validate claims: audience
         String audience = claimsSet.getAudience().get(0);
         if (!audience.equals(clientId)) {
             throw new Exception("Invalid ID Token audience: " + audience);
         }
-        String email = claimsSet.getClaim("email").toString();
-        logger.debug("Email of user: " + email);
 
+        logger.debug("Email of user: " + claimsSet.getClaim("email").toString());
         logger.info("ID Token is valid.");
     }
 
