@@ -14,7 +14,7 @@ import static tools.vitruv.framework.views.ViewTypeFactory.createIdentityMapping
 public class VitruvServerManager {
 
     private static final Logger logger = LoggerFactory.getLogger(VitruvServerManager.class);
-    private static final String DEFAULT_STORAGE_FOLDER_NAME = "StorageFolder";
+    private static final String STORAGE_FOLDER_PATH = "StorageFolder";
     private final int port;
     private VitruvServer server;
 
@@ -28,9 +28,9 @@ public class VitruvServerManager {
 
             /////////////////////////////////////////////////////////////////////////////////
             /////// Testing Area ///////
-            // TODO: I think you should remove/adjust this ;)
-            // TODO: init vsumBuilder here (testing area)
-            final Path pathDir = Path.of(DEFAULT_STORAGE_FOLDER_NAME);
+            // TODO: this needs to be adjusted
+
+            final Path pathDir = Path.of(STORAGE_FOLDER_PATH);
             vsumBuilder.withStorageFolder(pathDir);
 
             vsumBuilder.withUserInteractor(UserInteractorManager.createInternalUserInteractor());
