@@ -76,6 +76,12 @@ Edit [`deployment/.env`](./deployment/.env) and set important environment variab
    ```sh
    docker logs -f vitruvserver
    ```
+   Alternatively, the `server.log` file can be monitored inside the container:
+   ```sh
+   docker exec -it vitruvserer /bin/bash
+   cat logs/server.log
+   ```
+
 ---
 
 ### **6. Set Up Automatic Certificate Renewal**
