@@ -11,12 +11,12 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class HttpsRequestHandler implements HttpHandler {
+public class VitruvRequestHandler implements HttpHandler {
 
     private final int forwardPort;
-    private static final Logger logger = LoggerFactory.getLogger(HttpsRequestHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(VitruvRequestHandler.class);
 
-    public HttpsRequestHandler(int forwardPort) {
+    public VitruvRequestHandler(int forwardPort) {
         this.forwardPort = forwardPort;
     }
 

@@ -6,7 +6,7 @@ import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 import handler.AuthEndpointHandler;
 import handler.CallbackEndpointHandler;
-import handler.HttpsRequestHandler;
+import handler.VitruvRequestHandler;
 import handler.TokenValidationHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,7 @@ public class SecurityServerManager {
 
         //// Endpoints ////
         // Vitruv endpoints (secured through TokenValidationHandler wrapper)
-        server.createContext("/", new TokenValidationHandler(new HttpsRequestHandler(forwardPort)));
+        server.createContext("/", new TokenValidationHandler(new VitruvRequestHandler(forwardPort)));
 
         // VitruvServer endpoints
         server.createContext("/auth", new AuthEndpointHandler());
