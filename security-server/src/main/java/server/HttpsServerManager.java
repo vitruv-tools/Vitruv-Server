@@ -1,6 +1,6 @@
 package server;
 
-import app.VitruvServerApp;
+import app.VitruvSecurityServerApp;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
@@ -76,13 +76,13 @@ public class HttpsServerManager {
             X509Certificate certificate;
 
             // load certificate
-            try (InputStream certChainStream = new FileInputStream(VitruvServerApp.getServerConfig().getCertChainPath())) {
+            try (InputStream certChainStream = new FileInputStream(VitruvSecurityServerApp.getServerConfig().getCertChainPath())) {
                 logger.debug("certChainStream: {}", certChainStream);
                 certificate = (X509Certificate) certificateFactory.generateCertificate(certChainStream);
             }
 
             // load private key
-            try (InputStream keyStream = new FileInputStream(VitruvServerApp.getServerConfig().getCertKeyPath())) {
+            try (InputStream keyStream = new FileInputStream(VitruvSecurityServerApp.getServerConfig().getCertKeyPath())) {
                 logger.debug("keyStream: {}", keyStream);
 
                 byte[] keyBytes = keyStream.readAllBytes();

@@ -91,7 +91,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>app.VitruvServerApp</mainClass>
+                            <mainClass>app.VitruvSecurityServerApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

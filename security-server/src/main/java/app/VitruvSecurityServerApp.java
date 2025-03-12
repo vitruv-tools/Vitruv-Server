@@ -11,9 +11,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class VitruvServerApp {
+public class VitruvSecurityServerApp {
 
-    public static final Logger logger = LoggerFactory.getLogger(VitruvServerApp.class);
+    public static final Logger logger = LoggerFactory.getLogger(VitruvSecurityServerApp.class);
     private static OIDCClient oidcClient;
     private static ConfigManager config;
 

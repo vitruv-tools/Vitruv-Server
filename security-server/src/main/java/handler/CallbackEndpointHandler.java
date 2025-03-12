@@ -1,6 +1,6 @@
 package handler;
 
-import app.VitruvServerApp;
+import app.VitruvSecurityServerApp;
 import com.nimbusds.oauth2.sdk.AccessTokenResponse;
 import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.sun.net.httpserver.HttpExchange;
@@ -29,7 +29,7 @@ public class CallbackEndpointHandler implements HttpHandler {
 
         try {
             // get tokens
-            AccessTokenResponse tokenResponse = VitruvServerApp.getOidcClient().exchangeAuthorizationCode(code);
+            AccessTokenResponse tokenResponse = VitruvSecurityServerApp.getOidcClient().exchangeAuthorizationCode(code);
             Tokens tokens = tokenResponse.getTokens();
 
             String idToken = tokenResponse.getCustomParameters().get("id_token").toString();
@@ -40,7 +40,7 @@ public class CallbackEndpointHandler implements HttpHandler {
             logger.debug("Refresh Token: {}", refreshToken);
 
             // validate ID Token
-            VitruvServerApp.getOidcClient().validateIDToken(idToken);
+            VitruvSecurityServerApp.getOidcClient().validateIDToken(idToken);
 
             handleSuccessResponse(exchange, idToken, accessToken, refreshToken);
 
