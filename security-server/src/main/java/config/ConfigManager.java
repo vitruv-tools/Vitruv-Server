@@ -44,12 +44,12 @@ public class ConfigManager {
         return properties.getProperty("cert.key.path");
     }
 
-    public String getClientId() {
-        return System.getenv("CLIENT_ID");
+    public String getOidcClientId() {
+        return System.getenv("OIDC_CLIENT_ID");
     }
 
-    public String getClientSecret() {
-        return System.getenv("CLIENT_SECRET");
+    public String getOidcClientSecret() {
+        return System.getenv("OIDC_CLIENT_SECRET");
     }
 
     public String getTlsPassword() {

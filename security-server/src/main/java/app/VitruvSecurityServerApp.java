@@ -31,7 +31,7 @@ public class VitruvSecurityServerApp {
 
         final String redirectURI = config.getDomainProtocol() + "://" + config.getDomainName() + "/callback";
         logger.debug("redirectURI: {}", redirectURI);
-        oidcClient = new OIDCClient(config.getClientId(), config.getClientSecret(), redirectURI);
+        oidcClient = new OIDCClient(config.getOidcClientId(), config.getOidcClientSecret(), redirectURI);
 
         logger.info("Initialization completed.");
 

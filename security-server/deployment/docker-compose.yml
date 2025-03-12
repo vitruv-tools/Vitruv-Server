@@ -2,12 +2,12 @@ version: "3.8"
 
 services:
   vitruvserver:
-    container_name: vitruvserver
+    container_name: vitruv-security-server
     # TODO: adjust version (tag)
     image: vitruvserver:vX.Y
     environment:
-      - CLIENT_ID=${CLIENT_ID}
-      - CLIENT_SECRET=${CLIENT_SECRET}
+      - OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
+      - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
       - TLS_PASSWORD=${TLS_PASSWORD}
     ports:
       - "443:8443"
