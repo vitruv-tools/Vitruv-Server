@@ -1,6 +1,6 @@
 package server;
 
-import config.UserInteractorManager;
+import interaction.UserInteractorManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.vitruv.framework.remote.server.VitruvServer;

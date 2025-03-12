@@ -1,4 +1,4 @@
-package config;
+package interaction;
 
 import org.eclipse.xtext.xbase.lib.Functions;
 import org.slf4j.Logger;
