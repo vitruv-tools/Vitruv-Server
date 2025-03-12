@@ -58,7 +58,7 @@ public class OIDCClient {
         this.providerMetadata = metadata;
 
         logger.info("Metadata Issuer: {}", issuer);
-        logger.info("Provider Metadata discovered: {}", metadata);
+        logger.debug("Provider Metadata discovered: {}", metadata);
     }
 
     public URI getAuthorizationRequestURI() {

@@ -28,13 +28,13 @@ public class SecurityServerManager {
     private static final Logger logger = LoggerFactory.getLogger(SecurityServerManager.class);
     private final int port;
     private final int forwardPort;
-    private final char[] sslPassword;
+    private final char[] tlsPassword;
     private HttpsServer server;
 
-    public SecurityServerManager(int port, int forwardPort, String sslPassword) {
+    public SecurityServerManager(int port, int forwardPort, String tlsPassword) {
         this.port = port;
         this.forwardPort = forwardPort;
-        this.sslPassword = sslPassword == null ? null : sslPassword.toCharArray();
+        this.tlsPassword = tlsPassword == null ? null : tlsPassword.toCharArray();
     }
 
     public void start() throws Exception {
@@ -92,13 +92,13 @@ public class SecurityServerManager {
                 logger.debug("Private Key Format: {}", privateKey.getFormat());
 
                 KeyStore ks = KeyStore.getInstance("PKCS12");
-                ks.load(null, sslPassword);
+                ks.load(null, tlsPassword);
 
                 // add certificate and private key to key store
-                ks.setKeyEntry("alias", privateKey, sslPassword, new Certificate[]{certificate});
+                ks.setKeyEntry("alias", privateKey, tlsPassword, new Certificate[]{certificate});
 
                 KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-                kmf.init(ks, sslPassword);
+                kmf.init(ks, tlsPassword);
 
                 // create new SSL (TLS) context
                 SSLContext sslContext = SSLContext.getInstance("TLS");
