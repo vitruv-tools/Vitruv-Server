@@ -12,7 +12,7 @@ public class SSLUtils {
 
     private static final String PRIVATE_KEY_PATTERN = "-----BEGIN PRIVATE KEY-----([A-Za-z0-9+/=\\s]+)-----END PRIVATE KEY-----";
 
-    public static PrivateKey extractPrivateKey(byte[] pemKey) throws GeneralSecurityException {
+    public static PrivateKey convertToPkcs8Key(byte[] pemKey) throws GeneralSecurityException {
         try {
             // extract private key
             String pem = new String(pemKey);

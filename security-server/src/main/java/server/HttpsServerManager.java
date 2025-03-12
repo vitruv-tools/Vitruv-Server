@@ -86,7 +86,7 @@ public class HttpsServerManager {
                 logger.debug("keyStream: {}", keyStream);
 
                 byte[] keyBytes = keyStream.readAllBytes();
-                PrivateKey privateKey = SSLUtils.extractPrivateKey(keyBytes);
+                PrivateKey privateKey = SSLUtils.convertToPkcs8Key(keyBytes);
 
                 logger.debug("Private Key Algorithm: {}", privateKey.getAlgorithm());
                 logger.debug("Private Key Format: {}", privateKey.getFormat());
