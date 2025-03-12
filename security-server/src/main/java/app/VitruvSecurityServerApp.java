@@ -4,7 +4,7 @@ import config.ConfigManager;
 import oidc.OIDCClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import server.HttpsServerManager;
+import server.SecurityServerManager;
 import server.VitruvServerManager;
 
 import java.util.concurrent.Executors;
@@ -25,9 +25,9 @@ public class VitruvSecurityServerApp {
         final VitruvServerManager vitruvServerManager = new VitruvServerManager(config.getVitruvServerPort());
         vitruvServerManager.start();
 
-        final HttpsServerManager httpsServerManager =
-                new HttpsServerManager(config.getHttpsServerPort(), config.getVitruvServerPort(), config.getSslPassword());
-        httpsServerManager.start();
+        final SecurityServerManager securityServerManager =
+                new SecurityServerManager(config.getHttpsServerPort(), config.getVitruvServerPort(), config.getTlsPassword());
+        securityServerManager.start();
 
         final String redirectURI = config.getDomainProtocol() + "://" + config.getDomainName() + "/callback";
         logger.debug("redirectURI: {}", redirectURI);

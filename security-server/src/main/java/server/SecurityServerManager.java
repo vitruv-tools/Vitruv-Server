@@ -10,7 +10,7 @@ import handler.HttpsRequestHandler;
 import handler.TokenValidationHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import util.SSLUtils;
+import util.TLSUtils;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -24,14 +24,14 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
-public class HttpsServerManager {
-    private static final Logger logger = LoggerFactory.getLogger(HttpsServerManager.class);
+public class SecurityServerManager {
+    private static final Logger logger = LoggerFactory.getLogger(SecurityServerManager.class);
     private final int port;
     private final int forwardPort;
     private final char[] sslPassword;
     private HttpsServer server;
 
-    public HttpsServerManager(int port, int forwardPort, String sslPassword) {
+    public SecurityServerManager(int port, int forwardPort, String sslPassword) {
         this.port = port;
         this.forwardPort = forwardPort;
         this.sslPassword = sslPassword == null ? null : sslPassword.toCharArray();
@@ -86,7 +86,7 @@ public class HttpsServerManager {
                 logger.debug("keyStream: {}", keyStream);
 
                 byte[] keyBytes = keyStream.readAllBytes();
-                PrivateKey privateKey = SSLUtils.convertToPkcs8Key(keyBytes);
+                PrivateKey privateKey = TLSUtils.convertToPkcs8Key(keyBytes);
 
                 logger.debug("Private Key Algorithm: {}", privateKey.getAlgorithm());
                 logger.debug("Private Key Format: {}", privateKey.getFormat());
