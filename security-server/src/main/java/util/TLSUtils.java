@@ -8,7 +8,7 @@ import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SSLUtils {
+public class TLSUtils {
 
     private static final String PRIVATE_KEY_PATTERN = "-----BEGIN PRIVATE KEY-----([A-Za-z0-9+/=\\s]+)-----END PRIVATE KEY-----";
 

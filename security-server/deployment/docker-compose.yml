@@ -8,7 +8,7 @@ services:
     environment:
       - CLIENT_ID=${CLIENT_ID}
       - CLIENT_SECRET=${CLIENT_SECRET}
-      - SSL_PASSWORD=${SSL_PASSWORD}
+      - TLS_PASSWORD=${TLS_PASSWORD}
     ports:
       - "443:8443"
     restart: unless-stopped

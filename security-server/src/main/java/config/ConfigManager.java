@@ -52,7 +52,7 @@ public class ConfigManager {
         return System.getenv("CLIENT_SECRET");
     }
 
-    public String getSslPassword() {
-        return System.getenv("SSL_PASSWORD");
+    public String getTlsPassword() {
+        return System.getenv("TLS_PASSWORD");
     }
 }
