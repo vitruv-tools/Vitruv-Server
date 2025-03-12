@@ -10,11 +10,13 @@ public class ConfigManager {
     private static final Logger logger = LoggerFactory.getLogger(ConfigManager.class);
     private final Properties properties = new Properties();
 
-    public ConfigManager(String configFileName) throws Exception {
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream(configFileName)) {
+    private final static String CONFIG_FILE_NAME = "config.properties";
+
+    public ConfigManager() throws Exception {
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE_NAME)) {
             if (input == null) {
-                logger.error("Config file not found: " + configFileName);
-                throw new Exception("Config file not found: " + configFileName);
+                logger.error("Config file not found: " + CONFIG_FILE_NAME);
+                throw new Exception("Config file not found: " + CONFIG_FILE_NAME);
             }
             properties.load(input);
         }

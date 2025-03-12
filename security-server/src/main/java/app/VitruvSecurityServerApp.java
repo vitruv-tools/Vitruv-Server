@@ -20,7 +20,7 @@ public class VitruvSecurityServerApp {
     public static void main(String[] args) throws Exception {
         logger.info("Start initialization of servers and OIDC client...");
 
-        config = new ConfigManager("config.properties");
+        config = new ConfigManager();
 
         final VitruvServerManager vitruvServerManager = new VitruvServerManager(config.getVitruvServerPort());
         vitruvServerManager.start();
