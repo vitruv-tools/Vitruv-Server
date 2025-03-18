@@ -23,7 +23,7 @@ public interface RestEndpoint {
      * @param msg A message containing the reason of halting the execution.
      */
     default ServerHaltingException notFound(String msg) {
-        return new ServerHaltingException(HTTP_NOT_FOUND, msg);
+        return new ServerHaltingException(HTTP_BAD_METHOD, msg);
     }
 
     /**
