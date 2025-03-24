@@ -8,10 +8,20 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+/**
+ * Handles the `/auth` endpoint. Redirects clients to the OIDC authorization page for SSO authentication,
+ * since only authenticated users can use endpoints of the Vitruv Server.
+ */
 public class AuthEndpointHandler implements HttpHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthEndpointHandler.class);
 
+    /**
+     * Redirects incoming requests to the OIDC authentication URL.
+     *
+     * @param exchange HTTP exchange containing the request and response data.
+     * @throws IOException if io error occurs during redirect.
+     */
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         try {

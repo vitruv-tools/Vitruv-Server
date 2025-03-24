@@ -6,12 +6,19 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * Manages configuration properties loaded from 'config.properties' and environment variables for sensitive data.
+ */
 public class ConfigManager {
     private static final Logger logger = LoggerFactory.getLogger(ConfigManager.class);
     private final Properties properties = new Properties();
-
     private final static String CONFIG_FILE_NAME = "config.properties";
 
+    /**
+     * Loads configuration properties from 'config.properties'.
+     *
+     * @throws Exception if the config file is missing or cannot be loaded.
+     */
     public ConfigManager() throws Exception {
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE_NAME)) {
             if (input == null) {

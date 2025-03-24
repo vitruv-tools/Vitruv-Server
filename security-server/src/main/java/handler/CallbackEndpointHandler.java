@@ -10,10 +10,21 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+/**
+ * Handles the `/callback` endpoint. It processes incoming authorization codes from FeLS and exchanges them for ID, Access,
+ * and Refresh Tokens. After validation of ID Token, all tokens are sent to the client. The tokens are stored as
+ * HTTP-only cookies for secure client-side storage, and secure flag ensures HTTPS usage of the cookies.
+ */
 public class CallbackEndpointHandler implements HttpHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(CallbackEndpointHandler.class);
 
+    /**
+     * Processes incoming requests, exchanges the authorization code for tokens, and sets authentication cookies.
+     *
+     * @param exchange HTTP exchange containing the request and response data.
+     * @throws IOException if io error occurs during handling.
+     */
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         logger.info("Handling callback endpoint: {}", exchange.getRequestURI());

@@ -11,12 +11,22 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Main application entry point for starting the Vitruv Security Server and Vitruv Server.
+ * Initializes the OIDC client and schedules periodic status logs.
+ */
 public class VitruvSecurityServerApp {
 
     public static final Logger logger = LoggerFactory.getLogger(VitruvSecurityServerApp.class);
     private static OIDCClient oidcClient;
     private static ConfigManager config;
 
+    /**
+     * Starts the Vitruv and Security servers and initializes the OIDC client.
+     *
+     * @param args unused
+     * @throws Exception If server initialization fails
+     */
     public static void main(String[] args) throws Exception {
         logger.info("Starting initialization of servers and OIDC client...");
 
