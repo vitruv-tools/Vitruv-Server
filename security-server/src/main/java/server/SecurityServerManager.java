@@ -47,19 +47,20 @@ public class SecurityServerManager {
                 configureHttpsParameters(params, getSSLContext());
             }
         });
+        registerEndpoints();
+        securityServer.setExecutor(null);
+        securityServer.start();
 
-        //// Endpoints ////
+        logger.info("Security Server started on port {} with forwardPort {}.", port, forwardPort);
+    }
+
+    private void registerEndpoints() {
         // Vitruv endpoints (secured through TokenValidationHandler wrapper)
         securityServer.createContext("/", new TokenValidationHandler(new VitruvRequestHandler(forwardPort)));
 
         // Security Server specific endpoints
         securityServer.createContext("/auth", new AuthEndpointHandler());
         securityServer.createContext("/callback", new CallbackEndpointHandler());
-
-        securityServer.setExecutor(null);
-        securityServer.start();
-
-        logger.info("Security Server started on port " + port);
     }
 
     private void configureHttpsParameters(HttpsParameters params, SSLContext sslContext) {
