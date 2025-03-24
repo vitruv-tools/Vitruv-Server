@@ -18,7 +18,7 @@ public class VitruvSecurityServerApp {
     private static ConfigManager config;
 
     public static void main(String[] args) throws Exception {
-        logger.info("Start initialization of servers and OIDC client...");
+        logger.info("Starting initialization of servers and OIDC client...");
 
         config = new ConfigManager();
 
@@ -35,6 +35,7 @@ public class VitruvSecurityServerApp {
 
         logger.info("Initialization completed.");
 
+        // Periodic server notification (can be omitted)
         final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> logger.info("still running.."), 0, 1, TimeUnit.DAYS);
     }

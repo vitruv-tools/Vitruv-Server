@@ -179,7 +179,7 @@ public class OIDCClient {
             if (!isValid) {
                 logger.error("Invalid JWT signature.");
             } else {
-                logger.info("Valid JWT signature.");
+                logger.debug("Valid JWT signature.");
             }
             return isValid;
 

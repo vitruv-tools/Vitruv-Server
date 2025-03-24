@@ -25,7 +25,7 @@ public class CallbackEndpointHandler implements HttpHandler {
             handleMissingAuthCode(exchange);
             return;
         }
-        logger.debug("Access code received: {}", code);
+        logger.debug("OIDC Authorization code received: {}", code);
 
         try {
             // get tokens
@@ -53,7 +53,7 @@ public class CallbackEndpointHandler implements HttpHandler {
     }
 
     private void handleMissingAuthCode(HttpExchange exchange) throws IOException {
-        String response = "Authorization code not found in the callback request.";
+        String response = "Authentication failed. OIDC Authorization code not found in the callback request.";
         logger.info(response);
         exchange.sendResponseHeaders(400, response.getBytes().length);
         exchange.getResponseBody().write(response.getBytes());
@@ -67,10 +67,10 @@ public class CallbackEndpointHandler implements HttpHandler {
         exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=" + refreshToken + "; Path=/; HttpOnly; Secure; SameSite=Strict");
 
         // set body
-        String response = "Authorization successful! You can send new requests now." + "\n\n"
-                + "Access Token (JWT, expires in 1 hour):\n" + accessToken + "\n\n"
+        String response = "You were successfully authenticated by FeLS! Your requests are authorized now." + "\n\n"
+                + "Access Token (JWT; expires in 1 hour):\n" + accessToken + "\n\n"
                 + "ID Token (JWT; expires in 1 hour):\n" + idToken + "\n\n"
-                + "Refresh Token (Opaque; no expiration information):\n" + refreshToken;
+                + "Refresh Token (Opaque; this token is not further required):\n" + refreshToken;
         exchange.sendResponseHeaders(200, response.getBytes().length);
         exchange.getResponseBody().write(response.getBytes());
     }

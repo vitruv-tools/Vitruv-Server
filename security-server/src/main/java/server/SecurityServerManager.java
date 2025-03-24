@@ -29,7 +29,7 @@ public class SecurityServerManager {
     private final int port;
     private final int forwardPort;
     private final char[] tlsPassword;
-    private HttpsServer server;
+    private HttpsServer securityServer;
 
     public SecurityServerManager(int port, int forwardPort, String tlsPassword) {
         this.port = port;
@@ -40,8 +40,8 @@ public class SecurityServerManager {
     public void start() throws Exception {
         final SSLContext sslContext = createSSLContext();
 
-        server = HttpsServer.create(new InetSocketAddress(port), 0);
-        server.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
+        securityServer = HttpsServer.create(new InetSocketAddress(port), 0);
+        securityServer.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
             @Override
             public void configure(HttpsParameters params) {
                 configureHttpsParameters(params, getSSLContext());
@@ -50,16 +50,16 @@ public class SecurityServerManager {
 
         //// Endpoints ////
         // Vitruv endpoints (secured through TokenValidationHandler wrapper)
-        server.createContext("/", new TokenValidationHandler(new VitruvRequestHandler(forwardPort)));
+        securityServer.createContext("/", new TokenValidationHandler(new VitruvRequestHandler(forwardPort)));
 
-        // VitruvServer endpoints
-        server.createContext("/auth", new AuthEndpointHandler());
-        server.createContext("/callback", new CallbackEndpointHandler());
+        // Security Server specific endpoints
+        securityServer.createContext("/auth", new AuthEndpointHandler());
+        securityServer.createContext("/callback", new CallbackEndpointHandler());
 
-        server.setExecutor(null);
-        server.start();
+        securityServer.setExecutor(null);
+        securityServer.start();
 
-        logger.info("HTTPS server started on port " + port);
+        logger.info("Security Server started on port " + port);
     }
 
     private void configureHttpsParameters(HttpsParameters params, SSLContext sslContext) {
