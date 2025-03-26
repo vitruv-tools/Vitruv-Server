@@ -22,25 +22,25 @@ public class CallbackEndpointHandler implements HttpHandler {
     /**
      * Processes incoming requests, exchanges the authorization code for tokens, and sets authentication cookies.
      *
-     * @param exchange HTTP exchange containing the request and response data.
-     * @throws IOException if io error occurs during handling.
+     * @param exchange HTTP exchange containing the request and response data
+     * @throws IOException if io error occurs during handling
      */
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         logger.info("Handling callback endpoint: {}", exchange.getRequestURI());
 
         String query = exchange.getRequestURI().getQuery();
-        String code = getCode(query);
+        String authorizationCode = getAuthorizationCode(query);
 
-        if (code == null) {
+        if (authorizationCode == null) {
             handleMissingAuthCode(exchange);
             return;
         }
-        logger.debug("OIDC Authorization code received: {}", code);
+        logger.debug("OIDC Authorization code received: {}", authorizationCode);
 
         try {
             // get tokens
-            AccessTokenResponse tokenResponse = VitruvSecurityServerApp.getOidcClient().exchangeAuthorizationCode(code);
+            AccessTokenResponse tokenResponse = VitruvSecurityServerApp.getOidcClient().exchangeAuthorizationCode(authorizationCode);
             Tokens tokens = tokenResponse.getTokens();
 
             String idToken = tokenResponse.getCustomParameters().get("id_token").toString();
@@ -92,7 +92,7 @@ public class CallbackEndpointHandler implements HttpHandler {
         exchange.getResponseBody().write(response.getBytes());
     }
 
-    private String getCode(String query) {
+    private String getAuthorizationCode(String query) {
         if (query == null) return null;
         for (String pair : query.split("&")) {
             String[] keyValue = pair.split("=");

@@ -46,7 +46,7 @@ public class OIDCClient {
         this.redirectUri = new URI(redirectUri);
         discoverProviderMetadata();
 
-        logger.info("OIDC-Client started.");
+        logger.info("OIDC Client started.");
     }
 
     private void discoverProviderMetadata() throws Exception {

@@ -19,8 +19,8 @@ public class AuthEndpointHandler implements HttpHandler {
     /**
      * Redirects incoming requests to the OIDC authentication URL.
      *
-     * @param exchange HTTP exchange containing the request and response data.
-     * @throws IOException if io error occurs during redirect.
+     * @param exchange HTTP exchange containing the request and response data
+     * @throws IOException if io error occurs during redirect
      */
     @Override
     public void handle(HttpExchange exchange) throws IOException {

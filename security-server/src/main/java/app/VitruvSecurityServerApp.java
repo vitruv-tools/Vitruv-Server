@@ -12,8 +12,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Main application entry point for starting the Vitruv Security Server and Vitruv Server.
- * Initializes the OIDC client and schedules periodic status logs.
+ * The main application class initializes and starts both the Security Server and the Vitruv Server.
+ * It also manages the OIDC client for authentication and schedules a periodic log to indicate
+ * that the application is still running.
  */
 public class VitruvSecurityServerApp {
 

@@ -8,10 +8,20 @@ import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Utility class for TLS-specific tasks.
+ */
 public class TLSUtils {
 
     private static final String PRIVATE_KEY_PATTERN = "-----BEGIN PRIVATE KEY-----([A-Za-z0-9+/=\\s]+)-----END PRIVATE KEY-----";
 
+    /**
+     * Converts a PEM-formatted private key into a PKCS#8-encoded PrivateKey object using the elliptic curve algorithm.
+     *
+     * @param pemKey contains PEM key
+     * @return parsed PrivateKey
+     * @throws GeneralSecurityException if parsing or conversion fails
+     */
     public static PrivateKey convertToPkcs8Key(byte[] pemKey) throws GeneralSecurityException {
         try {
             // extract private key

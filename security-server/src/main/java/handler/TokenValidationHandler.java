@@ -10,15 +10,29 @@ import util.TokenUtils;
 
 import java.io.IOException;
 
+/**
+ *  Acts as a security wrapper for the VitruvRequestHandler, ensuring only valid Access Tokens are processed.
+ *  If a token is expired or missing, it attempts renewal using a Refresh Token.
+ *  If unsuccessful, clients are redirected to the '/auth' endpoint.
+ */
 public class TokenValidationHandler implements HttpHandler {
     private static final Logger logger = LoggerFactory.getLogger(TokenValidationHandler.class);
     private final HttpHandler next;
     private final AuthEndpointHandler authEndpointHandler = new AuthEndpointHandler();
 
+    /**
+     * @param next The handler to call if the request is authorized.
+     */
     public TokenValidationHandler(HttpHandler next) {
         this.next = next;
     }
 
+    /**
+     * Checks access token validity, handles refresh if needed, or redirects to authentication.
+     *
+     * @param exchange HTTP exchange containing request data
+     * @throws IOException if forwarding or redirecting fails
+     */
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         if (exchange.getRequestURI().toString().equals("/favicon.ico")) {
@@ -44,6 +58,12 @@ public class TokenValidationHandler implements HttpHandler {
         }
     }
 
+    /**
+     * Attempts to refresh the access token using the refresh token. If unsuccessful, redirects to authentication.
+     *
+     * @param exchange HTTP exchange containing request data
+     * @throws IOException if token refresh fails
+     */
     private void handleTokenRefresh(HttpExchange exchange) throws IOException {
         String refreshToken = TokenUtils.extractToken(exchange, "refresh_token");
 
@@ -66,6 +86,13 @@ public class TokenValidationHandler implements HttpHandler {
         }
     }
 
+    /**
+     * Clears old tokens and sets new access and refresh tokens as cookies.
+     *
+     * @param exchange HTTP exchange containing request data
+     * @param refreshToken refresh Token
+     * @throws Exception if token refresh fails
+     */
     private void replaceTokens(HttpExchange exchange, String refreshToken) throws Exception {
         AccessTokenResponse newTokens = VitruvSecurityServerApp.getOidcClient().refreshAccessToken(refreshToken);
         String newAccessToken = newTokens.getTokens().getAccessToken().getValue();

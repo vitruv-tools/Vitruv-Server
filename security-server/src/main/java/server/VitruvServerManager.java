@@ -11,6 +11,10 @@ import java.nio.file.Path;
 
 import static tools.vitruv.framework.views.ViewTypeFactory.createIdentityMappingViewType;
 
+/**
+ * Handles generic HTTPS requests, forwarding them to the internal Vitruv Server.
+ * Additionally, it responds to root endpoint (`/`) requests with a welcome message.
+ */
 public class VitruvServerManager {
 
     private static final Logger logger = LoggerFactory.getLogger(VitruvServerManager.class);
@@ -22,6 +26,11 @@ public class VitruvServerManager {
         this.port = port;
     }
 
+    /**
+     * Initializes the Vitruv server and starts it.
+     *
+     * @throws Exception if the server cannot be started.
+     */
     public void start() throws Exception {
         server = new VitruvServer(() -> {
             final VirtualModelBuilder vsumBuilder = new VirtualModelBuilder();

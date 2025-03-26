@@ -24,6 +24,11 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
+/**
+ *  Configures and launches the Security Server using TLS encryption.
+ *  It defines endpoints for token validation, initiating the OIDC authentication process, and handling the callback response.
+ *  The class also establishes the SSL context.
+ */
 public class SecurityServerManager {
     private static final Logger logger = LoggerFactory.getLogger(SecurityServerManager.class);
     private final int port;
@@ -37,6 +42,12 @@ public class SecurityServerManager {
         this.tlsPassword = tlsPassword == null ? null : tlsPassword.toCharArray();
     }
 
+    /**
+     * Sets up TLS context, configures HTTPS server, registers endpoints,
+     * and starts the server.
+     *
+     * @throws Exception if TLS or server setup fails
+     */
     public void start() throws Exception {
         final SSLContext sslContext = createSSLContext();
 
@@ -54,6 +65,9 @@ public class SecurityServerManager {
         logger.info("Security Server started on port {} with forwardPort {}.", port, forwardPort);
     }
 
+    /**
+     * Registers all HTTP endpoints handled by the Security Server. See handler classes for further details.
+     */
     private void registerEndpoints() {
         // Vitruv endpoints (secured through TokenValidationHandler wrapper)
         securityServer.createContext("/", new TokenValidationHandler(new VitruvRequestHandler(forwardPort)));
@@ -71,6 +85,12 @@ public class SecurityServerManager {
         params.setSSLParameters(sslContext.getDefaultSSLParameters());
     }
 
+    /**
+     * Creates and initializes the SSLContext using the TLS certificate and private key.
+     *
+     * @return initiated SSLContext
+     * @throws Exception if loading or initialization fails
+     */
     private SSLContext createSSLContext() throws Exception {
         try {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");

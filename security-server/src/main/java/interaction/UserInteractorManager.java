@@ -9,10 +9,20 @@ import tools.vitruv.change.interaction.UserInteractionListener;
 import tools.vitruv.change.interaction.builder.*;
 
 // TODO: adjust or remove
+
+/**
+ * Provides empty implementations for various user interaction dialogs.
+ * This class should be adjusted before productive usage.
+ */
 public class UserInteractorManager {
 
     private static final Logger logger = LoggerFactory.getLogger(UserInteractorManager.class);
 
+    /**
+     * A dummy InternalUserInteractor.
+     *
+     * @return stub of an InternalUserInteractor
+     */
     public static InternalUserInteractor createInternalUserInteractor() {
         return new InternalUserInteractor() {
             @Override

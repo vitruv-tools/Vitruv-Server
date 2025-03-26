@@ -17,7 +17,7 @@ public class ConfigManager {
     /**
      * Loads configuration properties from 'config.properties'.
      *
-     * @throws Exception if the config file is missing or cannot be loaded.
+     * @throws Exception if the config file is missing or cannot be loaded
      */
     public ConfigManager() throws Exception {
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE_NAME)) {

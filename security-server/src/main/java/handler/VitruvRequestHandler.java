@@ -11,6 +11,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/**
+ * Handles generic HTTPS requests, forwarding them to the internal Vitruv Server.
+ * Responds to root endpoint (`/`) requests with a welcome message.
+ */
 public class VitruvRequestHandler implements HttpHandler {
 
     private final int forwardPort;
@@ -20,6 +24,11 @@ public class VitruvRequestHandler implements HttpHandler {
         this.forwardPort = forwardPort;
     }
 
+    /**
+     * Forwards the request to the Vitruv server or responds directly if root path.
+     *
+     * @param exchange exchange containing the request from the client and used to send the response
+     */
     @Override
     public void handle(HttpExchange exchange) {
         try {
