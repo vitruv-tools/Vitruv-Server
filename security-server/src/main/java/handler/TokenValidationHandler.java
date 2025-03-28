@@ -98,6 +98,9 @@ public class TokenValidationHandler implements HttpHandler {
         String newAccessToken = newTokens.getTokens().getAccessToken().getValue();
         String newRefreshToken = newTokens.getTokens().getRefreshToken().getValue();
 
+        logger.debug("New Access Token: {}", newAccessToken);
+        logger.debug("New Refresh Token: {}", newRefreshToken);
+
         // remove old tokens
         exchange.getResponseHeaders().add("Set-Cookie", "access_token=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict");
         exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict");
