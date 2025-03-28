@@ -31,6 +31,10 @@ import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
 import java.util.Date;
 
+/**
+ * Handles the OIDC communication flow with the FeLS identity provider.
+ * Supports authorization requests, token exchange, validation, and token refresh using the refresh token.
+ */
 public class OIDCClient {
 
     private static final Logger logger = LoggerFactory.getLogger(OIDCClient.class);
@@ -38,8 +42,16 @@ public class OIDCClient {
     private final String clientSecret;
     private final URI redirectUri;
     private OIDCProviderMetadata providerMetadata;
+    /**
+     * Static discovery URI for the FeLS OIDC provider. Not configurable, as only FeLS is supported.
+     */
     private static final String DISCOVERY_URI = "https://fels.scc.kit.edu/oidc/realms/fels";
 
+    /**
+     * Initializes the OIDC client and fetches the provider metadata.
+     *
+     * @throws Exception if metadata discovery fails
+     */
     public OIDCClient(String clientId, String clientSecret, String redirectUri) throws Exception {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
@@ -49,10 +61,14 @@ public class OIDCClient {
         logger.info("OIDC Client started.");
     }
 
+    /**
+     * Discovers the OIDC provider metadata using the discovery endpoint.
+     *
+     * @throws Exception if discovery fails
+     */
     private void discoverProviderMetadata() throws Exception {
-        URI discoveryUri = new URI(DISCOVERY_URI);
+        Issuer issuer = new Issuer(new URI(DISCOVERY_URI));
 
-        Issuer issuer = new Issuer(discoveryUri);
         OIDCProviderConfigurationRequest request = new OIDCProviderConfigurationRequest(issuer);
         OIDCProviderMetadata metadata = OIDCProviderMetadata.parse(request.toHTTPRequest().send().getContentAsJSONObject());
         this.providerMetadata = metadata;
@@ -70,6 +86,13 @@ public class OIDCClient {
         return request.toURI();
     }
 
+    /**
+     * Exchanges an authorization code for access, ID, and refresh tokens.
+     *
+     * @param code Authorization code
+     * @return AccessTokenResponse
+     * @throws Exception if the token exchange fails
+     */
     public AccessTokenResponse exchangeAuthorizationCode(String code) throws Exception {
         AuthorizationCode authorizationCode = new AuthorizationCode(code);
         TokenRequest request = new TokenRequest(
@@ -87,15 +110,21 @@ public class OIDCClient {
         return response.toSuccessResponse();
     }
 
+    /**
+     * Validates the ID token's signature and claims.
+     *
+     * @param idTokenString ID Token as String
+     * @throws Exception if the token is invalid
+     */
     public void validateIDToken(String idTokenString) throws Exception {
         SignedJWT idToken = SignedJWT.parse(idTokenString);
-        // Create the JWT processor for validating signature & claims
+        // create the JWT processor for validating signature & claims
         DefaultJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
-        // Load the JWK set from "https://fels.scc.kit.edu/oidc/realms/fels/protocol/openid-connect/certs"
+        // load the JWK set from "https://fels.scc.kit.edu/oidc/realms/fels/protocol/openid-connect/certs"
         URL jwkSetURL = new URL(providerMetadata.getJWKSetURI().toString());
         JWKSet jwkSet = JWKSet.load(jwkSetURL);
         ImmutableJWKSet<SecurityContext> jwkSource = new ImmutableJWKSet<>(jwkSet);
-        // Set up JWS key selector with RS256
+        // set up JWS key selector with RS256
         JWSKeySelector<SecurityContext> keySelector = new JWSVerificationKeySelector<>(
                 JWSAlgorithm.RS256,
                 jwkSource
@@ -111,6 +140,12 @@ public class OIDCClient {
         logger.info("ID Token is valid.");
     }
 
+    /**
+     * Validates the claims of the ID Token.
+     *
+     * @param claimsSet set of claims
+     * @throws Exception if a claim is invalid
+     */
     private void validateClaims(JWTClaimsSet claimsSet) throws Exception {
         // validate issuer
         String issuer = claimsSet.getIssuer();
@@ -125,6 +160,13 @@ public class OIDCClient {
         }
     }
 
+    /**
+     * Refreshes the access token using a refresh token.
+     *
+     * @param refreshToken Refresh Token
+     * @return new Access and Refresh Token
+     * @throws Exception if refresh fails
+     */
     public AccessTokenResponse refreshAccessToken(String refreshToken) throws Exception {
         TokenRequest request = new TokenRequest(
                 providerMetadata.getTokenEndpointURI(),
@@ -140,6 +182,12 @@ public class OIDCClient {
         return response.toSuccessResponse();
     }
 
+    /**
+     * Checks whether an access token is valid and not expired.
+     *
+     * @param accessToken Access Token (JWT)
+     * @return true if the token is valid, false otherwise
+     */
     public boolean isAccessTokenValid(String accessToken) {
         try {
             SignedJWT signedJWT = SignedJWT.parse(accessToken);
@@ -159,6 +207,12 @@ public class OIDCClient {
         }
     }
 
+    /**
+     * Verifies the signature of a signed Access Token.
+     *
+     * @param signedJWT Token to be verified
+     * @return true if the signature is valid, false otherwise
+     */
     private boolean validateSignature(SignedJWT signedJWT) {
         try {
             // fetch JWKS URI and find matching key
