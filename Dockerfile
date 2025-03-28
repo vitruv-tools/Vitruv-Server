@@ -1,7 +1,7 @@
 FROM eclipse-temurin:17 AS builder
 WORKDIR /app
 COPY . .
-# only build secserver module
+# only build security-server module
 RUN ./mvnw clean verify -pl security-server -am
 
 FROM eclipse-temurin:17-jre
