@@ -52,7 +52,7 @@ public class VitruvRequestHandler implements HttpHandler {
 
     private void handleRootRequest(HttpExchange exchange) throws IOException {
         String response = "Welcome to Vitruv-Server :)\n\n"
-                + "Important information can be found here: https://github.com/vitruv-tools/Vitruv";
+                + "Important information can be found here: https://github.com/vitruv-tools";
         exchange.getResponseHeaders().set("Content-Type", "text/plain; charset=UTF-8");
         exchange.sendResponseHeaders(200, response.getBytes().length);
 

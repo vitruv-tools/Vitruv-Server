@@ -9,7 +9,6 @@ import tools.vitruv.change.interaction.UserInteractionListener;
 import tools.vitruv.change.interaction.builder.*;
 
 // TODO: adjust or remove
-
 /**
  * Provides empty implementations for various user interaction dialogs.
  * This class should be adjusted before productive usage.
