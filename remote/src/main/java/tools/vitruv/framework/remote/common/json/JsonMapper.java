@@ -29,7 +29,7 @@ import tools.vitruv.framework.remote.common.json.serializer.VitruviusChangeSeria
  * This mapper can be used to serialize objects and deserialize JSON in the context of Vitruvius.
  * It has custom De-/Serializers for {@link ResourceSet}s, {@link Resource}s and {@link VitruviusChange}s.
  */
-public class JsonMapper {
+public class JsonMapper implements JsonDeserializationHelper {
     private final ObjectMapper mapper = new ObjectMapper();
 
     public JsonMapper(Path vsumPath) {
