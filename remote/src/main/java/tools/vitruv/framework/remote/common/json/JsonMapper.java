@@ -89,7 +89,7 @@ public class JsonMapper {
      * @throws JsonProcessingException If the JSON node cannot be processed.
      * @throws IOException If there is an IO exception during deserialization.
      */
-    public <T> T deserialize(JsonNode json, Class<T> clazz) throws JsonProcessingException, IOException {
+    public <T> T deserialize(JsonNode json, Class<T> clazz) throws IOException {
     	return mapper.reader().forType(clazz).readValue(json);
     }
     
