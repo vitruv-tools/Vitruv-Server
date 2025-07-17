@@ -18,17 +18,17 @@ import tools.vitruv.framework.remote.common.json.IdTransformation;
 public class HierarichalIdDeserializer extends JsonDeserializer<ReferenceEntry> {
 	private final EcoreReferenceDeserializer standardDeserializer;
 	private final IdTransformation transformation;
-	
+
 	public HierarichalIdDeserializer(EcoreReferenceDeserializer standardDeserializer, IdTransformation transformation) {
 		this.standardDeserializer = standardDeserializer;
 		this.transformation = transformation;
 	}
 
 	@Override
-	public ReferenceEntry deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
+	public ReferenceEntry deserialize(JsonParser parser, DeserializationContext context) throws IOException {
 		if (parser.currentToken() == JsonToken.VALUE_STRING) {
 			var node = context.readTree(parser);
-			return new HidReferenceEntry(EMFContext.getParent(context), EMFContext.getReference(context), 
+			return new HidReferenceEntry(EMFContext.getParent(context), EMFContext.getReference(context),
 					transformation.toGlobal(URI.createURI(node.asText())).toString());
 		}
 		return standardDeserializer.deserialize(parser, context);
