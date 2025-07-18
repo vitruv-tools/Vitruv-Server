@@ -35,8 +35,10 @@ import tools.vitruv.framework.views.ViewSelector;
 import tools.vitruv.framework.views.ViewType;
 
 /**
- * A {@link VitruvRemoteConnection} acts as a {@link HttpClient} to forward requests to a Vitruvius
- * server. This enables the ability to perform actions on this remote Vitruvius instance.
+ * A {@link VitruvRemoteConnection} acts as a {@link HttpClient} to forward
+ * requests to a Vitruvius
+ * server. This enables the ability to perform actions on this remote Vitruvius
+ * instance.
  */
 public class VitruvRemoteConnection implements VitruvClient {
     private static final String SUCCESS = "success";
@@ -52,12 +54,13 @@ public class VitruvRemoteConnection implements VitruvClient {
     private final JsonMapper mapper;
 
     /**
-     * Creates a new {@link VitruvRemoteConnection} using the given URL and port to connect to the
+     * Creates a new {@link VitruvRemoteConnection} using the given URL and port to
+     * connect to the
      * Vitruvius server.
      *
      * @param protocol The protocol of the Vitruvius server.
      * @param hostOrIp The host name of IP address of the Vitruvius server.
-     * @param port of the Vitruvius server.
+     * @param port     of the Vitruvius server.
      */
     public VitruvRemoteConnection(String protocol, String hostOrIp, int port, Path temp) {
         this.client = HttpClient.newHttpClient();
@@ -85,18 +88,20 @@ public class VitruvRemoteConnection implements VitruvClient {
     }
 
     /**
-     * Returns a list of remote representations of {@link ViewType}s available at the Vitruvius
+     * Returns a list of remote representations of {@link ViewType}s available at
+     * the Vitruvius
      * server.
      */
     @Override
     public Collection<ViewType<?>> getViewTypes() {
-        var request =
-                HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.VIEW_TYPES)).GET().build();
+        var request = HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.VIEW_TYPES)).GET().build();
         try {
             var response = sendRequest(request);
             var typeNames = mapper.deserializeArrayOf(response.body(), String.class);
             var list = new LinkedList<ViewType<?>>();
-            typeNames.forEach(it -> list.add(new RemoteViewType(it, this)));
+            typeNames.forEach(it -> list.add(
+                    new RemoteViewType(it, this::getSelector)));
+            ;
             return list;
         } catch (IOException e) {
             throw new BadClientResponseException(e);
@@ -104,8 +109,10 @@ public class VitruvRemoteConnection implements VitruvClient {
     }
 
     /**
-     * Returns a view selector for the given {@link ViewType} by querying the selector from the
-     * Vitruvius server. The view type must be of type {@link RemoteViewType} as these represent the
+     * Returns a view selector for the given {@link ViewType} by querying the
+     * selector from the
+     * Vitruvius server. The view type must be of type {@link RemoteViewType} as
+     * these represent the
      * actual view types available at the server side.
      *
      * @param viewType The {@link ViewType} to create a selector for.
@@ -122,15 +129,18 @@ public class VitruvRemoteConnection implements VitruvClient {
     }
 
     /**
-     * Queries the Vitruvius server to obtain a view selector from the view type with the given
+     * Queries the Vitruvius server to obtain a view selector from the view type
+     * with the given
      * name.
      *
      * @param typeName The name of the view type.
      * @return The selector generated with the view type of the given name.
-     * @throws BadServerResponseException If the server answered with a bad response or a connection
-     *         error occurred.
-     * @throws NoSuchElementException If the response headers do not contain the expected selector
-     *         UUID.
+     * @throws BadServerResponseException If the server answered with a bad response
+     *                                    or a connection
+     *                                    error occurred.
+     * @throws NoSuchElementException     If the response headers do not contain the
+     *                                    expected selector
+     *                                    UUID.
      */
     RemoteViewSelector getSelector(String typeName) throws BadServerResponseException {
         var request = HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.VIEW_SELECTOR))
@@ -153,13 +163,16 @@ public class VitruvRemoteConnection implements VitruvClient {
     }
 
     /**
-     * Queries the Vitruvius server to obtain the view using the given view selector.
+     * Queries the Vitruvius server to obtain the view using the given view
+     * selector.
      *
-     * @param selector The {@link tools.vitruv.framework.views.ViewSelector} which should be used to
-     *        create the view.
+     * @param selector The {@link tools.vitruv.framework.views.ViewSelector} which
+     *                 should be used to
+     *                 create the view.
      * @return The view generated with the given view selector.
-     * @throws BadServerResponseException If the server answered with a bad response or a connection
-     *         error occurred.
+     * @throws BadServerResponseException If the server answered with a bad response
+     *                                    or a connection
+     *                                    error occurred.
      */
     RemoteView getView(RemoteViewSelector selector) throws BadServerResponseException {
         try {
@@ -182,12 +195,14 @@ public class VitruvRemoteConnection implements VitruvClient {
     }
 
     /**
-     * Queries the Vitruvius server to propagate the given changes for the view with the given UUID.
+     * Queries the Vitruvius server to propagate the given changes for the view with
+     * the given UUID.
      *
-     * @param uuid UUID of the changed view.
+     * @param uuid   UUID of the changed view.
      * @param change The changes performed on the affected view.
-     * @throws BadServerResponseException If the server answered with a bad response or a connection
-     *         error occurred.
+     * @throws BadServerResponseException If the server answered with a bad response
+     *                                    or a connection
+     *                                    error occurred.
      */
     void propagateChanges(String uuid, VitruviusChange<?> change)
             throws BadServerResponseException {
@@ -212,8 +227,9 @@ public class VitruvRemoteConnection implements VitruvClient {
      * Queries the Vitruvius server to close the view with the given.
      *
      * @param uuid UUID of the view.
-     * @throws BadServerResponseException If the server answered with a bad response or a connection
-     *         error occurred.
+     * @throws BadServerResponseException If the server answered with a bad response
+     *                                    or a connection
+     *                                    error occurred.
      */
     void closeView(String uuid) throws BadServerResponseException {
         var request = HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.VIEW))
@@ -226,8 +242,9 @@ public class VitruvRemoteConnection implements VitruvClient {
      *
      * @param uuid UUID of the view.
      * @return {@code true} if the view is closed, {@code false} otherwise.
-     * @throws BadServerResponseException If the server answered with a bad response or a connection
-     *         error occurred.
+     * @throws BadServerResponseException If the server answered with a bad response
+     *                                    or a connection
+     *                                    error occurred.
      */
     boolean isViewClosed(String uuid) throws BadServerResponseException {
         var request = HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.IS_VIEW_CLOSED))
@@ -236,7 +253,8 @@ public class VitruvRemoteConnection implements VitruvClient {
     }
 
     /**
-     * Queries the Vitruvius server to check if the view with the given ID is outdated.
+     * Queries the Vitruvius server to check if the view with the given ID is
+     * outdated.
      *
      * @param uuid UUID of the view.
      * @return {@code true} if the view is outdated, {@code false} otherwise.
@@ -252,8 +270,9 @@ public class VitruvRemoteConnection implements VitruvClient {
      *
      * @param uuid UUID of the view.
      * @return The updated {@link ResourceSet} of the view.
-     * @throws BadServerResponseException If the server answered with a bad response or a connection
-     *         error occurred.
+     * @throws BadServerResponseException If the server answered with a bad response
+     *                                    or a connection
+     *                                    error occurred.
      */
     ResourceSet updateView(String uuid) throws BadServerResponseException {
         var request = HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.VIEW))
