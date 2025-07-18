@@ -124,7 +124,7 @@ public class ChangeDerivingRemoteView implements CommittableView {
         var allChanges = new LinkedList<VitruviusChange<HierarchicalId>>();
         base.viewSource.getResources().forEach(it -> {
             var changes = findChanges(originalResourceMapping.get(it), it);
-            if (changes.getEChanges().size() > 0) {
+            if (changes.getEChanges().isEmpty()) {
                 allChanges.add(changes);
             }
         });
