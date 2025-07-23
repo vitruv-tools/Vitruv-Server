@@ -10,16 +10,20 @@ import io.micrometer.core.instrument.distribution.pause.PauseDetector;
 import io.micrometer.core.instrument.step.StepTimer;
 
 /**
- * Provides a specialized {@link StepTimer}, which records every single measurement.
+ * Provides a specialized {@link StepTimer}, which records every single
+ * measurement.
  */
 public class SingleMeasureRecordingTimer extends StepTimer {
-	public static record SingleRecordedMeasure(long amount, TimeUnit unit) {}
-	
+	public static record SingleRecordedMeasure(long amount, TimeUnit unit) {
+	}
+
 	private List<SingleRecordedMeasure> recordings = new ArrayList<>();
-	
+
 	public SingleMeasureRecordingTimer(Id id, Clock clock, DistributionStatisticConfig distributionStatisticConfig,
-			PauseDetector pauseDetector, TimeUnit baseTimeUnit, long stepDurationMillis, boolean supportsAggregablePercentiles) {
-		super(id, clock, distributionStatisticConfig, pauseDetector, baseTimeUnit, stepDurationMillis, supportsAggregablePercentiles);
+			PauseDetector pauseDetector, TimeUnit baseTimeUnit, long stepDurationMillis,
+			boolean supportsAggregablePercentiles) {
+		super(id, clock, distributionStatisticConfig, pauseDetector, baseTimeUnit, stepDurationMillis,
+				supportsAggregablePercentiles);
 	}
 
 	@Override
@@ -27,12 +31,26 @@ public class SingleMeasureRecordingTimer extends StepTimer {
 		super.recordNonNegative(amount, unit);
 		recordings.add(new SingleRecordedMeasure(amount, unit));
 	}
-	
+
 	public List<SingleRecordedMeasure> getRecordings() {
 		return List.copyOf(recordings);
 	}
-	
+
 	public void clear() {
 		recordings.clear();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof SingleMeasureRecordingTimer))
+			return false;
+		return super.equals(obj);
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 }
