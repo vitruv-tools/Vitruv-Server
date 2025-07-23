@@ -39,8 +39,8 @@ class VitruvStepMeterRegistry extends StepMeterRegistry {
 		try (BufferedWriter writer = Files.newBufferedWriter(output, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
 			for (var meter : getMeters()) {
 				if (meter instanceof SingleMeasureRecordingTimer timer) {
-					for (var record : timer.getRecordings()) {
-						writer.append(meter.getId().toString() + "," + record.unit().toMillis(record.amount()) + "\n");
+					for (var recording  : timer.getRecordings()) {
+						writer.append(meter.getId().toString() + "," + recording.unit().toMillis(recording.amount()) + "\n");
 					}
 					timer.clear();
 				} else {
