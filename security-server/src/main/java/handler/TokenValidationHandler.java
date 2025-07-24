@@ -1,6 +1,7 @@
 package handler;
 
-import app.VitruvSecurityServerApp;
+import oidc.OIDCClient;
+
 import com.nimbusds.oauth2.sdk.AccessTokenResponse;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -18,13 +19,16 @@ import java.io.IOException;
 public class TokenValidationHandler implements HttpHandler {
     private static final Logger logger = LoggerFactory.getLogger(TokenValidationHandler.class);
     private final HttpHandler next;
-    private final AuthEndpointHandler authEndpointHandler = new AuthEndpointHandler();
+    private final AuthEndpointHandler authEndpointHandler;
+    private OIDCClient oidcClient;
 
     /**
      * @param next The handler to call if the request is authorized.
      */
-    public TokenValidationHandler(HttpHandler next) {
+    public TokenValidationHandler(HttpHandler next, OIDCClient client) {
         this.next = next;
+        oidcClient = client;
+        this.authEndpointHandler = new AuthEndpointHandler(client);
     }
 
     /**
@@ -45,7 +49,7 @@ public class TokenValidationHandler implements HttpHandler {
             String accessToken = TokenUtils.extractToken(exchange, "access_token");
 
             // check if Access Token is valid
-            if (accessToken != null && VitruvSecurityServerApp.getOidcClient().isAccessTokenValid(accessToken)) {
+            if (accessToken != null && oidcClient.isAccessTokenValid(accessToken)) {
                 next.handle(exchange);
             }
             else {
@@ -94,7 +98,7 @@ public class TokenValidationHandler implements HttpHandler {
      * @throws Exception if token refresh fails
      */
     private void replaceTokens(HttpExchange exchange, String refreshToken) throws Exception {
-        AccessTokenResponse newTokens = VitruvSecurityServerApp.getOidcClient().refreshAccessToken(refreshToken);
+        AccessTokenResponse newTokens = oidcClient.refreshAccessToken(refreshToken);
         String newAccessToken = newTokens.getTokens().getAccessToken().getValue();
         String newRefreshToken = newTokens.getTokens().getRefreshToken().getValue();
 

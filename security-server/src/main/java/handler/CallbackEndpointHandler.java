@@ -1,6 +1,7 @@
 package handler;
 
-import app.VitruvSecurityServerApp;
+import oidc.OIDCClient;
+
 import com.nimbusds.oauth2.sdk.AccessTokenResponse;
 import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.sun.net.httpserver.HttpExchange;
@@ -16,8 +17,12 @@ import java.io.IOException;
  * HTTP-only cookies for secure client-side storage, and secure flag ensures HTTPS usage of the cookies.
  */
 public class CallbackEndpointHandler implements HttpHandler {
-
     private static final Logger logger = LoggerFactory.getLogger(CallbackEndpointHandler.class);
+    private OIDCClient oidcClient;
+
+    public CallbackEndpointHandler(OIDCClient client) {
+        oidcClient = client;
+    }
 
     /**
      * Processes incoming requests, exchanges the authorization code for tokens, and sets authentication cookies.
@@ -40,7 +45,7 @@ public class CallbackEndpointHandler implements HttpHandler {
 
         try {
             // get tokens
-            AccessTokenResponse tokenResponse = VitruvSecurityServerApp.getOidcClient().exchangeAuthorizationCode(authorizationCode);
+            AccessTokenResponse tokenResponse = oidcClient.exchangeAuthorizationCode(authorizationCode);
             Tokens tokens = tokenResponse.getTokens();
 
             String idToken = tokenResponse.getCustomParameters().get("id_token").toString();
@@ -51,7 +56,7 @@ public class CallbackEndpointHandler implements HttpHandler {
             logger.debug("Refresh Token: {}", refreshToken);
 
             // validate ID Token
-            VitruvSecurityServerApp.getOidcClient().validateIDToken(idToken);
+            oidcClient.validateIDToken(idToken);
 
             handleSuccessResponse(exchange, idToken, accessToken, refreshToken);
 

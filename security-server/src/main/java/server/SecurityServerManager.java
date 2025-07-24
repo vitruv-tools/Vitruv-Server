@@ -1,13 +1,16 @@
 package server;
 
-import app.VitruvSecurityServerApp;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
+
+import config.ConfigManager;
 import handler.AuthEndpointHandler;
 import handler.CallbackEndpointHandler;
 import handler.TokenValidationHandler;
 import handler.VitruvRequestHandler;
+import oidc.OIDCClient;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.TLSUtils;
@@ -16,6 +19,7 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
@@ -35,20 +39,24 @@ public class SecurityServerManager {
     private final int forwardPort;
     private final char[] tlsPassword;
     private HttpsServer securityServer;
+    private OIDCClient oidcClient;
+    private ConfigManager config;
 
-    public SecurityServerManager(int port, int forwardPort, String tlsPassword) {
+    public SecurityServerManager(int port, int forwardPort, String tlsPassword, OIDCClient client, ConfigManager config) {
         this.port = port;
         this.forwardPort = forwardPort;
         this.tlsPassword = tlsPassword == null ? null : tlsPassword.toCharArray();
+        this.config = config;
+        oidcClient = client;
     }
 
     /**
-     * Sets up TLS context, configures HTTPS server, registers endpoints,
-     * and starts the server.
-     *
-     * @throws Exception if TLS or server setup fails
+     * Initializes this manager by setting up the TLS context,
+     * configuring the HTTPS server, and registering the endpoints.
+     * 
+     * @throws IOException if TLS or server setup fails.
      */
-    public void start() throws Exception {
+    public void initialize() throws IOException {
         final SSLContext sslContext = createSSLContext();
 
         securityServer = HttpsServer.create(new InetSocketAddress(port), 0);
@@ -60,9 +68,24 @@ public class SecurityServerManager {
         });
         registerEndpoints();
         securityServer.setExecutor(null);
+    }
+
+    /**
+     * Starts the server.
+     */
+    public void start() {
         securityServer.start();
 
         logger.info("Security Server started on port {} with forwardPort {}.", port, forwardPort);
+    }
+
+    /**
+     * Stops the server.
+     */
+    public void stop() {
+        securityServer.stop(0);
+
+        logger.info("Stopped security server.");
     }
 
     /**
@@ -70,11 +93,11 @@ public class SecurityServerManager {
      */
     private void registerEndpoints() {
         // Vitruv endpoints (secured through TokenValidationHandler wrapper)
-        securityServer.createContext("/", new TokenValidationHandler(new VitruvRequestHandler(forwardPort)));
+        securityServer.createContext("/", new TokenValidationHandler(new VitruvRequestHandler(forwardPort), oidcClient));
 
         // Security Server specific endpoints
-        securityServer.createContext("/auth", new AuthEndpointHandler());
-        securityServer.createContext("/callback", new CallbackEndpointHandler());
+        securityServer.createContext("/auth", new AuthEndpointHandler(oidcClient));
+        securityServer.createContext("/callback", new CallbackEndpointHandler(oidcClient));
     }
 
     private void configureHttpsParameters(HttpsParameters params, SSLContext sslContext) {
@@ -89,21 +112,20 @@ public class SecurityServerManager {
      * Creates and initializes the SSLContext using the TLS certificate and private key.
      *
      * @return initiated SSLContext
-     * @throws Exception if loading or initialization fails
      */
-    private SSLContext createSSLContext() throws Exception {
+    private SSLContext createSSLContext() {
         try {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             X509Certificate certificate;
 
             // load certificate
-            try (InputStream certChainStream = new FileInputStream(VitruvSecurityServerApp.getServerConfig().getCertChainPath())) {
+            try (InputStream certChainStream = new FileInputStream(config.getCertChainPath())) {
                 logger.debug("certChainStream: {}", certChainStream);
                 certificate = (X509Certificate) certificateFactory.generateCertificate(certChainStream);
             }
 
             // load private key
-            try (InputStream keyStream = new FileInputStream(VitruvSecurityServerApp.getServerConfig().getCertKeyPath())) {
+            try (InputStream keyStream = new FileInputStream(config.getCertKeyPath())) {
                 logger.debug("keyStream: {}", keyStream);
 
                 byte[] keyBytes = keyStream.readAllBytes();
@@ -128,7 +150,7 @@ public class SecurityServerManager {
             }
         } catch (Exception e) {
             logger.error("Error occurred while trying to load SSL context: {}", e.getMessage());
-            throw new Exception("Failed to initialize SSL context", e);
+            throw new RuntimeException("Failed to initialize SSL context", e);
         }
     }
 }

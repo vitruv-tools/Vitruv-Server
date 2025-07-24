@@ -3,6 +3,7 @@ package config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -17,13 +18,13 @@ public class ConfigManager {
     /**
      * Loads configuration properties from 'config.properties'.
      *
-     * @throws Exception if the config file is missing or cannot be loaded
+     * @throws IOException if the config file is missing or cannot be loaded
      */
-    public ConfigManager() throws Exception {
+    public ConfigManager() throws IOException {
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE_NAME)) {
             if (input == null) {
                 logger.error("Config file not found: " + CONFIG_FILE_NAME);
-                throw new Exception("Config file not found: " + CONFIG_FILE_NAME);
+                throw new IOException("Config file not found: " + CONFIG_FILE_NAME);
             }
             properties.load(input);
         }
