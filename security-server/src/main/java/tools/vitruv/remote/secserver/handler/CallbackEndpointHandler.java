@@ -1,11 +1,12 @@
-package handler;
-
-import oidc.OIDCClient;
+package tools.vitruv.remote.secserver.handler;
 
 import com.nimbusds.oauth2.sdk.AccessTokenResponse;
 import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+
+import tools.vitruv.remote.secserver.oidc.OIDCClient;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

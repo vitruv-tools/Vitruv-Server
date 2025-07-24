@@ -1,4 +1,4 @@
-package handler;
+package tools.vitruv.remote.secserver.handler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;

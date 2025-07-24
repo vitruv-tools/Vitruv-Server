@@ -1,13 +1,13 @@
-package app;
+package tools.vitruv.remote.secserver;
 
-import config.ConfigManager;
-import oidc.OIDCClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import server.SecurityServerManager;
+
 import tools.vitruv.framework.remote.server.VirtualModelInitializer;
 import tools.vitruv.framework.remote.server.VitruvServer;
 import tools.vitruv.framework.remote.server.VitruviusServer;
+import tools.vitruv.remote.secserver.config.ConfigManager;
+import tools.vitruv.remote.secserver.oidc.OIDCClient;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

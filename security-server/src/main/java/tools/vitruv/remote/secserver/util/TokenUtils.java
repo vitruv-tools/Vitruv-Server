@@ -1,4 +1,4 @@
-package util;
+package tools.vitruv.remote.secserver.util;
 
 import com.sun.net.httpserver.HttpExchange;
 

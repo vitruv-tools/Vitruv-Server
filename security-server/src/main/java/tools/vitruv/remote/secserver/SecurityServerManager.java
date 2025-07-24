@@ -1,19 +1,19 @@
-package server;
+package tools.vitruv.remote.secserver;
 
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 
-import config.ConfigManager;
-import handler.AuthEndpointHandler;
-import handler.CallbackEndpointHandler;
-import handler.TokenValidationHandler;
-import handler.VitruvRequestHandler;
-import oidc.OIDCClient;
+import tools.vitruv.remote.secserver.config.ConfigManager;
+import tools.vitruv.remote.secserver.handler.AuthEndpointHandler;
+import tools.vitruv.remote.secserver.handler.CallbackEndpointHandler;
+import tools.vitruv.remote.secserver.handler.TokenValidationHandler;
+import tools.vitruv.remote.secserver.handler.VitruvRequestHandler;
+import tools.vitruv.remote.secserver.oidc.OIDCClient;
+import tools.vitruv.remote.secserver.util.TLSUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import util.TLSUtils;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -33,7 +33,7 @@ import java.security.cert.X509Certificate;
  *  It defines endpoints for token validation, initiating the OIDC authentication process, and handling the callback response.
  *  The class also establishes the SSL context.
  */
-public class SecurityServerManager {
+class SecurityServerManager {
     private static final Logger logger = LoggerFactory.getLogger(SecurityServerManager.class);
     private final int port;
     private final int forwardPort;

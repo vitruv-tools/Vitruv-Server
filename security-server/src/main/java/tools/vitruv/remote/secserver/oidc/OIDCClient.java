@@ -1,4 +1,4 @@
-package oidc;
+package tools.vitruv.remote.secserver.oidc;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
