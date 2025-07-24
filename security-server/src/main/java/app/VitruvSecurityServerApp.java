@@ -5,7 +5,6 @@ import oidc.OIDCClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import server.SecurityServerManager;
-import server.VitruvServerManager;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -33,8 +32,8 @@ public class VitruvSecurityServerApp {
 
         config = new ConfigManager();
 
-        final VitruvServerManager vitruvServerManager = new VitruvServerManager(config.getVitruvServerPort());
-        vitruvServerManager.start();
+        // final VitruvServerManager vitruvServerManager = new VitruvServerManager(config.getVitruvServerPort());
+        // vitruvServerManager.start();
 
         final SecurityServerManager securityServerManager =
                 new SecurityServerManager(config.getHttpsServerPort(), config.getVitruvServerPort(), config.getTlsPassword());
