@@ -1,70 +1,100 @@
 package tools.vitruv.framework.remote.server;
 
-import java.io.IOException;
-
-import tools.vitruv.framework.remote.common.DefaultConnectionSettings;
 import tools.vitruv.framework.remote.common.json.JsonMapper;
 import tools.vitruv.framework.remote.server.http.java.VitruvJavaHttpServer;
 import tools.vitruv.framework.remote.server.rest.endpoints.EndpointsProvider;
 import tools.vitruv.framework.vsum.VirtualModel;
 
 /**
- * A Vitruvius server wraps a REST-based API around a {@link VirtualModel VSUM}. Therefore,
- * it takes a {@link VirtualModelInitializer} which is responsible to create an instance
- * of a {@link VirtualModel virtual model}. Once the server is started, the API can be used by the
- * Vitruvius client to perform remote actions on the VSUM.
+ * A {@link VitruviusServer} implementation using unsecured HTTP/1.1.
  */
-public class VitruvServer {
-    private final VitruvJavaHttpServer server;
+public class VitruvServer implements VitruviusServer {
+    private boolean isInitialized = false;
+    private VitruvJavaHttpServer server;
+    private String baseUrl;
 
     /**
      * Creates a new {@link VitruvServer} using the given {@link VirtualModelInitializer}.
      * Sets host name or IP address and port which are used to open the server.
+     * Delegates to the appropriate {@link initialize} method.
      *
      * @param modelInitializer The initializer which creates an {@link VirtualModel}.
      * @param port             The port to open to server on.
      * @param hostOrIp         The host name or IP address to which the server is bound.
+     * @deprecated Here for backwards-compatibility. Please use default constructur and an {@link initialize} method.
      */
-    public VitruvServer(VirtualModelInitializer modelInitializer, int port, String hostOrIp) throws IOException {
-    	var model = modelInitializer.init();
-        var mapper = new JsonMapper(model.getFolder());
-        var endpoints = EndpointsProvider.getAllEndpoints(model, mapper);
-
-        this.server = new VitruvJavaHttpServer(hostOrIp, port, endpoints);
+    @Deprecated()
+    public VitruvServer(VirtualModelInitializer modelInitializer, int port, String hostOrIp) throws Exception {
+    	initialize(modelInitializer, port, hostOrIp);
     }
     
     /**
      * Creates a new {@link VitruvServer} using the given {@link VirtualModelInitializer}.
      * Sets the port which is used to open the server on to the given one.
+     * Delegates to the appropriate {@link initialize} method.
      *
      * @param modelInitializer The initializer which creates an {@link VirtualModel}.
      * @param port             The port to open to server on.
+     * @deprecated Here for backwards-compatibility. Please use default constructur and an {@link initialize} method.
      */
-    public VitruvServer(VirtualModelInitializer modelInitializer, int port) throws IOException {
-    	this(modelInitializer, port, DefaultConnectionSettings.STD_HOST);
+    @Deprecated
+    public VitruvServer(VirtualModelInitializer modelInitializer, int port) throws Exception {
+    	initialize(modelInitializer, port);
     }
 
     /**
      * Creates a new {@link VitruvServer} using the given {@link VirtualModelInitializer}.
      * Sets the port which is used to open the server on to 8080.
+     * Delegates to the appropriate {@link initialize} method.
      *
      * @param modelInitializer The initializer which creates an {@link tools.vitruv.framework.vsum.internal.InternalVirtualModel}.
+     * @deprecated Here for backwards-compatibility. Please use default constructur and an {@link initialize} method.
      */
-    public VitruvServer(VirtualModelInitializer modelInitializer) throws IOException {
-        this(modelInitializer, DefaultConnectionSettings.STD_PORT);
+    @Deprecated
+    public VitruvServer(VirtualModelInitializer modelInitializer) throws Exception {
+        initialize(modelInitializer);
     }
 
     /**
-     * Starts the Vitruvius server.
+     * Creates a new {@link VitruvServer}.
      */
+    public VitruvServer() {}
+
+    @Override
+    public void initialize(VirtualModelInitializer modelInitializer, int port, String hostOrIp) throws Exception {
+        if (this.isInitialized) {
+            return;
+        }
+
+        var model = modelInitializer.init();
+        var mapper = new JsonMapper(model.getFolder());
+        var endpoints = EndpointsProvider.getAllEndpoints(model, mapper);
+
+        this.server = new VitruvJavaHttpServer(hostOrIp, port, endpoints);
+        this.baseUrl = "http://" + hostOrIp + ":" + port;
+        this.isInitialized = true;
+    }
+
+    @Override
+    public String getBaseUrl() {
+        return this.baseUrl;
+    }
+
+    @Override
     public void start() {
+        if (!this.isInitialized) {
+            throw new IllegalStateException("Server not initialized.");
+        }
+
         server.start();
     }
 
-    /**
-     * Stops the Vitruvius server.
-     */
+    @Override
     public void stop() {
+        if (!this.isInitialized) {
+            throw new IllegalStateException("Server not initialized.");
+        }
+
         server.stop();
     }
 }
