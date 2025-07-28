@@ -32,7 +32,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 /**
- * Handles the OIDC communication flow with the FeLS identity provider.
+ * Handles the OIDC communication flow with an OpenID Connect provider.
  * Supports authorization requests, token exchange, validation, and token refresh using the refresh token.
  */
 public class OIDCClient {
@@ -42,21 +42,17 @@ public class OIDCClient {
     private final String clientSecret;
     private final URI redirectUri;
     private OIDCProviderMetadata providerMetadata;
-    /**
-     * Static discovery URI for the FeLS OIDC provider. Not configurable, as only FeLS is supported.
-     */
-    private static final String DISCOVERY_URI = "https://fels.scc.kit.edu/oidc/realms/fels";
 
     /**
      * Initializes the OIDC client and fetches the provider metadata.
      *
      * @throws Exception if metadata discovery fails
      */
-    public OIDCClient(String clientId, String clientSecret, String redirectUri) throws Exception {
+    public OIDCClient(String clientId, String clientSecret, String discoveryUri, String redirectUri) throws Exception {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.redirectUri = new URI(redirectUri);
-        discoverProviderMetadata();
+        discoverProviderMetadata(discoveryUri);
 
         logger.info("OIDC Client started.");
     }
@@ -66,8 +62,8 @@ public class OIDCClient {
      *
      * @throws Exception if discovery fails
      */
-    private void discoverProviderMetadata() throws Exception {
-        Issuer issuer = new Issuer(new URI(DISCOVERY_URI));
+    private void discoverProviderMetadata(String discoveryUri) throws Exception {
+        Issuer issuer = new Issuer(new URI(discoveryUri));
 
         OIDCProviderConfigurationRequest request = new OIDCProviderConfigurationRequest(issuer);
         OIDCProviderMetadata metadata = OIDCProviderMetadata.parse(request.toHTTPRequest().send().getContentAsJSONObject());
@@ -120,7 +116,7 @@ public class OIDCClient {
         SignedJWT idToken = SignedJWT.parse(idTokenString);
         // create the JWT processor for validating signature & claims
         DefaultJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
-        // load the JWK set from "https://fels.scc.kit.edu/oidc/realms/fels/protocol/openid-connect/certs"
+        // load the JWK set
         URL jwkSetURL = new URL(providerMetadata.getJWKSetURI().toString());
         JWKSet jwkSet = JWKSet.load(jwkSetURL);
         ImmutableJWKSet<SecurityContext> jwkSource = new ImmutableJWKSet<>(jwkSet);

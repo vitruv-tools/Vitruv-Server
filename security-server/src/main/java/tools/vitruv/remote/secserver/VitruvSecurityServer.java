@@ -35,7 +35,7 @@ public class VitruvSecurityServer implements VitruviusServer {
         baseUrl = "https://" + config.getDomainName() + ":" + config.getHttpsServerPort();
         final String redirectURI = baseUrl + "/callback";
         logger.debug("redirectURI: {}", redirectURI);
-        OIDCClient oidcClient = new OIDCClient(config.getOidcClientId(), config.getOidcClientSecret(), redirectURI);
+        OIDCClient oidcClient = new OIDCClient(config.getOidcClientId(), config.getOidcClientSecret(), config.getOIDCDiscoveryUri(), redirectURI);
         
         securityServerManager =
                 new SecurityServerManager(config.getHttpsServerPort(), config.getVitruvServerPort(), config.getTlsPassword(), oidcClient, config);

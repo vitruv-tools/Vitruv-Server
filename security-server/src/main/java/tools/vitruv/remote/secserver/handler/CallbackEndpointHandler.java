@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- * Handles the `/callback` endpoint. It processes incoming authorization codes from FeLS and exchanges them for ID, Access,
+ * Handles the `/callback` endpoint. It processes incoming authorization codes from an OIDC provider and exchanges them for ID, Access,
  * and Refresh Tokens. After validation of ID Token, all tokens are sent to the client. The tokens are stored as
  * HTTP-only cookies for secure client-side storage, and secure flag ensures HTTPS usage of the cookies.
  */
@@ -84,7 +84,7 @@ public class CallbackEndpointHandler implements HttpHandler {
         exchange.getResponseHeaders().add("Set-Cookie", "refresh_token=" + refreshToken + "; Path=/; HttpOnly; Secure; SameSite=Strict");
 
         // set body
-        String response = "You were successfully authenticated by FeLS! Your requests are authorized now." + "\n\n"
+        String response = "You were successfully authenticated! Your requests are authorized now." + "\n\n"
                 + "Access Token (JWT; expires in 1 hour):\n" + accessToken + "\n\n"
                 + "ID Token (JWT; expires in 1 hour):\n" + idToken + "\n\n"
                 + "Refresh Token (Opaque; this token is not further required):\n" + refreshToken;

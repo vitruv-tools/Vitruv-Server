@@ -65,4 +65,8 @@ public class ConfigManager {
     public String getTlsPassword() {
         return System.getenv("TLS_PASSWORD");
     }
+
+    public String getOIDCDiscoveryUri() {
+        return System.getenv("VITRUV_SERVER_OIDC_DISCOVERY_URI");
+    }
 }
