@@ -3,8 +3,10 @@ package tools.vitruv.remote.secserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tools.vitruv.framework.remote.common.DefaultConnectionSettings;
 import tools.vitruv.framework.remote.server.VirtualModelInitializer;
 import tools.vitruv.framework.remote.server.VitruvServer;
+import tools.vitruv.framework.remote.server.VitruvServerConfiguration;
 import tools.vitruv.framework.remote.server.VitruviusServer;
 import tools.vitruv.remote.secserver.config.ConfigManager;
 import tools.vitruv.remote.secserver.oidc.OIDCClient;
@@ -24,13 +26,13 @@ public class VitruvSecurityServer implements VitruviusServer {
     private String baseUrl;
 
     @Override
-    public void initialize(VirtualModelInitializer modelInitializer, int port, String hostOrIp) throws Exception {
+    public void initialize(VirtualModelInitializer modelInitializer) throws Exception {
         logger.info("Starting initialization of servers and OIDC client...");
 
         ConfigManager config = new ConfigManager();
 
-        vitruvServer = new VitruvServer();
-        vitruvServer.initialize(modelInitializer, config.getVitruvServerPort(), "localhost");
+        vitruvServer = new VitruvServer(new VitruvServerConfiguration(DefaultConnectionSettings.STD_HOST, config.getVitruvServerPort()));
+        vitruvServer.initialize(modelInitializer);
 
         baseUrl = "https://" + config.getDomainName() + ":" + config.getHttpsServerPort();
         final String redirectURI = baseUrl + "/callback";

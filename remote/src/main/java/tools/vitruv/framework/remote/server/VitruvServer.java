@@ -1,67 +1,75 @@
 package tools.vitruv.framework.remote.server;
 
+import tools.vitruv.framework.remote.common.DefaultConnectionSettings;
 import tools.vitruv.framework.remote.common.json.JsonMapper;
 import tools.vitruv.framework.remote.server.http.java.VitruvJavaHttpServer;
 import tools.vitruv.framework.remote.server.rest.endpoints.EndpointsProvider;
-import tools.vitruv.framework.vsum.VirtualModel;
 
 /**
- * A {@link VitruviusServer} implementation using unsecured HTTP/1.1.
+ * A {@link VitruviusServer} implementation using clear-text HTTP/1.1.
  */
 public class VitruvServer implements VitruviusServer {
     private boolean isInitialized = false;
+    private VitruvServerConfiguration config;
     private VitruvJavaHttpServer server;
     private String baseUrl;
 
     /**
-     * Creates a new {@link VitruvServer} using the given {@link VirtualModelInitializer}.
+     * Creates a new {@link VitruvServer}.
      * Sets host name or IP address and port which are used to open the server.
-     * Delegates to the appropriate {@link initialize} method.
+     * Delegates to the appropriate constructor.
      *
-     * @param modelInitializer The initializer which creates an {@link VirtualModel}.
+     * @param modelInitializer Ignored.
      * @param port             The port to open to server on.
      * @param hostOrIp         The host name or IP address to which the server is bound.
-     * @deprecated Here for backwards-compatibility. Please use default constructur and an {@link initialize} method.
+     * @deprecated Here for backwards-compatibility. Please use constructur with the {@link VitruvServerConfiguration}
+     *             parameter and the {@link initialize} method.
      */
     @Deprecated()
-    public VitruvServer(VirtualModelInitializer modelInitializer, int port, String hostOrIp) throws Exception {
-    	initialize(modelInitializer, port, hostOrIp);
+    public VitruvServer(VirtualModelInitializer modelInitializer, int port, String hostOrIp) {
+    	this(new VitruvServerConfiguration(hostOrIp, port));
     }
     
     /**
-     * Creates a new {@link VitruvServer} using the given {@link VirtualModelInitializer}.
+     * Creates a new {@link VitruvServer}.
      * Sets the port which is used to open the server on to the given one.
-     * Delegates to the appropriate {@link initialize} method.
+     * Delegates to the appropriate constructor.
      *
-     * @param modelInitializer The initializer which creates an {@link VirtualModel}.
+     * @param modelInitializer Ignored.
      * @param port             The port to open to server on.
-     * @deprecated Here for backwards-compatibility. Please use default constructur and an {@link initialize} method.
+     * @deprecated Here for backwards-compatibility. Please use constructur with the {@link VitruvServerConfiguration}
+     *             parameter and the {@link initialize} method.
      */
     @Deprecated
-    public VitruvServer(VirtualModelInitializer modelInitializer, int port) throws Exception {
-    	initialize(modelInitializer, port);
-    }
-
-    /**
-     * Creates a new {@link VitruvServer} using the given {@link VirtualModelInitializer}.
-     * Sets the port which is used to open the server on to 8080.
-     * Delegates to the appropriate {@link initialize} method.
-     *
-     * @param modelInitializer The initializer which creates an {@link tools.vitruv.framework.vsum.internal.InternalVirtualModel}.
-     * @deprecated Here for backwards-compatibility. Please use default constructur and an {@link initialize} method.
-     */
-    @Deprecated
-    public VitruvServer(VirtualModelInitializer modelInitializer) throws Exception {
-        initialize(modelInitializer);
+    public VitruvServer(VirtualModelInitializer modelInitializer, int port) {
+    	this(modelInitializer, port, DefaultConnectionSettings.STD_HOST);
     }
 
     /**
      * Creates a new {@link VitruvServer}.
+     * Sets the port which is used to open the server on to 8080.
+     * Delegates to the appropriate constructor.
+     *
+     * @param modelInitializer Ignored.
+     * @deprecated Here for backwards-compatibility. Please use constructur with the {@link VitruvServerConfiguration}
+     *             parameter and the {@link initialize} method.
      */
-    public VitruvServer() {}
+    @Deprecated
+    public VitruvServer(VirtualModelInitializer modelInitializer) {
+        this(modelInitializer, DefaultConnectionSettings.STD_PORT);
+    }
+
+    /**
+     * Creates a new {@link VitruvServer}.
+     * 
+     * @param config Configuration for the server.
+     */
+    public VitruvServer(VitruvServerConfiguration config) {
+        this.config = config;
+    }
 
     @Override
-    public void initialize(VirtualModelInitializer modelInitializer, int port, String hostOrIp) throws Exception {
+    public void initialize(VirtualModelInitializer modelInitializer) throws Exception {
         if (this.isInitialized) {
             return;
         }
@@ -70,8 +78,8 @@ public class VitruvServer implements VitruviusServer {
         var mapper = new JsonMapper(model.getFolder());
         var endpoints = EndpointsProvider.getAllEndpoints(model, mapper);
 
-        this.server = new VitruvJavaHttpServer(hostOrIp, port, endpoints);
-        this.baseUrl = "http://" + hostOrIp + ":" + port;
+        this.server = new VitruvJavaHttpServer(this.config.hostOrIp(), this.config.port(), endpoints);
+        this.baseUrl = "http://" + this.config.hostOrIp() + ":" + this.config.port();
         this.isInitialized = true;
     }
 
