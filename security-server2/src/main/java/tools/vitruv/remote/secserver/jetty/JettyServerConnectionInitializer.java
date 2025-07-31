@@ -3,6 +3,7 @@ package tools.vitruv.remote.secserver.jetty;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
 import org.eclipse.jetty.http.HttpCompliance;
 import org.eclipse.jetty.server.ConnectionFactory;
@@ -60,7 +61,7 @@ public class JettyServerConnectionInitializer {
         }
         
         SslContextFactory.Server tlsContext = new SslContextFactory.Server();
-        tlsContext.setProvider("BCJSSE");
+        tlsContext.setProvider(BouncyCastleJsseProvider.PROVIDER_NAME);
         if (config.keyStorePath() != null) {
             tlsContext.setKeyStorePath(config.keyStorePath());
         } else if (config.keyStore() != null) {
