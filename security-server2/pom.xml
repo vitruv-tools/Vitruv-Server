@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>tools.vitruv</groupId>
+        <artifactId>tools.vitruv.server</artifactId>
+        <version>3.2.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>tools.vitruv.server.security-server2</artifactId>
+    <packaging>jar</packaging>
+
+    <name>Vitruvius Secure Remote</name>
+    <description>An extension to Vitruvius Remote with security features.</description>
+
+    <properties>
+        <jetty.version>12.0.22</jetty.version>
+        <bouncycastle.version>1.81</bouncycastle.version>
+    </properties>
+
+    <!-- Vitruvius dependencies -->
+    <dependencies>
+        <dependency>
+            <groupId>tools.vitruv</groupId>
+            <artifactId>tools.vitruv.server.remote</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Jetty -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.http2</groupId>
+            <artifactId>jetty-http2-server</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.http3</groupId>
+            <artifactId>jetty-http3-server</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-alpn-bouncycastle-server</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-client</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.http2</groupId>
+            <artifactId>jetty-http2-client-transport</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.http3</groupId>
+            <artifactId>jetty-http3-client-transport</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-alpn-bouncycastle-client</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-slf4j-impl</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        
+        <!-- Security -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>${bouncycastle.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bctls-jdk18on</artifactId>
+            <version>${bouncycastle.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk18on</artifactId>
+            <version>${bouncycastle.version}</version>
+        </dependency>
+    </dependencies>
+</project>

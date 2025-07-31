@@ -39,6 +39,7 @@
     <module>remote</module>
     <module>p2wrappers</module>
     <module>security-server</module>
+    <module>security-server2</module>
   </modules>
 
   <properties>
