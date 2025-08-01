@@ -79,8 +79,12 @@ public class VitruvServer implements VitruviusServer {
         var endpoints = EndpointsProvider.getAllEndpoints(model, mapper);
 
         this.server = new VitruvJavaHttpServer(this.config.hostOrIp(), this.config.port(), endpoints);
-        this.baseUrl = "http://" + this.config.hostOrIp() + ":" + this.config.port();
+        buildBaseUrl(this.config.port());
         this.isInitialized = true;
+    }
+
+    private void buildBaseUrl(int port) {
+        this.baseUrl = "http://" + this.config.hostOrIp() + ":" + port;
     }
 
     @Override
@@ -95,6 +99,10 @@ public class VitruvServer implements VitruviusServer {
         }
 
         server.start();
+
+        if (this.config.port() == 0) {
+            this.buildBaseUrl(this.server.getBoundPort());
+        }
     }
 
     @Override

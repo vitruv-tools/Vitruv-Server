@@ -14,6 +14,10 @@ public class VitruvJavaHttpServer {
         endpoints.forEach(endp -> server.createContext(endp.path(), new RequestHandler(endp)));
     }
 
+    public int getBoundPort() {
+        return server.getAddress().getPort();
+    }
+
     public void start() {
         server.start();
     }
