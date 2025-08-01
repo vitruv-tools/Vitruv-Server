@@ -15,14 +15,18 @@ import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.io.ClientConnectionFactory.Info;
 import org.eclipse.jetty.proxy.ProxyHandler;
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Response;
+import org.eclipse.jetty.util.Callback;
 
 import tools.vitruv.remote.secserver.config.AvailableHttpVersions;
+import tools.vitruv.remote.secserver.proxy.ReverseProxyMappingService;
 
 public class VitruvReverseProxyHandler extends ProxyHandler.Reverse {
     private static class HttpURIRewriter implements Function<Request, HttpURI> {
         @Override
         public HttpURI apply(Request request) {
-            return HttpURI.from("");
+            var redirectUri = ReverseProxyMappingService.instance().getRedirectUriForPath(request.getHttpURI().getPath());
+            return HttpURI.from(redirectUri);
         }
     }
 
@@ -49,5 +53,13 @@ public class VitruvReverseProxyHandler extends ProxyHandler.Reverse {
         }
         
         return new HttpClient(new HttpClientTransportDynamic(clientConnector, versionInfos.toArray(new Info[versionInfos.size()])));
+    }
+
+    @Override
+    public boolean handle(Request clientToProxyRequest, Response proxyToClientResponse, Callback proxyToClientCallback) {
+        if (!ReverseProxyMappingService.instance().canHandlePath(clientToProxyRequest.getHttpURI().getPath())) {
+            return false;
+        }
+        return super.handle(clientToProxyRequest, proxyToClientResponse, proxyToClientCallback);
     }
 }

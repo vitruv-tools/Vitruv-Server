@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  */
 public class ReverseProxyMappingService {
     private static ReverseProxyMappingService instance;
-    private final Pattern pathSeparatorPattern = Pattern.compile("^(/[.&&[^/]]*)(/.*)?$");
+    private final Pattern pathSeparatorPattern = Pattern.compile("^(/[\\p{Graph}\\p{Blank}&&[^/]]*)(/.*)?$");
 
     private String oneDestination = null;
     private Map<String, String> pathToUri = new HashMap<>();
@@ -44,6 +44,26 @@ public class ReverseProxyMappingService {
      */
     public void addDestination(String contextPath, String targetUri) {
         this.pathToUri.put(contextPath, targetUri);
+    }
+
+    /**
+     * Removes a mapping for a context path to support dynamic configurations.
+     * 
+     * @param contextPath the context path to remove.
+     */
+    public void removeDestination(String contextPath) {
+        this.pathToUri.remove(contextPath);
+    }
+
+    /**
+     * Checks if a given path can be handled (i.e., either the one and only destination is set or there is a registered mapping for the path).
+     * 
+     * @param path the path to check.
+     * @return true if the redirection for the path can be handled. false otherwise.
+     */
+    public boolean canHandlePath(String path) {
+        var pathMatcher = this.pathSeparatorPattern.matcher(path);
+        return this.oneDestination != null || (pathMatcher.find() && this.pathToUri.containsKey(pathMatcher.group(1)));
     }
 
     /**

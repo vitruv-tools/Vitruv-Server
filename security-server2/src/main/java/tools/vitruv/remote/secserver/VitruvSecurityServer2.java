@@ -28,8 +28,10 @@ public class VitruvSecurityServer2 implements VitruviusServer {
 
         this.modeController = ServerModeControllerFactory.createModeController(this.config.handlerConfig());
         this.modeController.initialize(modelInitializer);
+        this.server = new Server();
         JettyServerConnectionInitializer.initializeConnectors(this.server, this.config.connectionConfig());
         JettyServerHandlerInitializer.initializeHandlers(this.server, this.config.handlerConfig(), this.modeController.getHandler());
+        this.isInitialized = true;
     }
 
     @Override
