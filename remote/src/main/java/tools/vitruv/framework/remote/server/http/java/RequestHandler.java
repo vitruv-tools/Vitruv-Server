@@ -3,13 +3,13 @@ package tools.vitruv.framework.remote.server.http.java;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import tools.vitruv.framework.remote.server.http.AbstractHttpHandler;
+import tools.vitruv.framework.remote.server.http.VitruvHttpHandler;
 import tools.vitruv.framework.remote.server.rest.PathEndointCollector;
 
 /**
  * Represents an {@link HttpHandler}.
  */
-class RequestHandler extends AbstractHttpHandler implements HttpHandler {
+class RequestHandler extends VitruvHttpHandler implements HttpHandler {
     RequestHandler(PathEndointCollector endpoints) {
         super(endpoints);
     }

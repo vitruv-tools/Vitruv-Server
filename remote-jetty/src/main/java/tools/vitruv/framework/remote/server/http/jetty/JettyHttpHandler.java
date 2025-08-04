@@ -5,6 +5,7 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
 
+import tools.vitruv.framework.remote.server.http.VitruvHttpHandler;
 import tools.vitruv.framework.remote.server.rest.PathEndointCollector;
 
 public class JettyHttpHandler extends Handler.Abstract {

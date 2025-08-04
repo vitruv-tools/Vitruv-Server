@@ -8,8 +8,6 @@ import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 
 import tools.vitruv.framework.remote.server.http.InternalHttpServerManager;
 import tools.vitruv.framework.remote.server.rest.PathEndointCollector;
@@ -37,12 +35,7 @@ public class VitruvJettyServerManager implements InternalHttpServerManager {
         });
         this.server.addConnector(connector);
         
-        ContextHandlerCollection handler = new ContextHandlerCollection();
-        endpoints.forEach((ep) -> {
-            var contextHandler = new ContextHandler(new JettyHttpHandler(ep), ep.path());
-            handler.addHandler(contextHandler);
-        });
-        this.server.setHandler(handler);
+        this.server.setHandler(JettyHandlerFactory.createHandler(endpoints));
     }
 
     @Override

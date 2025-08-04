@@ -7,23 +7,23 @@ import tools.vitruv.framework.remote.common.rest.constants.ContentType;
 import tools.vitruv.framework.remote.server.exception.ServerHaltingException;
 import tools.vitruv.framework.remote.server.rest.PathEndointCollector;
 
-public abstract class AbstractHttpHandler {
+public class VitruvHttpHandler {
     private static final int HTTP_NOT_FOUND = 404;
     private static final int HTTP_OK = 200;
     private static final int HTTP_INTERNAL_ERROR = 500;
 
     private PathEndointCollector endpoints;
 
-    protected AbstractHttpHandler(PathEndointCollector endpoints) {
+    public VitruvHttpHandler(PathEndointCollector endpoints) {
     	this.endpoints = endpoints;
     }
 
     /**
      * Processes an request when this end point is called.
      *
-     * @param exchange An object encapsulating the HTTP request and response.
+     * @param wrapper An object encapsulating the HTTP request and response.
      */
-    protected void process(String method, HttpWrapper wrapper) {
+    public void process(String method, HttpWrapper wrapper) {
         try {
             var response = switch (method) {
                 case "GET" -> endpoints.getEndpoint().process(wrapper);
