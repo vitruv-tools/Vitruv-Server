@@ -4,9 +4,11 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
+
+import tools.vitruv.framework.remote.server.http.InternalHttpServerManager;
 import tools.vitruv.framework.remote.server.rest.PathEndointCollector;
 
-public class VitruvJavaHttpServer {
+public class VitruvJavaHttpServer implements InternalHttpServerManager {
     private final HttpServer server;
 
     public VitruvJavaHttpServer(String host, int port, List<PathEndointCollector> endpoints) throws IOException {

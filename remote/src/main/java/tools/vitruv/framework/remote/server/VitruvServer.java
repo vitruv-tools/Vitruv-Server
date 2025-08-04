@@ -1,8 +1,12 @@
 package tools.vitruv.framework.remote.server;
 
+import java.util.List;
+
 import tools.vitruv.framework.remote.common.DefaultConnectionSettings;
 import tools.vitruv.framework.remote.common.json.JsonMapper;
+import tools.vitruv.framework.remote.server.http.InternalHttpServerManager;
 import tools.vitruv.framework.remote.server.http.java.VitruvJavaHttpServer;
+import tools.vitruv.framework.remote.server.rest.PathEndointCollector;
 import tools.vitruv.framework.remote.server.rest.endpoints.EndpointsProvider;
 
 /**
@@ -11,7 +15,7 @@ import tools.vitruv.framework.remote.server.rest.endpoints.EndpointsProvider;
 public class VitruvServer implements VitruviusServer {
     private boolean isInitialized = false;
     private VitruvServerConfiguration config;
-    private VitruvJavaHttpServer server;
+    private InternalHttpServerManager server;
     private String baseUrl;
 
     /**
@@ -78,9 +82,14 @@ public class VitruvServer implements VitruviusServer {
         var mapper = new JsonMapper(model.getFolder());
         var endpoints = EndpointsProvider.getAllEndpoints(model, mapper);
 
-        this.server = new VitruvJavaHttpServer(this.config.hostOrIp(), this.config.port(), endpoints);
+        this.server = this.createInternalServerManager(this.config, endpoints);
         buildBaseUrl(this.config.port());
         this.isInitialized = true;
+    }
+
+    protected InternalHttpServerManager createInternalServerManager(VitruvServerConfiguration config, List<PathEndointCollector> endpoints)
+            throws Exception {
+        return new VitruvJavaHttpServer(config.hostOrIp(), config.port(), endpoints);
     }
 
     private void buildBaseUrl(int port) {
