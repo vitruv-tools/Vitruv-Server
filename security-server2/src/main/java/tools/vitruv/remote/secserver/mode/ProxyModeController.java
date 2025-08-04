@@ -1,7 +1,9 @@
 package tools.vitruv.remote.secserver.mode;
 
+import tools.vitruv.framework.remote.server.JettyVitruvServer;
 import tools.vitruv.framework.remote.server.VirtualModelInitializer;
 import tools.vitruv.framework.remote.server.VitruvServer;
+import tools.vitruv.remote.secserver.config.AvailableHttpVersions;
 import tools.vitruv.remote.secserver.config.ServerHandlerConfiguration;
 import tools.vitruv.remote.secserver.proxy.ReverseProxyMappingService;
 
@@ -16,7 +18,11 @@ class ProxyModeController extends AbstractProxyModeController {
 
     @Override
     public void initialize(VirtualModelInitializer modelInitializer) throws Exception {
-        this.proxiedServer = new VitruvServer(this.config.proxiedServerConfig());
+        if (this.config.httpVersions().contains(AvailableHttpVersions.HTTP_2)) {
+            this.proxiedServer = new JettyVitruvServer(this.config.proxiedServerConfig());
+        } else {
+            this.proxiedServer = new VitruvServer(this.config.proxiedServerConfig());
+        }
         this.proxiedServer.initialize(modelInitializer);
     }
 
