@@ -11,6 +11,8 @@ public class ServerModeControllerFactory {
                 return new ProxyModeController(config);
             case REVERSE_PROXY:
                 return new ReverseProxyModeController(config);
+            case DIRECT_CONNECTION:
+                return new DirectConnectionModeController(config);
             default:
                 throw new UnsupportedOperationException();
         }
