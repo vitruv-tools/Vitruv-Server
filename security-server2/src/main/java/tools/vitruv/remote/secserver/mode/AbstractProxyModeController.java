@@ -23,8 +23,8 @@ abstract class AbstractProxyModeController implements ServerModeController {
     }
 
     @Override
-    public void start() {}
+    public void start() throws Exception {}
 
     @Override
-    public void stop() {}
+    public void stop() throws Exception {}
 }

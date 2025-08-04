@@ -26,13 +26,13 @@ class ProxyModeController extends AbstractProxyModeController {
     }
 
     @Override
-    public void start() {
+    public void start() throws Exception {
         this.proxiedServer.start();
         ReverseProxyMappingService.instance().setOneDestination(this.proxiedServer.getBaseUrl());
     }
 
     @Override
-    public void stop() {
+    public void stop() throws Exception {
         this.proxiedServer.stop();
     }
 }

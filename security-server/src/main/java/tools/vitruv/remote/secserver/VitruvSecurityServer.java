@@ -55,13 +55,13 @@ public class VitruvSecurityServer implements VitruviusServer {
     }
 
     @Override
-    public void start() {
+    public void start() throws Exception {
         vitruvServer.start();
         securityServerManager.start();
     }
 
     @Override
-    public void stop() {
+    public void stop() throws Exception {
         securityServerManager.stop();
         vitruvServer.stop();
     }

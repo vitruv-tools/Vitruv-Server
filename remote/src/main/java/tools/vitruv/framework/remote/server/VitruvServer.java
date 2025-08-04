@@ -102,7 +102,7 @@ public class VitruvServer implements VitruviusServer {
     }
 
     @Override
-    public void start() {
+    public void start() throws Exception {
         if (!this.isInitialized) {
             throw new IllegalStateException("Server not initialized.");
         }
@@ -115,7 +115,7 @@ public class VitruvServer implements VitruviusServer {
     }
 
     @Override
-    public void stop() {
+    public void stop() throws Exception {
         if (!this.isInitialized) {
             throw new IllegalStateException("Server not initialized.");
         }
