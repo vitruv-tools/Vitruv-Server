@@ -172,6 +172,16 @@
           <artifactId>jetty-proxy</artifactId>
           <version>${jetty.version}</version>
       </dependency>
+      <dependency>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-openid</artifactId>
+          <version>${jetty.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-session</artifactId>
+          <version>${jetty.version}</version>
+      </dependency>
 
       <!-- external test dependencies -->
       <dependency>

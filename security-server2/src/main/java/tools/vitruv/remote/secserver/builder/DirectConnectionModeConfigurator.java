@@ -19,7 +19,9 @@ public class DirectConnectionModeConfigurator extends ServerHandlerConfigurator 
             ServerModes.DIRECT_CONNECTION,
             this.connectionConfig.httpVersions(),
             null,
-            null
+            null,
+            this.getAuthenticationMode(),
+            this.getOpenIdConfig()
         );
     }
 }

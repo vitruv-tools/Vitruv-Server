@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jetty.security.openid.OpenIdConfiguration;
+
 import tools.vitruv.framework.remote.server.VitruvServerConfiguration;
 
 public record ServerHandlerConfiguration(
@@ -11,5 +13,7 @@ public record ServerHandlerConfiguration(
     ServerModes mode,
     List<AvailableHttpVersions> httpVersions,
     VitruvServerConfiguration proxiedServerConfig,
-    Map<String, String> initialPathUriRedirects) {
+    Map<String, String> initialPathUriRedirects,
+    AuthenticationMode authMethod,
+    OpenIdConfiguration openIdConfig) {
 }

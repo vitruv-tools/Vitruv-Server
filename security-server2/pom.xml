@@ -74,6 +74,14 @@
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-proxy</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-openid</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-session</artifactId>
+        </dependency>
         
         <!-- Security -->
         <dependency>

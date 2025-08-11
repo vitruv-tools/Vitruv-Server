@@ -32,7 +32,9 @@ public class ProxyModeConfigurator extends ServerHandlerConfigurator {
             ServerModes.PROXY,
             this.connectionConfig.httpVersions(),
             new VitruvServerConfiguration(DefaultConnectionSettings.STD_HOST, this.vitruvServerPort),
-            null
+            null,
+            this.getAuthenticationMode(),
+            this.getOpenIdConfig()
         );
     }
 }

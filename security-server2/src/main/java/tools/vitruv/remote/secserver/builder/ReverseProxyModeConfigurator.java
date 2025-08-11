@@ -28,7 +28,9 @@ public class ReverseProxyModeConfigurator extends ServerHandlerConfigurator {
             ServerModes.REVERSE_PROXY,
             this.connectionConfig.httpVersions(),
             null,
-            this.pathToUri
+            this.pathToUri,
+            this.getAuthenticationMode(),
+            this.getOpenIdConfig()
         );
     }
 }
