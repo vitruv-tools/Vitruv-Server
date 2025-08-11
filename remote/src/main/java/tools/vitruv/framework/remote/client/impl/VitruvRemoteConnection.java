@@ -2,12 +2,6 @@ package tools.vitruv.framework.remote.client.impl;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -25,6 +19,9 @@ import tools.vitruv.change.utils.ProjectMarker;
 import tools.vitruv.framework.remote.client.VitruvClient;
 import tools.vitruv.framework.remote.client.exception.BadClientResponseException;
 import tools.vitruv.framework.remote.client.exception.BadServerResponseException;
+import tools.vitruv.framework.remote.client.http.VitruvHttpClientWrapper;
+import tools.vitruv.framework.remote.client.http.VitruvHttpRequest;
+import tools.vitruv.framework.remote.client.http.VitruvHttpResponseWrapper;
 import tools.vitruv.framework.remote.common.json.JsonFieldName;
 import tools.vitruv.framework.remote.common.json.JsonMapper;
 import tools.vitruv.framework.remote.common.rest.constants.ContentType;
@@ -45,25 +42,20 @@ public class VitruvRemoteConnection implements VitruvClient {
     private static final String METHOD = "method";
     private static final String ENDPOINT = "endpoint";
     private static final String METRIC_CLIENT_NAME = "vitruv.client.rest.client";
-    private final int port;
-    private final String hostOrIp;
-    private final String protocol;
-    private final HttpClient client;
+    private final String baseUri;
+    private final VitruvHttpClientWrapper client;
     private final JsonMapper mapper;
 
     /**
-     * Creates a new {@link VitruvRemoteConnection} using the given URL and port to connect to the
-     * Vitruvius server.
+     * Creates a new {@link VitruvRemoteConnection} using a URI, client, and directory.
      *
-     * @param protocol The protocol of the Vitruvius server.
-     * @param hostOrIp The host name of IP address of the Vitruvius server.
-     * @param port of the Vitruvius server.
+     * @param baseUri Base URI of the Vitruvius server against which requests are sent.
+     * @param client Wrapper for the actual HTTP client.
+     * @param temp A temporary directory, in which temporary files and data can be stored.
      */
-    public VitruvRemoteConnection(String protocol, String hostOrIp, int port, Path temp) {
-        this.client = HttpClient.newHttpClient();
-        this.protocol = protocol;
-        this.hostOrIp = hostOrIp;
-        this.port = port;
+    public VitruvRemoteConnection(String baseUri, VitruvHttpClientWrapper client, Path temp) {
+        this.baseUri = baseUri;
+        this.client = client;
 
         try {
             if (Files.notExists(temp) || (Files.isDirectory(temp) && isDirectoryEmpty(temp))) {
@@ -90,11 +82,10 @@ public class VitruvRemoteConnection implements VitruvClient {
      */
     @Override
     public Collection<ViewType<?>> getViewTypes() {
-        var request =
-                HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.VIEW_TYPES)).GET().build();
+        var request = VitruvHttpRequest.GET(createURIFrom(EndpointPath.VIEW_TYPES));
         try {
             var response = sendRequest(request);
-            var typeNames = mapper.deserializeArrayOf(response.body(), String.class);
+            var typeNames = mapper.deserializeArrayOf(response.getBody().orElse(""), String.class);
             var list = new LinkedList<ViewType<?>>();
             typeNames.forEach(it -> list.add(new RemoteViewType(it, this)));
             return list;
@@ -133,13 +124,13 @@ public class VitruvRemoteConnection implements VitruvClient {
      *         UUID.
      */
     RemoteViewSelector getSelector(String typeName) throws BadServerResponseException {
-        var request = HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.VIEW_SELECTOR))
-                .header(Header.VIEW_TYPE, typeName).GET().build();
+        var request = VitruvHttpRequest.GET(createURIFrom(EndpointPath.VIEW_SELECTOR))
+                .addHeader(Header.VIEW_TYPE, typeName);
         try {
             var response = sendRequest(request);
-            var resource = mapper.deserializeResource(response.body(), JsonFieldName.TEMP_VALUE,
+            var resource = mapper.deserializeResource(response.getBody().orElse(""), JsonFieldName.TEMP_VALUE,
                     ResourceUtil.createJsonResourceSet());
-            Optional<String> selectorUuid = response.headers().firstValue(Header.SELECTOR_UUID);
+            Optional<String> selectorUuid = response.getHeader(Header.SELECTOR_UUID);
             if (selectorUuid.isPresent()) {
                 return new RemoteViewSelector(selectorUuid.get(), resource, this);
             } else {
@@ -163,13 +154,12 @@ public class VitruvRemoteConnection implements VitruvClient {
      */
     RemoteView getView(RemoteViewSelector selector) throws BadServerResponseException {
         try {
-            var request = HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.VIEW))
-                    .header(Header.SELECTOR_UUID, selector.getUUID())
-                    .POST(BodyPublishers.ofString(mapper.serialize(selector.getSelectionIds())))
-                    .build();
+            var request = VitruvHttpRequest.POST(createURIFrom(EndpointPath.VIEW))
+                    .addHeader(Header.SELECTOR_UUID, selector.getUUID())
+                    .setBody(mapper.serialize(selector.getSelectionIds()));
             var response = sendRequest(request);
-            var rSet = mapper.deserialize(response.body(), ResourceSet.class);
-            Optional<String> viewUuid = response.headers().firstValue(Header.VIEW_UUID);
+            var rSet = mapper.deserialize(response.getBody().orElse(""), ResourceSet.class);
+            Optional<String> viewUuid = response.getHeader(Header.VIEW_UUID);
             if (viewUuid.isPresent()) {
                 return new RemoteView(viewUuid.get(), rSet, selector, this);
             } else {
@@ -198,10 +188,10 @@ public class VitruvRemoteConnection implements VitruvClient {
                 }
             });
             var jsonBody = mapper.serialize(change);
-            var request = HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.VIEW))
-                    .header(Header.CONTENT_TYPE, ContentType.APPLICATION_JSON)
-                    .header(Header.VIEW_UUID, uuid)
-                    .method("PATCH", BodyPublishers.ofString(jsonBody)).build();
+            var request = VitruvHttpRequest.PATCH(createURIFrom(EndpointPath.VIEW))
+                    .addHeader(Header.CONTENT_TYPE, ContentType.APPLICATION_JSON)
+                    .addHeader(Header.VIEW_UUID, uuid)
+                    .setBody(jsonBody);
             sendRequest(request);
         } catch (IOException e) {
             throw new BadClientResponseException(e);
@@ -216,8 +206,8 @@ public class VitruvRemoteConnection implements VitruvClient {
      *         error occurred.
      */
     void closeView(String uuid) throws BadServerResponseException {
-        var request = HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.VIEW))
-                .header(Header.VIEW_UUID, uuid).DELETE().build();
+        var request = VitruvHttpRequest.DELETE(createURIFrom(EndpointPath.VIEW))
+                .addHeader(Header.VIEW_UUID, uuid);
         sendRequest(request);
     }
 
@@ -230,8 +220,8 @@ public class VitruvRemoteConnection implements VitruvClient {
      *         error occurred.
      */
     boolean isViewClosed(String uuid) throws BadServerResponseException {
-        var request = HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.IS_VIEW_CLOSED))
-                .header(Header.VIEW_UUID, uuid).GET().build();
+        var request = VitruvHttpRequest.GET(createURIFrom(EndpointPath.IS_VIEW_CLOSED))
+                .addHeader(Header.VIEW_UUID, uuid);
         return sendRequestAndCheckBooleanResult(request);
     }
 
@@ -242,8 +232,8 @@ public class VitruvRemoteConnection implements VitruvClient {
      * @return {@code true} if the view is outdated, {@code false} otherwise.
      */
     boolean isViewOutdated(String uuid) {
-        var request = HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.IS_VIEW_OUTDATED))
-                .header(Header.VIEW_UUID, uuid).GET().build();
+        var request = VitruvHttpRequest.GET(createURIFrom(EndpointPath.IS_VIEW_OUTDATED))
+                .addHeader(Header.VIEW_UUID, uuid);
         return sendRequestAndCheckBooleanResult(request);
     }
 
@@ -256,51 +246,46 @@ public class VitruvRemoteConnection implements VitruvClient {
      *         error occurred.
      */
     ResourceSet updateView(String uuid) throws BadServerResponseException {
-        var request = HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.VIEW))
-                .header(Header.VIEW_UUID, uuid).GET().build();
+        var request = VitruvHttpRequest.GET(createURIFrom(EndpointPath.VIEW))
+                .addHeader(Header.VIEW_UUID, uuid);
         try {
             var response = sendRequest(request);
-            return mapper.deserialize(response.body(), ResourceSet.class);
+            return mapper.deserialize(response.getBody().orElse(""), ResourceSet.class);
         } catch (IOException e) {
             throw new BadClientResponseException(e);
         }
     }
 
-    private boolean sendRequestAndCheckBooleanResult(HttpRequest request) {
+    private boolean sendRequestAndCheckBooleanResult(VitruvHttpRequest request) {
         var response = sendRequest(request);
-        if (!Objects.equals(response.body(), Boolean.TRUE.toString())
-                && !Objects.equals(response.body(), Boolean.FALSE.toString())) {
+        if (!Objects.equals(response.getBody().orElse(""), Boolean.TRUE.toString())
+                && !Objects.equals(response.getBody().orElse(""), Boolean.FALSE.toString())) {
             throw new BadServerResponseException(
                     "Expected response to be true or false! Actual: " + response);
         }
-        return response.body().equals(Boolean.TRUE.toString());
+        return response.getBody().orElse("").equals(Boolean.TRUE.toString());
     }
 
-    private HttpResponse<String> sendRequest(HttpRequest request) {
+    private VitruvHttpResponseWrapper sendRequest(VitruvHttpRequest request) {
         var timer = Timer.start(Metrics.globalRegistry);
         try {
-            var response = client.send(request, BodyHandlers.ofString());
-            if (response.statusCode() != HttpURLConnection.HTTP_OK) {
-                timer.stop(Metrics.timer(METRIC_CLIENT_NAME, ENDPOINT, request.uri().getPath(),
-                        METHOD, request.method(), RESULT, "" + response.statusCode()));
-                throw new BadServerResponseException(response.body(), response.statusCode());
+            var response = request.sendRequest(this.client);
+            if (response.getStatusCode() != HttpURLConnection.HTTP_OK) {
+                timer.stop(Metrics.timer(METRIC_CLIENT_NAME, ENDPOINT, request.getUri(),
+                        METHOD, request.getMethod(), RESULT, "" + response.getStatusCode()));
+                throw new BadServerResponseException(response.getBody().orElse(""), response.getStatusCode());
             }
-            timer.stop(Metrics.timer(METRIC_CLIENT_NAME, ENDPOINT, request.uri().getPath(),
-                    METHOD, request.method(), RESULT, SUCCESS));
+            timer.stop(Metrics.timer(METRIC_CLIENT_NAME, ENDPOINT, request.getUri(),
+                    METHOD, request.getMethod(), RESULT, SUCCESS));
             return response;
-        } catch (IOException e) {
-            timer.stop(Metrics.timer(METRIC_CLIENT_NAME, ENDPOINT, request.uri().getPath(),
-                    METHOD, request.method(), RESULT, EXCEPTION));
-            throw new BadServerResponseException(e);
-        } catch (InterruptedException e) {
-            timer.stop(Metrics.timer(METRIC_CLIENT_NAME, ENDPOINT, request.uri().getPath(),
-                    METHOD, request.method(), RESULT, EXCEPTION));
-            Thread.currentThread().interrupt(); // Re-interrupt the current thread
+        } catch (Exception e) {
+            timer.stop(Metrics.timer(METRIC_CLIENT_NAME, ENDPOINT, request.getUri(),
+                    METHOD, request.getMethod(), RESULT, EXCEPTION));
             throw new BadServerResponseException(e);
         }
     }
 
-    private URI createURIFrom(String path) {
-        return URI.create(String.format("%s://%s:%d%s", protocol, hostOrIp, port, path));
+    private String createURIFrom(String path) {
+        return String.format("%s%s", this.baseUri, path);
     }
 }
