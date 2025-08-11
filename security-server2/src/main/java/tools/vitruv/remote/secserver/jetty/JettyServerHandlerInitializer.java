@@ -14,7 +14,6 @@ import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.session.SessionHandler;
 
-import tools.vitruv.remote.secserver.config.AuthenticationMode;
 import tools.vitruv.remote.secserver.config.ServerHandlerConfiguration;
 import tools.vitruv.remote.secserver.handler.ApiHandler;
 import tools.vitruv.remote.secserver.handler.ApiPaths;
@@ -47,22 +46,21 @@ public class JettyServerHandlerInitializer {
         handler7Security.put("", Constraint.SECURE_TRANSPORT);
         handler7Security.put("/*", Constraint.ANY_USER);
         handler7Security.put("/favicon.ico", Constraint.ALLOWED);
-        handler7Security.put(ApiPaths.OPENID_BASE_PATH + "/*", Constraint.ALLOWED);
+        handler7Security.put(ApiPaths.OPENID_REDIRECT_PATH, Constraint.ALLOWED);
+        handler7Security.put(ApiPaths.OPENID_ERROR_PATH, Constraint.ALLOWED);
+        handler7Security.put(ApiPaths.OPENID_FULL_LOGOUT_REDIRECT_PATH, Constraint.ALLOWED);
 
-        if (config.authMethod() == AuthenticationMode.OPEN_ID) {
-            LoginService loginService = new OpenIdLoginService(config.openIdConfig());
-            handler7Security.setLoginService(loginService);
-            handler7Security.setAuthenticator(
-                new OpenIdAuthenticator(
-                    config.openIdConfig(),
-                    ApiPaths.OPENID_REDIRECT_PATH,
-                    ApiPaths.OPENID_ERROR_PATH,
-                    ApiPaths.OPENID_LOGOUT_REDIRECT_PATH
-                )
+        LoginService loginService = new OpenIdLoginService(config.openIdConfig());
+        handler7Security.setLoginService(loginService);
+        OpenIdAuthenticator oidAuth = new OpenIdAuthenticator(
+                config.openIdConfig(),
+                ApiPaths.OPENID_REDIRECT_PATH,
+                ApiPaths.OPENID_ERROR_PATH,
+                ApiPaths.OPENID_LOGOUT_REDIRECT_PATH
             );
-        }
+        handler7Security.setAuthenticator(oidAuth);
         
-        ContextHandler handler9Api = new ContextHandler(new ApiHandler(), "/api");
+        ContextHandler handler9Api = new ContextHandler(new ApiHandler(oidAuth), "/api");
         handler9Api.setAllowNullPathInContext(true);
         
         Handler.Sequence handler8Sequence = new Handler.Sequence(handler9Api, actualHandler);
