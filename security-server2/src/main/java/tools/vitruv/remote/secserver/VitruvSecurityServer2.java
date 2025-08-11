@@ -1,6 +1,8 @@
 package tools.vitruv.remote.secserver;
 
+import org.eclipse.jetty.server.CustomRequestLog;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.Slf4jRequestLogWriter;
 
 import tools.vitruv.framework.remote.server.VirtualModelInitializer;
 import tools.vitruv.framework.remote.server.VitruviusServer;
@@ -29,6 +31,7 @@ public class VitruvSecurityServer2 implements VitruviusServer {
         this.modeController = ServerModeControllerFactory.createModeController(this.config.handlerConfig());
         this.modeController.initialize(modelInitializer);
         this.server = new Server();
+        this.server.setRequestLog(new CustomRequestLog(new Slf4jRequestLogWriter(), CustomRequestLog.EXTENDED_NCSA_FORMAT));
         JettyServerConnectionInitializer.initializeConnectors(this.server, this.config.connectionConfig());
         JettyServerHandlerInitializer.initializeHandlers(this.server, this.config.handlerConfig(), this.modeController.getHandler());
         this.isInitialized = true;
