@@ -14,7 +14,8 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import tools.vitruv.framework.remote.client.http.VitruvHttpRequest;
 import tools.vitruv.framework.remote.client.jetty.JettyHttpClientWrapper;
 import tools.vitruv.framework.remote.common.AvailableHttpVersions;
-import tools.vitruv.remote.secserver.SessionConstants;
+import tools.vitruv.remote.seccommon.SecurityProviderInitialization;
+import tools.vitruv.remote.seccommon.SessionConstants;
 
 import org.eclipse.jetty.http2.client.HTTP2Client;
 import org.eclipse.jetty.http2.client.transport.ClientConnectionFactoryOverHTTP2;
@@ -28,6 +29,10 @@ import org.eclipse.jetty.quic.client.ClientQuicConfiguration;
  * A wrapper for the Eclipse Jetty HTTP client. It supports HTTP/1.1, HTTP/2, and HTTP/3 (experimental), only secured.
  */
 public class SecurityJettyHttpClientWrapper extends JettyHttpClientWrapper {
+    static {
+        SecurityProviderInitialization.initializeSecurityProviders();
+    }
+    
     private SecurityClientConfiguration config;
     private String sessionId;
     private AvailableHttpVersions fixedVersion;

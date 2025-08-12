@@ -1,15 +1,12 @@
 package tools.vitruv.remote.secserver;
 
-import java.security.Security;
-
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 import org.eclipse.jetty.server.CustomRequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Slf4jRequestLogWriter;
 
 import tools.vitruv.framework.remote.server.VirtualModelInitializer;
 import tools.vitruv.framework.remote.server.VitruviusServer;
+import tools.vitruv.remote.seccommon.SecurityProviderInitialization;
 import tools.vitruv.remote.secserver.config.ServerConfiguration;
 import tools.vitruv.remote.secserver.jetty.JettyServerConnectionInitializer;
 import tools.vitruv.remote.secserver.jetty.JettyServerHandlerInitializer;
@@ -23,12 +20,7 @@ public class VitruvSecurityServer2 implements VitruviusServer {
     private boolean isInitialized = false;
 
     static {
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-            Security.insertProviderAt(new BouncyCastleProvider(), 1);
-        }
-        if (Security.getProvider(BouncyCastleJsseProvider.PROVIDER_NAME) == null) {
-            Security.insertProviderAt(new BouncyCastleJsseProvider(), 2);
-        }
+        SecurityProviderInitialization.initializeSecurityProviders();
     }
 
     public VitruvSecurityServer2(ServerConfiguration config) {

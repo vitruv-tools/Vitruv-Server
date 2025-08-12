@@ -14,7 +14,7 @@ import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.session.SessionHandler;
 
-import tools.vitruv.remote.secserver.SessionConstants;
+import tools.vitruv.remote.seccommon.SessionConstants;
 import tools.vitruv.remote.secserver.config.ServerHandlerConfiguration;
 import tools.vitruv.remote.secserver.handler.ApiHandler;
 import tools.vitruv.remote.secserver.handler.ApiPaths;

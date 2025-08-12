@@ -44,11 +44,17 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.bc.BcDigestCalculatorProvider;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
+import tools.vitruv.remote.seccommon.SecurityProviderInitialization;
+
 public class CertificateGenerator {
     private static enum CertificateType {
         ROOT_CA_CERT,
         SERVER_AUTH_CA_CERT,
         SERVER_AUTH_CERT;
+    }
+
+    static {
+        SecurityProviderInitialization.initializeSecurityProviders();
     }
 
     private static final String ROOT_CA_NAME = "Vitruvius Root-CA";

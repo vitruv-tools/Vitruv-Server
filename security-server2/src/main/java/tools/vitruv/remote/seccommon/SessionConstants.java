@@ -1,4 +1,4 @@
-package tools.vitruv.remote.secserver;
+package tools.vitruv.remote.seccommon;
 
 /**
  * A class of constants for HTTP sessions.
