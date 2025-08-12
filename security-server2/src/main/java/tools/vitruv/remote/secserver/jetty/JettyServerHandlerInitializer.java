@@ -14,6 +14,7 @@ import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.session.SessionHandler;
 
+import tools.vitruv.remote.secserver.SessionConstants;
 import tools.vitruv.remote.secserver.config.ServerHandlerConfiguration;
 import tools.vitruv.remote.secserver.handler.ApiHandler;
 import tools.vitruv.remote.secserver.handler.ApiPaths;
@@ -38,7 +39,7 @@ public class JettyServerHandlerInitializer {
         var handler6Session = new SessionHandler();
         handler6Session.setHttpOnly(true);
         handler6Session.setSecureCookies(true);
-        handler6Session.setSessionCookie("vitruv-sec-server");
+        handler6Session.setSessionCookie(SessionConstants.SESSION_COOKIE_NAME);
 
         var handler5RootContext = new ContextHandler(handler6Session, "/");
 

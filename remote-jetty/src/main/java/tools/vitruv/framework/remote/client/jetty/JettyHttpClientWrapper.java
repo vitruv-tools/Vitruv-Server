@@ -2,6 +2,7 @@ package tools.vitruv.framework.remote.client.jetty;
 
 import org.eclipse.jetty.client.CompletableResponseListener;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.client.StringRequestContent;
 
 import tools.vitruv.framework.remote.client.http.VitruvHttpClientWrapper;
@@ -31,6 +32,14 @@ public class JettyHttpClientWrapper implements VitruvHttpClientWrapper {
 
     @Override
     public VitruvHttpResponseWrapper sendRequest(VitruvHttpRequest request) throws Exception {
+        var actualRequest = this.prepareActualRequest(request);
+
+        var response = new CompletableResponseListener(actualRequest, 100 * 1024 * 1024).send().get();
+
+        return new JettyHttpResponseWrapper(response);
+    }
+
+    protected Request prepareActualRequest(VitruvHttpRequest request) {
         var actualRequest = this.client
             .newRequest(request.getUri())
             .method(request.getMethod())
@@ -44,8 +53,6 @@ public class JettyHttpClientWrapper implements VitruvHttpClientWrapper {
             actualRequest.body(new StringRequestContent(request.getBody()));
         }
 
-        var response = new CompletableResponseListener(actualRequest, 100 * 1024 * 1024).send().get();
-
-        return new JettyHttpResponseWrapper(response);
+        return actualRequest;
     }
 }
