@@ -1,7 +1,9 @@
-package tools.vitruv.framework.remote.server;
+package tools.vitruv.framework.remote.server.jetty;
 
 import java.util.List;
 
+import tools.vitruv.framework.remote.server.VitruvServer;
+import tools.vitruv.framework.remote.server.VitruvServerConfiguration;
 import tools.vitruv.framework.remote.server.http.InternalHttpServerManager;
 import tools.vitruv.framework.remote.server.http.jetty.VitruvJettyServerManager;
 import tools.vitruv.framework.remote.server.rest.PathEndointCollector;
