@@ -4,6 +4,8 @@ import java.nio.file.Path;
 import java.security.KeyStore;
 import java.util.List;
 
+import tools.vitruv.framework.remote.common.AvailableHttpVersions;
+
 public record ServerConnectionConfiguration(
     List<AvailableHttpVersions> httpVersions,
     String hostName,

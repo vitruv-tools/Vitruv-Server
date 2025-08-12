@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.eclipse.jetty.security.openid.OpenIdConfiguration;
 
+import tools.vitruv.framework.remote.common.AvailableHttpVersions;
 import tools.vitruv.framework.remote.server.VitruvServerConfiguration;
 
 public record ServerHandlerConfiguration(

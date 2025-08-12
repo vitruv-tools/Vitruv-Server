@@ -1,9 +1,9 @@
 package tools.vitruv.remote.secserver.mode;
 
+import tools.vitruv.framework.remote.common.AvailableHttpVersions;
 import tools.vitruv.framework.remote.server.JettyVitruvServer;
 import tools.vitruv.framework.remote.server.VirtualModelInitializer;
 import tools.vitruv.framework.remote.server.VitruvServer;
-import tools.vitruv.remote.secserver.config.AvailableHttpVersions;
 import tools.vitruv.remote.secserver.config.ServerHandlerConfiguration;
 import tools.vitruv.remote.secserver.proxy.ReverseProxyMappingService;
 

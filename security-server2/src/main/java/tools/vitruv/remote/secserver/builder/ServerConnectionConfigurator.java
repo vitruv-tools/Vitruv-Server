@@ -5,7 +5,7 @@ import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
 
-import tools.vitruv.remote.secserver.config.AvailableHttpVersions;
+import tools.vitruv.framework.remote.common.AvailableHttpVersions;
 import tools.vitruv.remote.secserver.config.ServerConnectionConfiguration;
 
 public class ServerConnectionConfigurator {
