@@ -17,7 +17,7 @@ public class JavaHttpResponseWrapper implements VitruvHttpResponseWrapper {
 
     @Override
     public Optional<String> getBody() {
-        return Optional.of(this.wrapperResponse.body());
+        return Optional.ofNullable(this.wrapperResponse.body());
     }
 
     @Override
