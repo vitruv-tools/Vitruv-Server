@@ -154,6 +154,12 @@ public class CertificateGenerator {
         return keyStore;
     }
 
+    public static KeyStore createEmptyKeyStore(String password) throws NoSuchAlgorithmException, CertificateException, IOException, KeyStoreException {
+        var keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        keyStore.load(null, password.toCharArray());
+        return keyStore;
+    }
+
     private static X509CertificateHolder generateCertificateContainer(
             CertificateType certType,
             String commonName,
