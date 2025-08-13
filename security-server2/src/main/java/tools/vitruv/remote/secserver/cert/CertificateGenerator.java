@@ -146,6 +146,14 @@ public class CertificateGenerator {
         writer.close();
     }
 
+    public static KeyStore openKeyStore(Path keyStorePath, String password) throws IOException, KeyStoreException, NoSuchAlgorithmException, CertificateException {
+        var keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        var inputStream = Files.newInputStream(keyStorePath);
+        keyStore.load(inputStream, password.toCharArray());
+        inputStream.close();
+        return keyStore;
+    }
+
     private static X509CertificateHolder generateCertificateContainer(
             CertificateType certType,
             String commonName,

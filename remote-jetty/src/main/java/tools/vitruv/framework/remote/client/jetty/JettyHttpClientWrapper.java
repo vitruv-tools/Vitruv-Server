@@ -55,4 +55,9 @@ public class JettyHttpClientWrapper implements VitruvHttpClientWrapper {
 
         return actualRequest;
     }
+
+    @Override
+    public void disconnect() throws Exception {
+        this.client.stop();
+    }
 }

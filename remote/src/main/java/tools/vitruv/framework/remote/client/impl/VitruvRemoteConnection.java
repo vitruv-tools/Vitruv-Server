@@ -288,4 +288,9 @@ public class VitruvRemoteConnection implements VitruvClient {
     private String createURIFrom(String path) {
         return String.format("%s%s", this.baseUri, path);
     }
+
+    @Override
+    public void disconnect() throws Exception {
+        this.client.disconnect();
+    }
 }

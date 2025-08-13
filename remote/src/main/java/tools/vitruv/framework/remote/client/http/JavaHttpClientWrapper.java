@@ -6,6 +6,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
 
+/**
+ * The default {@link VitruvHttpClientWrapper} implementation, which uses the Java {@link HttpClient}
+ * as underlying client.
+ */
 public class JavaHttpClientWrapper implements VitruvHttpClientWrapper {
     private final HttpClient client;
 
@@ -29,5 +33,10 @@ public class JavaHttpClientWrapper implements VitruvHttpClientWrapper {
 
         var response = client.send(requestBuilder.build(), BodyHandlers.ofString());
         return new JavaHttpResponseWrapper(response);
+    }
+
+    @Override
+    public void disconnect() throws Exception {
+        this.client.close();
     }
 }

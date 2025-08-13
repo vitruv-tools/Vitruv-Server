@@ -40,8 +40,13 @@ public abstract class ServerHandlerConfigurator {
         return this.authMethod;
     }
 
-    public ServerHandlerConfigurator withOpenIfConfiguration(String discoveryUri, String clientId, String clientSecret) {
+    public ServerHandlerConfigurator withOpenIdConfiguration(String discoveryUri, String clientId, String clientSecret) {
         this.openIdConfig = new OpenIdConfiguration(discoveryUri, clientId, clientSecret);
+        return this;
+    }
+
+    public ServerHandlerConfigurator withOpenIdConfiguration(OpenIdConfiguration openIdConfig) {
+        this.openIdConfig = openIdConfig;
         return this;
     }
 

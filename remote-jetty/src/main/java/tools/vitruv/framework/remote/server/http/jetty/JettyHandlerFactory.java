@@ -15,6 +15,7 @@ public final class JettyHandlerFactory {
         ContextHandlerCollection handler = new ContextHandlerCollection();
         endpoints.forEach((ep) -> {
             var contextHandler = new ContextHandler(new JettyHttpHandler(ep), ep.path());
+            contextHandler.setAllowNullPathInContext(true);
             handler.addHandler(contextHandler);
         });
         return handler;
