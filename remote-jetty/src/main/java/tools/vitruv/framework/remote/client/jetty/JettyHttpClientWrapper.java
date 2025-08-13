@@ -22,11 +22,11 @@ public class JettyHttpClientWrapper implements VitruvHttpClientWrapper {
      * @throws Exception if the creation fails.
      */
     public void initialize() throws Exception {
-        this.client = this.creaHttpClient();
+        this.client = this.createHttpClient();
         this.client.start();
     }
 
-    protected HttpClient creaHttpClient() throws Exception {
+    protected HttpClient createHttpClient() throws Exception {
         return JettyHttpClientFactory.createClearTextHttpClient();
     }
 

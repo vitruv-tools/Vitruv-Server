@@ -1,4 +1,4 @@
-package tools.vitruv.remote.secserver.cert;
+package tools.vitruv.remote.seccommon.cert;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -46,6 +46,10 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
 import tools.vitruv.remote.seccommon.SecurityProviderInitialization;
 
+/**
+ * This class provides generation methods for X.509 certificates
+ * and related utility functions.
+ */
 public class CertificateGenerator {
     private static enum CertificateType {
         ROOT_CA_CERT,
@@ -61,6 +65,22 @@ public class CertificateGenerator {
     private static final String SERVER_CA_NAME = "Vitruvius Server-CA";
     private static final String SERVER_LOCALHOST_NAME = "localhost";
 
+    /**
+     * Generates a full certificate chain for "localhost" (including private keys).
+     * The chain consists of a self-signed root certificate, intermediate certificate
+     * for signing server certificates, and the actual server certificate for "localhost".
+     * The keys use RSA with 4096 bits.
+     * 
+     * @param keyStorePassword Password for the {@link KeyStore}, in which the certificates and private keys are stored.
+     * @param keyStorePath Path, where the {@link KeyStore} with the certificates and private keys are stored.
+     * @param trustStorePassword Password for the trust store, a {@link KeyStore}, in which the certificates only are stored.
+     * @param trustStorePath Path, where the trust store with the certificates only is stored.
+     * @throws NoSuchAlgorithmException If an algorithm used cannot be found.
+     * @throws OperatorCreationException If something goes wrong.
+     * @throws CertificateException If there is an issue with the certificates.
+     * @throws IOException If there is an issue while reading or writing files.
+     * @throws KeyStoreException If there is an issue with the {@link KeyStore}s.
+     */
     public static void generateFullCertificateChainForLocalhost(
             String keyStorePassword,
             Path keyStorePath,
@@ -80,6 +100,24 @@ public class CertificateGenerator {
         );
     }
 
+    /**
+     * Generates a full certificate chain for a server (including private keys).
+     * The chain consists of a self-signed root certificate, intermediate certificate
+     * for signing server certificates, and the actual server certificate.
+     * The keys use RSA with 4096 bits.
+     * 
+     * @param keyStorePassword Password for the {@link KeyStore}, in which the certificates and private keys are stored.
+     * @param keyStorePath Path, where the {@link KeyStore} with the certificates and private keys are stored.
+     * @param trustStorePassword Password for the trust store, a {@link KeyStore}, in which the certificates only are stored.
+     * @param trustStorePath Path, where the trust store with the certificates only is stored.
+     * @param serverCertCommonName The common name of the server, usually its host name or IP address.
+     * @param serverAlternativeNames Alternative names for the server.
+     * @throws NoSuchAlgorithmException If an algorithm used cannot be found.
+     * @throws OperatorCreationException If something goes wrong.
+     * @throws CertificateException If there is an issue with the certificates.
+     * @throws IOException If there is an issue while reading or writing files.
+     * @throws KeyStoreException If there is an issue with the {@link KeyStore}s.
+     */
     public static void generateFullCertificateChain(
             String keyStorePassword,
             Path keyStorePath,
@@ -127,8 +165,7 @@ public class CertificateGenerator {
         );
         var serverAuthCert = convertToCertificate(serverAuthCertContainer);
 
-        KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-        keyStore.load(null, keyStorePassword.toCharArray());
+        KeyStore keyStore = createEmptyKeyStore(keyStorePassword);
         keyStore.setKeyEntry(serverCertCommonName, serverAuthKeyPair.getPrivate(), keyStorePassword.toCharArray(), new Certificate[] { serverAuthCert });
         keyStore.setKeyEntry(SERVER_CA_NAME, serverCaKeyPair.getPrivate(), keyStorePassword.toCharArray(), new Certificate[] { serverCaCert });
         keyStore.setKeyEntry(ROOT_CA_NAME, rootCaKeyPair.getPrivate(), keyStorePassword.toCharArray(), new Certificate[] { rootCaCert });
@@ -136,8 +173,7 @@ public class CertificateGenerator {
         keyStore.store(writer, keyStorePassword.toCharArray());
         writer.close();
 
-        var trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-        trustStore.load(null, trustStorePassword.toCharArray());
+        var trustStore = createEmptyKeyStore(trustStorePassword);
         trustStore.setCertificateEntry(serverCertCommonName, serverAuthCert);
         trustStore.setCertificateEntry(SERVER_CA_NAME, serverCaCert);
         trustStore.setCertificateEntry(ROOT_CA_NAME, rootCaCert);
@@ -146,6 +182,17 @@ public class CertificateGenerator {
         writer.close();
     }
 
+    /**
+     * Creates a new {@link KeyStore} and loads its content from a specified file.
+     * 
+     * @param keyStorePath Path to the {@link KeyStore} file.
+     * @param password Password for the {@link KeyStore}.
+     * @return the opened {@link KeyStore}.
+     * @throws IOException If there is an issue while reading the file.
+     * @throws KeyStoreException If the {@link KeyStore} cannot be created or loaded.
+     * @throws NoSuchAlgorithmException If an algorithm cannot be found.
+     * @throws CertificateException If there is an issue with the certificates.
+     */
     public static KeyStore openKeyStore(Path keyStorePath, String password) throws IOException, KeyStoreException, NoSuchAlgorithmException, CertificateException {
         var keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
         var inputStream = Files.newInputStream(keyStorePath);
@@ -154,6 +201,16 @@ public class CertificateGenerator {
         return keyStore;
     }
 
+    /**
+     * Creates a new and empty {@link KeyStore}.
+     * 
+     * @param password Password for the {@link KeyStore}.
+     * @return The {@link KeyStore}.
+     * @throws NoSuchAlgorithmException If an algorithm cannot be found.
+     * @throws CertificateException If there is an issue with certificates.
+     * @throws IOException If there is an issue with reading or writing files.
+     * @throws KeyStoreException If there is an issue with the key stores.
+     */
     public static KeyStore createEmptyKeyStore(String password) throws NoSuchAlgorithmException, CertificateException, IOException, KeyStoreException {
         var keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
         keyStore.load(null, password.toCharArray());

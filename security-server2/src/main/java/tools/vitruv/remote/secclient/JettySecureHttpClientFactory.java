@@ -15,7 +15,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import tools.vitruv.remote.seccommon.SecurityProviderInitialization;
 import tools.vitruv.remote.seccommon.TlsContextConfiguration;
-import tools.vitruv.remote.secserver.cert.CertificateGenerator;
+import tools.vitruv.remote.seccommon.cert.CertificateGenerator;
 
 /**
  * This factory allows creating Eclipse Jetty HTTP clients for HTTPS connections.
