@@ -1,11 +1,13 @@
 package tools.vitruv.remote.secserver.builder;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
 
 import tools.vitruv.framework.remote.common.AvailableHttpVersions;
+import tools.vitruv.remote.seccommon.TlsContextConfiguration;
 import tools.vitruv.remote.secserver.config.ServerConnectionConfiguration;
 
 public class ServerConnectionConfigurator {
@@ -95,10 +97,15 @@ public class ServerConnectionConfigurator {
             this.httpVersions,
             this.hostName,
             this.port,
-            this.keyStorePath,
-            this.keyStore,
-            this.keyStorePassword,
-            this.pemWorkDir
+            new TlsContextConfiguration(
+                Paths.get(this.keyStorePath),
+                this.keyStore,
+                this.keyStorePassword,
+                null,
+                null,
+                null,
+                this.pemWorkDir
+            )
         );
     }
 }

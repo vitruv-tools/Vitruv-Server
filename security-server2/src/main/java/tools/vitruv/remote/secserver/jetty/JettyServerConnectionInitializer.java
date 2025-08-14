@@ -62,12 +62,12 @@ public class JettyServerConnectionInitializer {
         
         SslContextFactory.Server tlsContext = new SslContextFactory.Server();
         tlsContext.setProvider(BouncyCastleJsseProvider.PROVIDER_NAME);
-        if (config.keyStorePath() != null) {
-            tlsContext.setKeyStorePath(config.keyStorePath());
-        } else if (config.keyStore() != null) {
-            tlsContext.setKeyStore(config.keyStore());
+        if (config.tlsConfig().keyStorePath() != null) {
+            tlsContext.setKeyStorePath(config.tlsConfig().keyStorePath().toString());
+        } else if (config.tlsConfig().keyStore() != null) {
+            tlsContext.setKeyStore(config.tlsConfig().keyStore());
         }
-        tlsContext.setKeyStorePassword(config.keyStorePassword());
+        tlsContext.setKeyStorePassword(config.tlsConfig().keyStorePassword());
         tlsContext.setCertAlias(config.hostName());
         tlsContext.addExcludeProtocols("TLSv1.2");
         SslConnectionFactory tls = new SslConnectionFactory(tlsContext, nextProtocolAfterTls);
@@ -81,7 +81,7 @@ public class JettyServerConnectionInitializer {
         if (config.httpVersions().contains(AvailableHttpVersions.HTTP_3)) {
             httpConfig.addCustomizer(new Http3AlternativeServiceCustomizer(config.port()));
             
-            ServerQuicConfiguration quicConfig = new ServerQuicConfiguration(tlsContext, config.http3PemWorkDir());
+            ServerQuicConfiguration quicConfig = new ServerQuicConfiguration(tlsContext, config.tlsConfig().tempCertDir());
             QuicServerConnector h3 = new QuicServerConnector(server, quicConfig, new HTTP3ServerConnectionFactory(quicConfig));
             h3.setHost(config.hostName());
             h3.setPort(config.port());
