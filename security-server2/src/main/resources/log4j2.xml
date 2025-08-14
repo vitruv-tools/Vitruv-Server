@@ -2,11 +2,11 @@
 <Configuration>
     <Appenders>
         <Console name="CONSOLE" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>
+            <PatternLayout pattern="%d{ISO8601} [%t] %-5level %logger - %msg%n"/>
         </Console>
 
         <File name="MAIN_FILE" fileName="logs/server.log">
-            <JsonTemplateLayout />
+            <PatternLayout pattern="%d{ISO8601} [%t] %-5level %logger - %msg%n"/>
         </File>
     </Appenders>
     <Loggers>
