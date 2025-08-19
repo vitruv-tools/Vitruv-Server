@@ -37,6 +37,5 @@ public class JavaHttpClientWrapper implements VitruvHttpClientWrapper {
 
     @Override
     public void disconnect() throws Exception {
-        this.client.close();
     }
 }
