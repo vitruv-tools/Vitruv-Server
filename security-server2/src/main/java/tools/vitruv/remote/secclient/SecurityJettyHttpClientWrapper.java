@@ -22,7 +22,6 @@ public class SecurityJettyHttpClientWrapper extends JettyHttpClientWrapper {
     
     private TlsContextConfiguration config;
     private String sessionId;
-    private AvailableHttpVersions fixedVersion;
 
     /**
      * Sets the general configuration for the client. This must be set before initializing the client.
@@ -34,20 +33,13 @@ public class SecurityJettyHttpClientWrapper extends JettyHttpClientWrapper {
     }
 
     /**
+     * The {@link JettyVitruvServer} gives session IDs out. After obtaining one, it can be set with this method
+     * to use it for future requests.
      * 
-     * @param sessionId
+     * @param sessionId the session ID to use.
      */
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
-    }
-
-    /**
-     * This wrapper supports 
-     * 
-     * @param version the specific HTTP version to use.
-     */
-    public void setFixedVersion(AvailableHttpVersions version) {
-        this.fixedVersion = version;
     }
 
     @Override
@@ -59,19 +51,8 @@ public class SecurityJettyHttpClientWrapper extends JettyHttpClientWrapper {
     protected Request prepareActualRequest(VitruvHttpRequest request) {
         var actualRequest = super.prepareActualRequest(request);
 
-        if (this.fixedVersion != null) {
-            switch (this.fixedVersion) {
-                default:
-                case HTTP_1_1:
-                    actualRequest.version(HttpVersion.HTTP_1_1);
-                    break;
-                case HTTP_2:
-                    actualRequest.version(HttpVersion.HTTP_2);
-                    break;
-                case HTTP_3:
-                    actualRequest.version(HttpVersion.HTTP_3);
-                    break;
-            }
+        if (this.getFixedHttpVersion() == AvailableHttpVersions.HTTP_3) {
+            actualRequest.version(HttpVersion.HTTP_3);
         }
 
         if (this.sessionId != null) {
