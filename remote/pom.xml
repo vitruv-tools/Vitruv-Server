@@ -14,7 +14,7 @@
   <artifactId>tools.vitruv.server.remote</artifactId>
 
   <name>Vitruv V-SUM remote definition</name>
-  <description />
+  <description>The package for the V-SUM remote definitions</description>
 
   <dependencies>
     <!-- Vitruvius dependencies -->
