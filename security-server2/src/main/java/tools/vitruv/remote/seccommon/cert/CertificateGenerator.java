@@ -166,18 +166,21 @@ public class CertificateGenerator {
         );
         var serverAuthCert = convertToCertificate(serverAuthCertContainer);
 
+        var rootCaAlias = ROOT_CA_NAME + "-" + serverCertCommonName;
+        var serverCaAlias = SERVER_CA_NAME + "-" + serverCertCommonName;
+
         KeyStore keyStore = createEmptyKeyStore(keyStorePassword);
         keyStore.setKeyEntry(serverCertCommonName, serverAuthKeyPair.getPrivate(), keyStorePassword.toCharArray(), new Certificate[] { serverAuthCert });
-        keyStore.setKeyEntry(SERVER_CA_NAME, serverCaKeyPair.getPrivate(), keyStorePassword.toCharArray(), new Certificate[] { serverCaCert });
-        keyStore.setKeyEntry(ROOT_CA_NAME, rootCaKeyPair.getPrivate(), keyStorePassword.toCharArray(), new Certificate[] { rootCaCert });
+        keyStore.setKeyEntry(serverCaAlias, serverCaKeyPair.getPrivate(), keyStorePassword.toCharArray(), new Certificate[] { serverCaCert });
+        keyStore.setKeyEntry(rootCaAlias, rootCaKeyPair.getPrivate(), keyStorePassword.toCharArray(), new Certificate[] { rootCaCert });
         var writer = Files.newOutputStream(keyStorePath);
         keyStore.store(writer, keyStorePassword.toCharArray());
         writer.close();
 
         var trustStore = createEmptyKeyStore(trustStorePassword);
         trustStore.setCertificateEntry(serverCertCommonName, serverAuthCert);
-        trustStore.setCertificateEntry(SERVER_CA_NAME, serverCaCert);
-        trustStore.setCertificateEntry(ROOT_CA_NAME, rootCaCert);
+        trustStore.setCertificateEntry(serverCaAlias, serverCaCert);
+        trustStore.setCertificateEntry(rootCaAlias, rootCaCert);
         writer = Files.newOutputStream(trustStorePath);
         trustStore.store(writer, trustStorePassword.toCharArray());
         writer.close();
