@@ -8,6 +8,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.UnrecoverableEntryException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -215,6 +216,50 @@ public class CertificateGenerator {
         var keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
         keyStore.load(null, password.toCharArray());
         return keyStore;
+    }
+
+    /**
+     * Merges the content of two {@link KeyStore}s. For entries which are contained in both {@link KeyStore}s,
+     * it can be controlled if the entries of the {@link KeyStore}, in which the entries are merged, should be
+     * overriden or not.
+     * 
+     * @param keyStore Path to the {@link KeyStore}, in which the entries are merged.
+     * @param password Password for the {@link KeyStore} above.
+     * @param storeToMerge Path to the {@link KeyStore}, whose entries will be merged into the other one.
+     * @param passwordForStoreToMerge Password for the {@link KeyStore} above.
+     * @param override If true, entries, which are contained in both {@link KeyStore}s, are overriden in the keyStore. If false, they are not overridden.
+     * @throws KeyStoreException
+     * @throws NoSuchAlgorithmException
+     * @throws UnrecoverableEntryException
+     * @throws IOException
+     * @throws CertificateException
+     */
+    public static void mergeKeyStores(
+        Path keyStore,
+        String password,
+        Path storeToMerge,
+        String passwordForStoreToMerge,
+        boolean override
+    ) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableEntryException, IOException, CertificateException {
+        var ks1 = openKeyStore(keyStore, password);
+        var ks2 = openKeyStore(storeToMerge, passwordForStoreToMerge);
+        
+        for (var iterator = ks2.aliases().asIterator(); iterator.hasNext(); ) {
+            var alias = iterator.next();
+
+            if (!ks1.containsAlias(alias) || override) {
+                if (ks2.isKeyEntry(alias)) {
+                    var key = ks2.getKey(alias, passwordForStoreToMerge.toCharArray());
+                    ks1.setKeyEntry(alias, key.getEncoded(), ks2.getCertificateChain(alias));
+                } else {
+                    ks1.setCertificateEntry(alias, ks2.getCertificate(alias));
+                }
+            }
+        }
+
+        try (var output = Files.newOutputStream(keyStore)) {
+            ks1.store(output, password.toCharArray());
+        }
     }
 
     private static X509CertificateHolder generateCertificateContainer(
