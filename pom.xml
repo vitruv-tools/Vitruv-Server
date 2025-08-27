@@ -8,7 +8,7 @@
   <parent>
     <groupId>tools.vitruv</groupId>
     <artifactId>parent</artifactId>
-    <version>3.2.2</version>
+    <version>3.3.1</version>
   </parent>
 
   <!-- Project Information -->
@@ -41,7 +41,7 @@
   </modules>
 
   <properties>
-    <vitruv.version>3.2.0-SNAPSHOT</vitruv.version>
+    <vitruv.version>3.2.2</vitruv.version>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.organization>vitruv-tools</sonar.organization>
     <sonar.projectKey>vitruv-tools_Vitruv-Server</sonar.projectKey>
@@ -101,12 +101,12 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
-        <version>2.19.1</version>
+        <version>2.19.2</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>2.19.1</version>
+        <version>2.19.2</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.emfcloud</groupId>
@@ -116,34 +116,34 @@
       <dependency>
         <groupId>io.micrometer</groupId>
         <artifactId>micrometer-core</artifactId>
-        <version>1.15.1</version>
+        <version>1.15.3</version>
       </dependency>
 
       <!-- external test dependencies -->
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-api</artifactId>
-        <version>5.13.1</version>
+        <version>5.13.4</version>
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-params</artifactId>
-        <version>5.13.1</version>
+        <version>5.13.4</version>
       </dependency>
       <dependency>
         <groupId>org.junit.platform</groupId>
         <artifactId>junit-platform-commons</artifactId>
-        <version>1.13.1</version>
+        <version>1.13.4</version>
       </dependency>
       <dependency>
         <groupId>org.junit.platform</groupId>
         <artifactId>junit-platform-launcher</artifactId>
-        <version>1.13.1</version>
+        <version>1.13.4</version>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>5.18.0</version>
+        <version>5.19.0</version>
       </dependency>
     </dependencies>
 
