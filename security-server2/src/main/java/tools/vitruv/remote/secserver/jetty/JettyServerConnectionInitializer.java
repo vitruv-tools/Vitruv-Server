@@ -84,7 +84,7 @@ public class JettyServerConnectionInitializer {
             
             ServerQuicConfiguration quicConfig = new ServerQuicConfiguration(tlsContext, config.tlsConfig().tempCertDir());
             QuicServerConnector h3 = new QuicServerConnector(server, quicConfig, new HTTP3ServerConnectionFactory(quicConfig));
-            h3.setHost(config.hostName());
+            h3.setHost(AddressBinderUtil.getAddressForBinding(config.hostName()));
             h3.setPort(config.port());
 
             server.addConnector(h3);
