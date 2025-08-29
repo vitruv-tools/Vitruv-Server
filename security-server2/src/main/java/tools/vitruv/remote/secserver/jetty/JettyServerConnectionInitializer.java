@@ -16,6 +16,7 @@ import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import tools.vitruv.framework.remote.common.AvailableHttpVersions;
+import tools.vitruv.remote.seccommon.AddressBinderUtil;
 import tools.vitruv.remote.secserver.config.ServerConnectionConfiguration;
 
 import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
@@ -74,7 +75,7 @@ public class JettyServerConnectionInitializer {
         connectionFactories.add(0, tls);
 
         ServerConnector connector = new ServerConnector(server, connectionFactories.toArray(new ConnectionFactory[connectionFactories.size()]));
-        connector.setHost(config.hostName());
+        connector.setHost(AddressBinderUtil.getAddressForBinding(config.hostName()));
         connector.setPort(config.port());
         server.addConnector(connector);
 
