@@ -16,7 +16,7 @@ import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import tools.vitruv.framework.remote.common.AvailableHttpVersions;
-import tools.vitruv.remote.seccommon.AddressBinderUtil;
+import tools.vitruv.framework.remote.common.AddressBinderUtil;
 import tools.vitruv.remote.secserver.config.ServerConnectionConfiguration;
 
 import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;

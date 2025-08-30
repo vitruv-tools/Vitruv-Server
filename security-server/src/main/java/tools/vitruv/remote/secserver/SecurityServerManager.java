@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 
+import tools.vitruv.framework.remote.common.AddressBinderUtil;
 import tools.vitruv.remote.secserver.config.ConfigManager;
 import tools.vitruv.remote.secserver.handler.AuthEndpointHandler;
 import tools.vitruv.remote.secserver.handler.CallbackEndpointHandler;
@@ -59,7 +60,7 @@ class SecurityServerManager {
     public void initialize() throws IOException {
         final SSLContext sslContext = createSSLContext();
 
-        securityServer = HttpsServer.create(new InetSocketAddress(port), 0);
+        securityServer = HttpsServer.create(new InetSocketAddress(AddressBinderUtil.getAddressForBinding(config.getDomainName()), port), 0);
         securityServer.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
             @Override
             public void configure(HttpsParameters params) {

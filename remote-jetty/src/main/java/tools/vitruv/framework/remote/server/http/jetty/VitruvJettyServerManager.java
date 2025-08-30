@@ -9,6 +9,7 @@ import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 
+import tools.vitruv.framework.remote.common.AddressBinderUtil;
 import tools.vitruv.framework.remote.server.http.InternalHttpServerManager;
 import tools.vitruv.framework.remote.server.rest.PathEndointCollector;
 
@@ -25,7 +26,7 @@ public class VitruvJettyServerManager implements InternalHttpServerManager {
         HTTP2CServerConnectionFactory h2c = new HTTP2CServerConnectionFactory(httpConfig);
         
         ServerConnector connector = new ServerConnector(this.server, http1, h2c);
-        connector.setHost(hostOrIp);
+        connector.setHost(AddressBinderUtil.getAddressForBinding(hostOrIp));
         connector.setPort(port);
         connector.addEventListener(new NetworkConnector.Listener() {
             @Override

@@ -1,6 +1,4 @@
-package tools.vitruv.remote.seccommon;
-
-import tools.vitruv.framework.remote.common.DefaultConnectionSettings;
+package tools.vitruv.framework.remote.common;
 
 public final class AddressBinderUtil {
     private AddressBinderUtil() {}
