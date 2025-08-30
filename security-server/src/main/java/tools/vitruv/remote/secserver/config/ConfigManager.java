@@ -8,9 +8,19 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Manages configuration properties loaded from 'config.properties' and environment variables for sensitive data.
+ * Manages configuration properties loaded from 'config.properties'.
  */
 public class ConfigManager {
+    public static final String KEY_VITRUVIUS_SERVER_PORT = "vitruv-server.port";
+    public static final String KEY_HTTPS_SERVER_PORT = "https-server.port";
+    public static final String KEY_DOMAIN_PROTOCOL = "domain.protocol";
+    public static final String KEY_DOMAIN_NAME = "domain.name";
+    public static final String KEY_CERT_CHAIN_PATH = "cert.chain.path";
+    public static final String KEY_CERT_KEY_PATH = "cert.key.path";
+    public static final String KEY_OIDC_CLIENT_ID = "OIDC_CLIENT_ID";
+    public static final String KEY_OIDC_CLIENT_SECRET = "OIDC_CLIENT_SECRET";
+    public static final String KEY_TLS_PASSWORD = "TLS_PASSWORD";
+    public static final String KEY_OIDC_DISCOVERY_URI = "VITRUV_SERVER_OIDC_DISCOVERY_URI";
     private static final Logger logger = LoggerFactory.getLogger(ConfigManager.class);
     private final Properties properties = new Properties();
     private final static String CONFIG_FILE_NAME = "config.properties";
@@ -20,7 +30,7 @@ public class ConfigManager {
      *
      * @throws IOException if the config file is missing or cannot be loaded
      */
-    public ConfigManager() throws IOException {
+    public void initialize() throws IOException {
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE_NAME)) {
             if (input == null) {
                 logger.error("Config file not found: " + CONFIG_FILE_NAME);
@@ -31,42 +41,42 @@ public class ConfigManager {
     }
 
     public int getVitruvServerPort() {
-        return Integer.parseInt(properties.getProperty("vitruv-server.port"));
+        return Integer.parseInt(properties.getProperty(KEY_VITRUVIUS_SERVER_PORT));
     }
 
     public int getHttpsServerPort() {
-        return Integer.parseInt(properties.getProperty("https-server.port"));
+        return Integer.parseInt(properties.getProperty(KEY_HTTPS_SERVER_PORT));
     }
 
     public String getDomainProtocol() {
-        return properties.getProperty("domain.protocol");
+        return properties.getProperty(KEY_DOMAIN_PROTOCOL);
     }
 
     public String getDomainName() {
-        return properties.getProperty("domain.name");
+        return properties.getProperty(KEY_DOMAIN_NAME);
     }
 
     public String getCertChainPath() {
-        return properties.getProperty("cert.chain.path");
+        return properties.getProperty(KEY_CERT_CHAIN_PATH);
     }
 
     public String getCertKeyPath() {
-        return properties.getProperty("cert.key.path");
+        return properties.getProperty(KEY_CERT_KEY_PATH);
     }
 
     public String getOidcClientId() {
-        return System.getenv("OIDC_CLIENT_ID");
+        return properties.getProperty(KEY_OIDC_CLIENT_ID);
     }
 
     public String getOidcClientSecret() {
-        return System.getenv("OIDC_CLIENT_SECRET");
+        return properties.getProperty(KEY_OIDC_CLIENT_SECRET);
     }
 
     public String getTlsPassword() {
-        return System.getenv("TLS_PASSWORD");
+        return properties.getProperty(KEY_TLS_PASSWORD);
     }
 
     public String getOIDCDiscoveryUri() {
-        return System.getenv("VITRUV_SERVER_OIDC_DISCOVERY_URI");
+        return properties.getProperty(KEY_OIDC_DISCOVERY_URI);
     }
 }

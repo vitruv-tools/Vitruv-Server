@@ -39,6 +39,7 @@ public class VitruvSecurityServer implements VitruviusServer {
         if (this.configManager == null) {
             this.configManager = new ConfigManager();
         }
+        this.configManager.initialize();
 
         vitruvServer = new VitruvServer(new VitruvServerConfiguration(DefaultConnectionSettings.STD_HOST, this.configManager.getVitruvServerPort()));
         vitruvServer.initialize(modelInitializer);
