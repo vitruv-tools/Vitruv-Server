@@ -24,23 +24,32 @@ public class VitruvSecurityServer implements VitruviusServer {
     private VitruvServer vitruvServer;
     private SecurityServerManager securityServerManager;
     private String baseUrl;
+    private ConfigManager configManager;
+
+    public VitruvSecurityServer() {}
+
+    public VitruvSecurityServer(ConfigManager configManager) {
+        this.configManager = configManager;
+    }
 
     @Override
     public void initialize(VirtualModelInitializer modelInitializer) throws Exception {
         logger.info("Starting initialization of servers and OIDC client...");
 
-        ConfigManager config = new ConfigManager();
+        if (this.configManager == null) {
+            this.configManager = new ConfigManager();
+        }
 
-        vitruvServer = new VitruvServer(new VitruvServerConfiguration(DefaultConnectionSettings.STD_HOST, config.getVitruvServerPort()));
+        vitruvServer = new VitruvServer(new VitruvServerConfiguration(DefaultConnectionSettings.STD_HOST, this.configManager.getVitruvServerPort()));
         vitruvServer.initialize(modelInitializer);
 
-        baseUrl = "https://" + config.getDomainName() + ":" + config.getHttpsServerPort();
+        baseUrl = "https://" + this.configManager.getDomainName() + ":" + this.configManager.getHttpsServerPort();
         final String redirectURI = baseUrl + "/callback";
         logger.debug("redirectURI: {}", redirectURI);
-        OIDCClient oidcClient = new OIDCClient(config.getOidcClientId(), config.getOidcClientSecret(), config.getOIDCDiscoveryUri(), redirectURI);
+        OIDCClient oidcClient = new OIDCClient(this.configManager.getOidcClientId(), this.configManager.getOidcClientSecret(), this.configManager.getOIDCDiscoveryUri(), redirectURI);
         
         securityServerManager =
-                new SecurityServerManager(config.getHttpsServerPort(), config.getVitruvServerPort(), config.getTlsPassword(), oidcClient, config);
+                new SecurityServerManager(this.configManager.getHttpsServerPort(), this.configManager.getVitruvServerPort(), this.configManager.getTlsPassword(), oidcClient, this.configManager);
 
         logger.info("Initialization completed.");
 
