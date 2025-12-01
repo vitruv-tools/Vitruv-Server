@@ -41,7 +41,7 @@
   </modules>
 
   <properties>
-    <vitruv.version>3.2.2</vitruv.version>
+    <vitruv.version>3.2.3</vitruv.version>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.organization>vitruv-tools</sonar.organization>
     <sonar.projectKey>vitruv-tools_Vitruv-Server</sonar.projectKey>
