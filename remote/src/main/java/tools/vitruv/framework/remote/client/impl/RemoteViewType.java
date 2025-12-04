@@ -5,16 +5,18 @@ import tools.vitruv.framework.views.ViewSelector;
 import tools.vitruv.framework.views.ViewType;
 
 /**
- * A Vitruvius view type representing actual types on the virtual model, but is still capable of providing a view selector and allows creating
+ * A Vitruvius view type representing actual types on the virtual model, but is
+ * still capable of providing a view selector and allows creating
  * views by querying the Vitruvius server.
  */
 public class RemoteViewType implements ViewType<ViewSelector> {
-    private final String name;
-    private final VitruvRemoteConnection remoteConnection;
 
-    RemoteViewType(String name, VitruvRemoteConnection remoteConnection) {
+    private final String name;
+    private final SelectorProvider selectorProvider;
+
+    public RemoteViewType(String name, SelectorProvider selectorProvider) {
         this.name = name;
-        this.remoteConnection = remoteConnection;
+        this.selectorProvider = selectorProvider;
     }
 
     @Override
@@ -22,14 +24,17 @@ public class RemoteViewType implements ViewType<ViewSelector> {
         return name;
     }
 
-    /**
-     * Returns the {@link ViewSelector} of the {@link ViewType}, which allows configuring views by delegating the request to the Vitruvius server.
-     * 
-     * @param viewSource Ignored, can be null.
-     * @return A view selector for the view type represented by this remote view type.
-     */
     @Override
     public ViewSelector createSelector(ChangeableViewSource viewSource) {
-        return remoteConnection.getSelector(name);
+        return selectorProvider.getSelector(name);
     }
 }
+
+/**
+ * Returns the {@link ViewSelector} of the {@link ViewType}, which allows
+ * configuring views by delegating the request to the Vitruvius server.
+ * 
+ * @param viewSource Ignored, can be null.
+ * @return A view selector for the view type represented by this remote view
+ *         type.
+ */
