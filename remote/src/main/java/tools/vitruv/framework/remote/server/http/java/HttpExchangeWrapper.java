@@ -6,6 +6,7 @@ import tools.vitruv.framework.remote.common.rest.constants.Header;
 import tools.vitruv.framework.remote.server.http.HttpWrapper;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -51,5 +52,10 @@ class HttpExchangeWrapper implements HttpWrapper {
         outputStream.write(body);
         outputStream.flush();
         outputStream.close();
+    }
+
+    @Override
+    public URI getRequestURI() {
+        return exchange.getRequestURI();
     }
 }

@@ -1,5 +1,7 @@
 package tools.vitruv.framework.remote.client.impl;
 
+import org.eclipse.emf.ecore.EPackage;
+
 import tools.vitruv.framework.views.ChangeableViewSource;
 import tools.vitruv.framework.views.ViewSelector;
 import tools.vitruv.framework.views.ViewType;
@@ -31,5 +33,10 @@ public class RemoteViewType implements ViewType<ViewSelector> {
     @Override
     public ViewSelector createSelector(ChangeableViewSource viewSource) {
         return remoteConnection.getSelector(name);
+    }
+
+    @Override
+    public EPackage getMetamodel() {
+        return null;
     }
 }

@@ -3,6 +3,7 @@ package tools.vitruv.framework.remote.common.rest.constants;
 public final class EndpointPath {
     public static final String HEALTH = "/health";
     public static final String VIEW_TYPES = "/vsum/view/types";
+    public static final String VIEW_TYPES_METAMODEL = EndpointPath.VIEW_TYPES + "/";
     public static final String VIEW_SELECTOR = "/vsum/view/selector";
     public static final String VIEW = "/vsum/view";
     public static final String IS_VIEW_CLOSED = "/vsum/view/closed";

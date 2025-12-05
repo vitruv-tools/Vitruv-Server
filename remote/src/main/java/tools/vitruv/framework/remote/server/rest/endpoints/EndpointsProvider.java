@@ -68,6 +68,14 @@ public class EndpointsProvider {
 			defaultEndpoints.patchEndpoint(),
 			defaultEndpoints.deleteEndpoint()
 		));
+		result.add(new PathEndointCollector(
+			EndpointPath.VIEW_TYPES_METAMODEL,
+			new ViewTypeMetaModelEndpoint(virtualModel),
+			defaultEndpoints.postEndpoint(),
+			defaultEndpoints.putEndpoint(),
+			defaultEndpoints.patchEndpoint(),
+			defaultEndpoints.deleteEndpoint()
+		));
 		
 		return result;
 	}

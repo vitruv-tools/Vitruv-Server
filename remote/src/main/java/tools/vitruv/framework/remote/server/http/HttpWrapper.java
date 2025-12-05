@@ -1,6 +1,7 @@
 package tools.vitruv.framework.remote.server.http;
 
 import java.io.IOException;
+import java.net.URI;
 
 /**
  * This interface wraps an HTTP request/response from the underlying HTTP server implementation.
@@ -49,4 +50,10 @@ public interface HttpWrapper {
 	 * @throws IOException If the response cannot be sent.
 	 */
 	void sendResponse(int responseCode, byte[] body) throws IOException;
+	/**
+	 * Returns the HTTP request URI.
+	 * 
+	 * @return the URI.
+	 */
+	URI getRequestURI();
 }
