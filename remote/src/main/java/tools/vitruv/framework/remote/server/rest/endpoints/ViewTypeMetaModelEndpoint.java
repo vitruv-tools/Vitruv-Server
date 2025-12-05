@@ -1,7 +1,15 @@
 package tools.vitruv.framework.remote.server.rest.endpoints;
 
+import java.util.Map;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+import io.freund.adrian.emfjsonschema.schema.MutableJsonSchema;
+import io.freund.adrian.emfjsonschema.transform.EcoreTransformer;
 import tools.vitruv.framework.remote.common.rest.constants.EndpointPath;
 import tools.vitruv.framework.remote.server.exception.ServerHaltingException;
 import tools.vitruv.framework.remote.server.http.HttpWrapper;
@@ -33,6 +41,14 @@ public class ViewTypeMetaModelEndpoint implements GetEndpoint {
             throw notFound("View type " + viewTypeName + " has no metamodel to send.");
         }
 
-        return ""; // Here, map view type metamodel to a String.
+        Map<String, MutableJsonSchema> convertedSchemas = new EcoreTransformer().visitPackage(viewType.get().getMetamodel());
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setDefaultPropertyInclusion(Include.NON_NULL);
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        try {
+            return mapper.writeValueAsString(convertedSchemas);
+        } catch (JsonProcessingException exception) {
+            throw internalServerError(exception.getMessage());
+        }
     }
 }

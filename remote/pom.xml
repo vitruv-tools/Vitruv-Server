@@ -43,6 +43,13 @@
       <artifactId>tools.vitruv.framework.vsum</artifactId>
     </dependency>
 
+    <dependency>
+      <artifactId>io.freund.adrian</artifactId>
+      <groupId>emf-jsonschema</groupId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>./target/emf-jsonschema-1.0-SNAPSHOT.jar</systemPath>
+    </dependency>
 
     <!-- external dependencies -->
     <dependency>
@@ -58,6 +65,15 @@
       <artifactId>org.eclipse.emf.ecore</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.eclipse.emf</groupId>
+      <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.eclipse.platform</groupId>
+    	<artifactId>org.eclipse.core.runtime</artifactId>
+    	<version>3.26.100</version>
+	  </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
     </dependency>
@@ -72,6 +88,11 @@
     <dependency>
       <groupId>io.micrometer</groupId>
       <artifactId>micrometer-core</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-stdlib</artifactId>
+        <version>2.0.20</version>
     </dependency>
     <!-- external test dependencies -->
     <dependency>
