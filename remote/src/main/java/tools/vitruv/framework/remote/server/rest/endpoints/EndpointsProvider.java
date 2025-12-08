@@ -42,6 +42,13 @@ public class EndpointsProvider {
 				defaultEndpoints.patchEndpoint(),
 				defaultEndpoints.deleteEndpoint()));
 		result.add(new PathEndointCollector(
+				EndpointPath.VIEW_ASYNC,
+				new AsyncChangePropagationStatusEndpoint(mapper),
+				new AsyncChangePropagationEndpoint(mapper),
+				defaultEndpoints.putEndpoint(),
+				defaultEndpoints.patchEndpoint(),
+				defaultEndpoints.deleteEndpoint()));
+		result.add(new PathEndointCollector(
 				EndpointPath.VIEW,
 				new UpdateViewEndpoint(mapper),
 				new ViewEndpoint(mapper),
@@ -59,13 +66,6 @@ public class EndpointsProvider {
 				EndpointPath.VIEW_TYPES,
 				new ViewTypesEndpoint(virtualModel, mapper),
 				defaultEndpoints.postEndpoint(),
-				defaultEndpoints.putEndpoint(),
-				defaultEndpoints.patchEndpoint(),
-				defaultEndpoints.deleteEndpoint()));
-		result.add(new PathEndointCollector(
-				EndpointPath.VIEW_ASYNC,
-				new AsyncChangePropagationStatusEndpoint(mapper),
-				new AsyncChangePropagationEndpoint(mapper),
 				defaultEndpoints.putEndpoint(),
 				defaultEndpoints.patchEndpoint(),
 				defaultEndpoints.deleteEndpoint()));

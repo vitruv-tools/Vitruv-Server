@@ -25,7 +25,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
 /**
- * A {@link RemoteView} that derives changes based on the changed state of its resources and allows to propagate them
+ * A {@link RemoteView} that derives changes based on the changed state of its
+ * resources and allows to propagate them
  * back to the Vitruvius server using the {@link #commitChanges} method.
  */
 public class ChangeDerivingRemoteView implements CommittableView {
@@ -46,8 +47,8 @@ public class ChangeDerivingRemoteView implements CommittableView {
     }
 
     private void initializeResourceMapping(ResourceSet source) {
-        originalResourceMapping = ResourceCopier.copyViewResources(source.getResources(), 
-        		ResourceSetUtil.withGlobalFactories(new ResourceSetImpl()));
+        originalResourceMapping = ResourceCopier.copyViewResources(source.getResources(),
+                ResourceSetUtil.withGlobalFactories(new ResourceSetImpl()));
     }
 
     @Override
@@ -128,8 +129,34 @@ public class ChangeDerivingRemoteView implements CommittableView {
                 allChanges.add(changes);
             }
         });
-        base.remoteConnection.propagateChanges(base.uuid, VitruviusChangeFactory.getInstance().createCompositeChange(allChanges));
+        base.remoteConnection.propagateChanges(base.uuid,
+                VitruviusChangeFactory.getInstance().createCompositeChange(allChanges));
         base.modified = false;
+    }
+
+    /**
+     * Commits the changes made to the view asynchronously and its containing
+     * elements.
+     *
+     * @return A task ID that can be used to query the status of the async
+     *         operation.
+     * @throws IllegalStateException if called on a closed view
+     * @see #isClosed()
+     * @see #commitChanges()
+     */
+    public String commitChangesAsync() {
+        base.checkNotClosed();
+        var allChanges = new LinkedList<VitruviusChange<HierarchicalId>>();
+        base.viewSource.getResources().forEach(it -> {
+            var changes = findChanges(originalResourceMapping.get(it), it);
+            if (changes.getEChanges().isEmpty()) {
+                allChanges.add(changes);
+            }
+        });
+        String taskId = base.remoteConnection.startAsyncPropagation(base.uuid,
+                VitruviusChangeFactory.getInstance().createCompositeChange(allChanges));
+        base.modified = false;
+        return taskId;
     }
 
     private VitruviusChange<HierarchicalId> findChanges(Resource oldState, Resource newState) {
@@ -141,4 +168,5 @@ public class ChangeDerivingRemoteView implements CommittableView {
             return resolutionStrategy.getChangeSequenceBetween(newState, oldState);
         }
     }
+
 }

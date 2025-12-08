@@ -5,6 +5,9 @@ import java.util.Collection;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
+
 import tools.vitruv.change.composite.description.TransactionalChange;
 import tools.vitruv.change.composite.description.VitruviusChangeResolverFactory;
 import tools.vitruv.change.composite.recording.ChangeRecorder;
@@ -15,11 +18,9 @@ import tools.vitruv.framework.views.ViewSelector;
 import tools.vitruv.framework.views.ViewType;
 import tools.vitruv.framework.views.changederivation.StateBasedChangeResolutionStrategy;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkState;
-
 /**
- * A {@link RemoteView} that records changes to its resources and allows to propagate them
+ * A {@link RemoteView} that records changes to its resources and allows to
+ * propagate them
  * back to the Vitruvius server using the {@link #commitChanges} method.
  */
 public class ChangeRecordingRemoteView implements CommittableView {
@@ -97,7 +98,6 @@ public class ChangeRecordingRemoteView implements CommittableView {
         return base.getViewType();
     }
 
-
     @Override
     public CommittableView withChangeRecordingTrait() {
         changeRecorder.close();
@@ -127,15 +127,36 @@ public class ChangeRecordingRemoteView implements CommittableView {
         base.modified = false;
         changeRecorder.beginRecording();
     }
-    
+
     public void commitChanges(Iterable<UserInteractionBase> userInputs) {
-    	 base.checkNotClosed();
-         var recordedChange = changeRecorder.endRecording();
-         var changeResolver = VitruviusChangeResolverFactory.forHierarchicalIds(base.viewSource);
-         var unresolvedChanges = changeResolver.assignIds(recordedChange);
-         ((TransactionalChange<?>) unresolvedChanges).setUserInteractions(userInputs);
-         base.remoteConnection.propagateChanges(base.uuid, unresolvedChanges);
-         base.modified = false;
-         changeRecorder.beginRecording();
+        base.checkNotClosed();
+        var recordedChange = changeRecorder.endRecording();
+        var changeResolver = VitruviusChangeResolverFactory.forHierarchicalIds(base.viewSource);
+        var unresolvedChanges = changeResolver.assignIds(recordedChange);
+        ((TransactionalChange<?>) unresolvedChanges).setUserInteractions(userInputs);
+        base.remoteConnection.propagateChanges(base.uuid, unresolvedChanges);
+        base.modified = false;
+        changeRecorder.beginRecording();
+    }
+
+    /**
+     * Commits the changes made to the view asynchronously and its containing
+     * elements.
+     *
+     * @return A task ID that can be used to query the status of the async
+     *         operation.
+     * @throws IllegalStateException if called on a closed view
+     * @see #isClosed()
+     * @see #commitChanges()
+     */
+    public String commitChangesAsync() {
+        base.checkNotClosed();
+        var recordedChange = changeRecorder.endRecording();
+        var changeResolver = VitruviusChangeResolverFactory.forHierarchicalIds(base.viewSource);
+        var unresolvedChanges = changeResolver.assignIds(recordedChange);
+        String taskId = base.remoteConnection.startAsyncPropagation(base.uuid, unresolvedChanges);
+        base.modified = false;
+        changeRecorder.beginRecording();
+        return taskId;
     }
 }

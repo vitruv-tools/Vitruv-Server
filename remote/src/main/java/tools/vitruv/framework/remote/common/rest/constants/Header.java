@@ -5,6 +5,7 @@ public final class Header {
     public static final String VIEW_UUID = "View-UUID";
     public static final String SELECTOR_UUID = "Selector-UUID";
     public static final String VIEW_TYPE = "View-Type";
+    public static final String TASK_ID = "Task-ID";
 
     private Header() throws InstantiationException {
         throw new InstantiationException("Cannot be instantiated");
