@@ -1,0 +1,7 @@
+{
+  "$schema": "https://emf-jsonschema.adrian.freund.io/draft/1/schema.json",
+  "$id": "https://emf-jsonschema.adrian.freund.io/draft/1/types/EBigInteger.json",
+  "title": "EMF Data type definition for EBigInteger",
+  "javaType": "java.math.BigInteger",
+  "type": ["integer", "null"]
+}

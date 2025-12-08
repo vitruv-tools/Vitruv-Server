@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://emf-jsonschema.adrian.freund.io/draft/1/structural-feature.json",
+  "$dynamicAnchor": "meta",
+  "title": "emf-structural-feature-vocab",
+  "description": "A custom vocabulary adding support for adding EMF metadata to properties",
+  "properties": {
+    "volatile": {
+      "type": "boolean"
+    },
+    "derived": {
+      "type": "boolean"
+    },
+    "transientProperties": {
+      "type": "object",
+      "additionalProperties": {
+        "$dynamicRef": "#meta"
+      },
+      "default": {}
+    },
+    "reference": {
+      "type": "boolean"
+    }
+  }
+}

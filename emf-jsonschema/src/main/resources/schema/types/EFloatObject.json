@@ -1,0 +1,7 @@
+{
+  "$schema": "https://emf-jsonschema.adrian.freund.io/draft/1/schema.json",
+  "$id": "https://emf-jsonschema.adrian.freund.io/draft/1/types/EFloatObject.json",
+  "title": "EMF Data type definition for EFloatObject",
+  "javaType": "java.lang.Float",
+  "type": ["number", "null"]
+}

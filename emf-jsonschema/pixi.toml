@@ -1,0 +1,39 @@
+[project]
+authors = ["Adrian Freund <adrian@freund.io>"]
+channels = ["conda-forge"]
+description = "Add a short description here"
+name = "emf-jsonschema"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[feature.java.tasks]
+start = "gradle run --args=\"convert src/test/resources/Coffee.ecore out/\""
+build = "gradle jar"
+test = "gradle test"
+lint = "gradle spotlessCheck"
+"lint:fix" = "gradle spotlessApply"
+
+[feature.pre-commit.tasks]
+pre-commit-install = "pre-commit install"
+pre-commit-run = "pre-commit run -a"
+
+[feature.infrastructure.tasks]
+tf-plan = "tofu plan"
+tf-apply = "tofu apply"
+
+[feature.java.dependencies]
+openjdk = ">=21,<22"
+gradle = ">=8.10.0,<9"
+
+[feature.pre-commit.dependencies]
+pre-commit = ">=3.8.0,<4"
+
+[feature.infrastructure.dependencies]
+opentofu = "*"
+backblaze-b2 = ">=4.1.0,<5"
+
+[environments]
+default = ["java", "pre-commit", "infrastructure"]
+build = ["java"]
+infrastructure = ["infrastructure"]
+

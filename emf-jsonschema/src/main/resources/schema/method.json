@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://emf-jsonschema.adrian.freund.io/draft/1/method.json",
+  "$dynamicAnchor": "meta",
+  "title": "emf-method-vocab",
+  "description": "A custom vocabulary adding support for specifying methods",
+  "properties": {
+    "methods": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/method" }
+    }
+  },
+  "$defs": {
+    "method": {
+      "type": "object",
+      "properties": {
+        "parameters": {
+          "type": "array",
+          "items": {
+            "$dynamicRef": "#meta"
+          }
+        },
+        "returnType": { "$dynamicRef": "#meta" }
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://emf-jsonschema.adrian.freund.io/draft/1/reference.json",
+  "$dynamicAnchor": "meta",
+  "title": "emf-reference-vocab",
+  "description": "A custom vocabulary adding support for adding EMF reference metadata to properties",
+  "properties": {
+    "containment": {
+      "type": "boolean"
+    },
+    "resolveProxies": {
+      "type": "boolean"
+    },
+    "opposite": {
+      "type": "string",
+      "format": "uri-reference"
+    },
+    "keys": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri-reference"
+    }
+  }
+}

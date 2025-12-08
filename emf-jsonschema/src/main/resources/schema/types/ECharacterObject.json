@@ -1,0 +1,9 @@
+{
+  "$schema": "https://emf-jsonschema.adrian.freund.io/draft/1/schema.json",
+  "$id": "https://emf-jsonschema.adrian.freund.io/draft/1/types/ECharacterObject.json",
+  "title": "EMF Data type definition for ECharacterObject",
+  "javaType": "java.lang.Character",
+  "type": ["string", "null"],
+  "minLength": 1,
+  "maxLength": 1
+}

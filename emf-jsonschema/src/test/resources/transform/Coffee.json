@@ -1,0 +1,224 @@
+{
+  "$id" : "http://www.eclipse.org/emfcloud/coffee/model",
+  "$defs" : {
+    "Identifiable" : {
+      "properties" : {
+        "id" : {
+          "$ref" : "#/$defs/EString"
+        }
+      },
+      "title" : "Identifiable",
+      "abstract" : true
+    },
+    "Component" : {
+      "properties" : {
+        "children" : { },
+        "parent" : { }
+      },
+      "title" : "Component",
+      "abstract" : true
+    },
+    "Machine" : {
+      "properties" : {
+        "name" : {
+          "$ref" : "#/$defs/EString"
+        },
+        "workflows" : { }
+      },
+      "title" : "Machine",
+      "abstract" : false
+    },
+    "ControlUnit" : {
+      "properties" : {
+        "processor" : { },
+        "dimension" : { },
+        "ram" : { },
+        "display" : { },
+        "userDescription" : {
+          "$ref" : "#/$defs/EString"
+        }
+      },
+      "title" : "ControlUnit",
+      "abstract" : false
+    },
+    "BrewingUnit" : {
+      "properties" : { },
+      "title" : "BrewingUnit",
+      "abstract" : false
+    },
+    "DipTray" : {
+      "properties" : { },
+      "title" : "DipTray",
+      "abstract" : false
+    },
+    "WaterTank" : {
+      "properties" : { },
+      "title" : "WaterTank",
+      "abstract" : false
+    },
+    "Processor" : {
+      "properties" : {
+        "vendor" : {
+          "$ref" : "#/$defs/EString"
+        },
+        "clockSpeed" : {
+          "$ref" : "#/$defs/EInt"
+        },
+        "numberOfCores" : {
+          "$ref" : "#/$defs/EInt"
+        },
+        "socketconnectorType" : {
+          "$ref" : "#/$defs/SocketConnectorType"
+        },
+        "thermalDesignPower" : {
+          "$ref" : "#/$defs/EInt"
+        },
+        "manufactoringProcess" : {
+          "$ref" : "#/$defs/ManufactoringProcess"
+        }
+      },
+      "title" : "Processor",
+      "abstract" : false
+    },
+    "SocketConnectorType" : {
+      "enum" : [ "A1T", "Z51" ]
+    },
+    "ManufactoringProcess" : {
+      "enum" : [ "nm18", "nm25" ]
+    },
+    "Dimension" : {
+      "properties" : {
+        "width" : {
+          "$ref" : "#/$defs/EInt"
+        },
+        "height" : {
+          "$ref" : "#/$defs/EInt"
+        },
+        "length" : {
+          "$ref" : "#/$defs/EInt"
+        }
+      },
+      "title" : "Dimension",
+      "abstract" : false
+    },
+    "RAM" : {
+      "properties" : {
+        "clockSpeed" : {
+          "$ref" : "#/$defs/EInt"
+        },
+        "size" : {
+          "$ref" : "#/$defs/EInt"
+        },
+        "ramType" : {
+          "$ref" : "#/$defs/RamType"
+        }
+      },
+      "title" : "RAM",
+      "abstract" : false
+    },
+    "RamType" : {
+      "enum" : [ "SODIMM", "SIDIMM" ]
+    },
+    "Display" : {
+      "properties" : {
+        "width" : {
+          "$ref" : "#/$defs/EInt"
+        },
+        "height" : {
+          "$ref" : "#/$defs/EInt"
+        }
+      },
+      "title" : "Display",
+      "abstract" : false
+    },
+    "Workflow" : {
+      "properties" : {
+        "name" : {
+          "$ref" : "#/$defs/EString"
+        },
+        "nodes" : { },
+        "flows" : { }
+      },
+      "title" : "Workflow",
+      "abstract" : false
+    },
+    "Node" : {
+      "properties" : { },
+      "title" : "Node",
+      "abstract" : true
+    },
+    "Task" : {
+      "properties" : {
+        "name" : {
+          "$ref" : "#/$defs/TaskName"
+        },
+        "duration" : {
+          "$ref" : "#/$defs/EInt"
+        }
+      },
+      "title" : "Task",
+      "abstract" : true
+    },
+    "AutomaticTask" : {
+      "properties" : {
+        "component" : { }
+      },
+      "title" : "AutomaticTask",
+      "abstract" : false
+    },
+    "ManualTask" : {
+      "properties" : {
+        "actor" : {
+          "$ref" : "#/$defs/EString"
+        }
+      },
+      "title" : "ManualTask",
+      "abstract" : false
+    },
+    "Fork" : {
+      "properties" : { },
+      "title" : "Fork",
+      "abstract" : false
+    },
+    "Join" : {
+      "properties" : { },
+      "title" : "Join",
+      "abstract" : false
+    },
+    "Decision" : {
+      "properties" : { },
+      "title" : "Decision",
+      "abstract" : false
+    },
+    "Merge" : {
+      "properties" : { },
+      "title" : "Merge",
+      "abstract" : false
+    },
+    "Flow" : {
+      "properties" : {
+        "source" : { },
+        "target" : { }
+      },
+      "title" : "Flow",
+      "abstract" : false
+    },
+    "WeightedFlow" : {
+      "properties" : {
+        "probability" : {
+          "$ref" : "#/$defs/Probability"
+        }
+      },
+      "title" : "WeightedFlow",
+      "abstract" : false
+    },
+    "Probability" : {
+      "enum" : [ "low", "medium", "high" ]
+    },
+    "TaskName" : {
+      "type" : "string"
+    }
+  },
+  "title" : "coffee",
+  "description" : "org.eclipse.emfcloud.coffee.model"
+}

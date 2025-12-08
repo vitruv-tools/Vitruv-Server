@@ -1,0 +1,9 @@
+{
+  "$schema": "https://emf-jsonschema.adrian.freund.io/draft/1/schema.json",
+  "$id": "https://emf-jsonschema.adrian.freund.io/draft/1/types/EShortObject.json",
+  "title": "EMF Data type definition for EShortObject",
+  "type": ["integer", "null"],
+  "javaType": "java.lang.Short",
+  "minimum": -32768,
+  "maximum": 32767
+}

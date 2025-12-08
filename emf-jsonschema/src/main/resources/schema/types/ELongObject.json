@@ -1,0 +1,9 @@
+{
+  "$schema": "https://emf-jsonschema.adrian.freund.io/draft/1/schema.json",
+  "$id": "https://emf-jsonschema.adrian.freund.io/draft/1/types/ELongObject.json",
+  "title": "EMF Data type definition for ELongObject",
+  "javaType": "java.lang.Long",
+  "type": ["integer", "null"],
+  "minimum": -9223372036854775808,
+  "maximum": 9223372036854775807
+}

@@ -1,0 +1,9 @@
+{
+  "$schema": "https://emf-jsonschema.adrian.freund.io/draft/1/schema.json",
+  "$id": "https://emf-jsonschema.adrian.freund.io/draft/1/types/EChar.json",
+  "title": "EMF Data type definition for EChar",
+  "javaType": "char",
+  "type": "string",
+  "minLength": 1,
+  "maxLength": 1
+}

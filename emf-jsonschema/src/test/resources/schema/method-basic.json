@@ -1,0 +1,19 @@
+{
+  "$id": "https://emf-jsonschema.adrian.freund.io/tests/schema/with-method",
+  "$schema": "https://emf-jsonschema.adrian.freund.io/draft/1/schema",
+  "title": "with-method test",
+  "properties": {
+    "foo": { "type": "string" }
+  },
+  "methods": {
+    "bar": {
+      "parameters": [
+        {
+          "argumentName": "p0",
+          "type": "number"
+        }
+      ],
+      "returnType": { "type": "string" }
+    }
+  }
+}

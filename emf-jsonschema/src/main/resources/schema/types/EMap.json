@@ -1,0 +1,24 @@
+{
+  "$schema": "https://emf-jsonschema.adrian.freund.io/draft/1/schema.json",
+  "$id": "https://emf-jsonschema.adrian.freund.io/draft/1/types/EMap.json",
+  "title": "EMF Data type definition for EMap",
+  "javaType": "java.util.Map",
+  "$defs": {
+    "key": {
+      "$dynamicAnchor": "K",
+      "not": true
+    },
+    "value": {
+      "$dynamicAnchor": "V",
+      "not": true
+    }
+  },
+  "type": ["array", "null"],
+  "items": {
+    "type": "array",
+    "prefixItems": [
+      { "$dynamicRef": "K" },
+      { "$dynamicRef": "V" }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://emf-jsonschema.adrian.freund.io/draft/1/class.json",
+  "$dynamicAnchor": "meta",
+  "title": "emf-class-vocab",
+  "description": "A custom vocabulary adding support for marking schemas as abstract or interface",
+  "properties": {
+    "abstract": {
+      "type": "boolean"
+    },
+    "interface": {
+      "type": "boolean"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "$schema": "https://emf-jsonschema.adrian.freund.io/draft/1/schema.json",
+  "$id": "https://emf-jsonschema.adrian.freund.io/draft/1/types/EByteObject.json",
+  "title": "EMF Data type definition for EByteObject",
+  "javaType": "java.lang.Byte",
+  "type": ["integer", "null"],
+  "minimum": -128,
+  "maximum": 127
+}

@@ -1,0 +1,57 @@
+stages:
+  - lint
+  - build
+  - test
+  - deploy
+
+default:
+  image: ghcr.io/prefix-dev/pixi:0.31.0
+  cache:
+    - key:
+        files:
+          - pixi.lock
+      paths:
+        - .pixi/
+
+lint-job:
+  stage: lint
+  artifacts:
+    paths:
+      - build
+    expire_in: 1 day
+  script:
+    - pixi run -e build lint
+
+build-job:
+  stage: build
+  artifacts:
+    paths:
+      - build
+    expire_in: 1 day
+  dependencies:
+    - lint-job
+  script:
+    - pixi run -e build build
+
+test-job:
+  stage: test
+  dependencies:
+    - build-job
+  script:
+    - pixi run -e build test
+
+tofu-plan-job:
+  image: ghcr.io/opentofu/opentofu:1.8.3
+  stage: deploy
+  script:
+    - tofu plan
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+
+tofu-apply-job:
+  image: ghcr.io/opentofu/opentofu:1.8.3
+  stage: deploy
+  script:
+    - tofu apply -auto-approve
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

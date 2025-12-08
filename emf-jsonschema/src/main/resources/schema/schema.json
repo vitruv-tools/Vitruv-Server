@@ -1,0 +1,36 @@
+{
+  "$id": "https://emf-jsonschema.adrian.freund.io/draft/1/schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$vocabulary": {
+    "https://json-schema.org/draft/2020-12/vocab/core": true,
+    "https://json-schema.org/draft/2020-12/vocab/applicator": true,
+    "https://json-schema.org/draft/2020-12/vocab/validation": true,
+    "https://json-schema.org/draft/2020-12/vocab/meta-data": true,
+    "https://json-schema.org/draft/2020-12/vocab/format-annotation": true,
+    "https://json-schema.org/draft/2020-12/vocab/content": true,
+    "https://json-schema.org/draft/2020-12/vocab/unevaluated": true,
+    "https://emf-jsonschema.adrian.freund.io/draft/1/vocabs/java-type": true,
+    "https://emf-jsonschema.adrian.freund.io/draft/1/vocabs/package": false,
+    "https://emf-jsonschema.adrian.freund.io/draft/1/vocabs/class": false,
+    "https://emf-jsonschema.adrian.freund.io/draft/1/vocabs/enum": false,
+    "https://emf-jsonschema.adrian.freund.io/draft/1/vocabs/structural-feature": false,
+    "https://emf-jsonschema.adrian.freund.io/draft/1/vocabs/attribute": false,
+    "https://emf-jsonschema.adrian.freund.io/draft/1/vocabs/reference": false,
+    "https://emf-jsonschema.adrian.freund.io/draft/1/vocabs/method": false
+  },
+  "$dynamicAnchor": "meta",
+
+  "title": "Extended JsonSchema for Model Driven Software Development",
+  "allOf": [
+    { "$ref": "https://json-schema.org/draft/2020-12/schema" },
+    { "$ref": "https://emf-jsonschema.adrian.freund.io/draft/1/java-type.json" },
+    { "$ref": "https://emf-jsonschema.adrian.freund.io/draft/1/package.json" },
+    { "$ref": "https://emf-jsonschema.adrian.freund.io/draft/1/class.json" },
+    { "$ref": "https://emf-jsonschema.adrian.freund.io/draft/1/array.json" },
+    { "$ref": "https://emf-jsonschema.adrian.freund.io/draft/1/enum.json" },
+    { "$ref": "https://emf-jsonschema.adrian.freund.io/draft/1/structural-feature.json" },
+    { "$ref": "https://emf-jsonschema.adrian.freund.io/draft/1/attribute.json" },
+    { "$ref": "https://emf-jsonschema.adrian.freund.io/draft/1/reference.json" },
+    { "$ref": "https://emf-jsonschema.adrian.freund.io/draft/1/method.json" }
+  ]
+}

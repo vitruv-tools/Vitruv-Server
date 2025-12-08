@@ -1,0 +1,30 @@
+{
+  "eClass" : "file:/var/home/adrian/Documents/Nextcloud/uni/24ss/ma/abgabe/code/build/resources/test/Coffee.ecore#//Machine",
+  "children" : [ {
+    "eClass" : "file:/var/home/adrian/Documents/Nextcloud/uni/24ss/ma/abgabe/code/build/resources/test/Coffee.ecore#//BrewingUnit"
+  }, {
+    "eClass" : "file:/var/home/adrian/Documents/Nextcloud/uni/24ss/ma/abgabe/code/build/resources/test/Coffee.ecore#//ControlUnit",
+    "processor" : {
+      "clockSpeed" : 5,
+      "numberOfCores" : 10,
+      "socketconnectorType" : "Z51",
+      "thermalDesignPower" : 100
+    },
+    "display" : {
+      "width" : 10,
+      "height" : 20
+    }
+  } ],
+  "name" : "Super Brewer 3000",
+  "workflows" : [ {
+    "name" : "Simple Workflow",
+    "nodes" : [ {
+      "eClass" : "file:/var/home/adrian/Documents/Nextcloud/uni/24ss/ma/abgabe/code/build/resources/test/Coffee.ecore#//AutomaticTask",
+      "name" : "PreHeat",
+      "component" : {
+        "eClass" : "file:/var/home/adrian/Documents/Nextcloud/uni/24ss/ma/abgabe/code/build/resources/test/Coffee.ecore#//BrewingUnit",
+        "$ref" : "//@children.0"
+      }
+    } ]
+  } ]
+}

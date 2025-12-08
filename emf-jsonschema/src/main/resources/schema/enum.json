@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://emf-jsonschema.adrian.freund.io/draft/1/enum.json",
+  "$dynamicAnchor": "meta",
+  "title": "emf-enum-vocab",
+  "description": "A custom vocabulary adding support for adding EMF enum metadata",
+  "properties": {
+    "enumNames": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
