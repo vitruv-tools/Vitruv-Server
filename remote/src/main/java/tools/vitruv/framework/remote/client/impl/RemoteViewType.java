@@ -22,6 +22,12 @@ public class RemoteViewType implements ViewType<ViewSelector> {
         this.metamodel = metamodel;
     }
 
+    RemoteViewType(String name, VitruvRemoteConnection remoteConnection) {
+        this.name = name;
+        this.remoteConnection = remoteConnection;
+        this.metamodel = null;
+    }
+
     @Override
     public String getName() {
         return name;
