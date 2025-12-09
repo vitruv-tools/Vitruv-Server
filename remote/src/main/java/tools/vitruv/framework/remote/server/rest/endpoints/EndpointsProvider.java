@@ -2,7 +2,6 @@ package tools.vitruv.framework.remote.server.rest.endpoints;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import tools.vitruv.framework.remote.common.json.JsonMapper;
 import tools.vitruv.framework.remote.common.rest.constants.EndpointPath;
 import tools.vitruv.framework.remote.server.exception.ServerHaltingException;
@@ -15,103 +14,123 @@ import tools.vitruv.framework.remote.server.rest.PostEndpoint;
 import tools.vitruv.framework.remote.server.rest.PutEndpoint;
 import tools.vitruv.framework.vsum.VirtualModel;
 
+/**
+ * An utility class that provides all {@link PathEndpointCollector}s for the requests
+ * that a Vitruvius server needs to handle.
+ */
 public class EndpointsProvider {
-	public static List<PathEndpointCollector> getAllEndpoints(VirtualModel virtualModel, JsonMapper mapper) {
-		var defaultEndpoints = getDefaultEndpoints();
-		
-		List<PathEndpointCollector> result = new ArrayList<>();
-		result.add(new PathEndpointCollector(
-			EndpointPath.HEALTH,
-			new HealthEndpoint(),
-			defaultEndpoints.postEndpoint(),
-			defaultEndpoints.putEndpoint(),
-			defaultEndpoints.patchEndpoint(),
-			defaultEndpoints.deleteEndpoint()
-		));
-		result.add(new PathEndpointCollector(
-			EndpointPath.IS_VIEW_CLOSED,
-			new IsViewClosedEndpoint(),
-			defaultEndpoints.postEndpoint(),
-			defaultEndpoints.putEndpoint(),
-			defaultEndpoints.patchEndpoint(),
-			defaultEndpoints.deleteEndpoint()
-		));
-		result.add(new PathEndpointCollector(
-			EndpointPath.IS_VIEW_OUTDATED,
-			new IsViewOutdatedEndpoint(),
-			defaultEndpoints.postEndpoint(),
-			defaultEndpoints.putEndpoint(),
-			defaultEndpoints.patchEndpoint(),
-			defaultEndpoints.deleteEndpoint()
-		));
-		result.add(new PathEndpointCollector(
-			EndpointPath.VIEW,
-			new UpdateViewEndpoint(mapper),
-			new ViewEndpoint(mapper),
-			defaultEndpoints.putEndpoint(),
-			new ChangePropagationEndpoint(mapper),
-			new CloseViewEndpoint()
-		));
-		result.add(new PathEndpointCollector(
-			EndpointPath.VIEW_SELECTOR,
-			new ViewSelectorEndpoint(virtualModel, mapper),
-			defaultEndpoints.postEndpoint(),
-			defaultEndpoints.putEndpoint(),
-			defaultEndpoints.patchEndpoint(),
-			defaultEndpoints.deleteEndpoint()
-		));
-		result.add(new PathEndpointCollector(
-			EndpointPath.VIEW_TYPES,
-			new ViewTypesEndpoint(virtualModel, mapper),
-			defaultEndpoints.postEndpoint(),
-			defaultEndpoints.putEndpoint(),
-			defaultEndpoints.patchEndpoint(),
-			defaultEndpoints.deleteEndpoint()
-		));
-		result.add(new PathEndpointCollector(
-			EndpointPath.VIEW_TYPE_METAMODEL,
-			new ViewTypeMetamodelEndpoint(virtualModel, mapper),
-			defaultEndpoints.postEndpoint(), 
-			defaultEndpoints.putEndpoint(),
-			defaultEndpoints.patchEndpoint(),
-			defaultEndpoints.deleteEndpoint()));
-		
-		return result;
-	}
-	
-	private static PathEndpointCollector getDefaultEndpoints() {
-		var getEndpoint = new GetEndpoint() {
-            @Override
-            public String process(HttpWrapper wrapper) throws ServerHaltingException {
-                throw notFound("Get mapping for this request path not found!");
-            }
-        };
-        var postEndpoint = new PostEndpoint() {
-            @Override
-            public String process(HttpWrapper wrapper) throws ServerHaltingException {
-                throw notFound("Post mapping for this request path not found!");
-            }
-        };
-        var patchEndpoint = new PatchEndpoint() {
-            @Override
-            public String process(HttpWrapper wrapper) throws ServerHaltingException {
-                throw notFound("Patch mapping for this request path not found!");
-            }
-        };
-        var deleteEndpoint = new DeleteEndpoint() {
-            @Override
-            public String process(HttpWrapper wrapper) throws ServerHaltingException {
-                throw notFound("Delete mapping for this request path not found!");
-            }
-        };
-        var putEndpoint = new PutEndpoint() {
-            @Override
-            public String process(HttpWrapper wrapper) throws ServerHaltingException {
-                throw notFound("Put mapping for this request path not found!");
-            }
-        };
-        return new PathEndpointCollector("", getEndpoint, postEndpoint, putEndpoint, patchEndpoint, deleteEndpoint);
-	}
-	
-	private EndpointsProvider() {}
+  /**
+   * Builds and returns all endpoints.
+   *
+   * <p>Requests posed to an existing path, but with the wrong method, 
+   * are handled by default endpoints that respond with HTTP 404.
+   *
+   * @param virtualModel - {@link VirtualModel}
+   * @param mapper - {@link JsonMapper}
+   * @return {@link List}
+   */
+  public static List<PathEndpointCollector> getAllEndpoints(
+      VirtualModel virtualModel, JsonMapper mapper) {
+    var defaultEndpoints = getDefaultEndpoints();
+
+    List<PathEndpointCollector> result = new ArrayList<>();
+    result.add(new PathEndpointCollector(
+        EndpointPath.HEALTH,
+        new HealthEndpoint(),
+        defaultEndpoints.postEndpoint(),
+        defaultEndpoints.putEndpoint(),
+        defaultEndpoints.patchEndpoint(),
+        defaultEndpoints.deleteEndpoint()
+    ));
+    result.add(new PathEndpointCollector(
+        EndpointPath.IS_VIEW_CLOSED,
+        new IsViewClosedEndpoint(),
+        defaultEndpoints.postEndpoint(),
+        defaultEndpoints.putEndpoint(),
+        defaultEndpoints.patchEndpoint(),
+        defaultEndpoints.deleteEndpoint()
+    ));
+    result.add(new PathEndpointCollector(
+        EndpointPath.IS_VIEW_OUTDATED,
+        new IsViewOutdatedEndpoint(),
+        defaultEndpoints.postEndpoint(),
+        defaultEndpoints.putEndpoint(),
+        defaultEndpoints.patchEndpoint(),
+        defaultEndpoints.deleteEndpoint()
+    ));
+    result.add(new PathEndpointCollector(
+        EndpointPath.VIEW,
+        new UpdateViewEndpoint(mapper),
+        new ViewEndpoint(mapper),
+        defaultEndpoints.putEndpoint(),
+        new ChangePropagationEndpoint(mapper),
+        new CloseViewEndpoint()
+    ));
+    result.add(new PathEndpointCollector(
+        EndpointPath.VIEW_SELECTOR,
+        new ViewSelectorEndpoint(virtualModel, mapper),
+        defaultEndpoints.postEndpoint(),
+        defaultEndpoints.putEndpoint(),
+        defaultEndpoints.patchEndpoint(),
+        defaultEndpoints.deleteEndpoint()
+    ));
+    result.add(new PathEndpointCollector(
+        EndpointPath.VIEW_TYPES,
+        new ViewTypesEndpoint(virtualModel, mapper),
+        defaultEndpoints.postEndpoint(),
+        defaultEndpoints.putEndpoint(),
+        defaultEndpoints.patchEndpoint(),
+        defaultEndpoints.deleteEndpoint()
+    ));
+    result.add(new PathEndpointCollector(
+        EndpointPath.VIEW_TYPE_METAMODEL,
+        new ViewTypeMetamodelEndpoint(virtualModel, mapper),
+        defaultEndpoints.postEndpoint(), 
+        defaultEndpoints.putEndpoint(),
+        defaultEndpoints.patchEndpoint(),
+        defaultEndpoints.deleteEndpoint()));
+    
+    return result;
+  }
+  
+  private static PathEndpointCollector getDefaultEndpoints() {
+    var getEndpoint = new GetEndpoint() {
+      @Override
+      public String process(HttpWrapper wrapper) throws ServerHaltingException {
+        throw notFound("Get mapping for this request path not found!");
+      }
+    };
+    var postEndpoint = new PostEndpoint() {
+      @Override
+      public String process(HttpWrapper wrapper) throws ServerHaltingException {
+        throw notFound("Post mapping for this request path not found!");
+      }
+    };
+    var patchEndpoint = new PatchEndpoint() {
+      @Override
+      public String process(HttpWrapper wrapper) throws ServerHaltingException {
+          throw notFound("Patch mapping for this request path not found!");
+      }
+    };
+    var deleteEndpoint = new DeleteEndpoint() {
+        @Override
+        public String process(HttpWrapper wrapper) throws ServerHaltingException {
+            throw notFound("Delete mapping for this request path not found!");
+        }
+    };
+    var putEndpoint = new PutEndpoint() {
+        @Override
+        public String process(HttpWrapper wrapper) throws ServerHaltingException {
+            throw notFound("Put mapping for this request path not found!");
+        }
+    };
+    return new PathEndpointCollector("",
+      getEndpoint,
+      postEndpoint,
+      putEndpoint,
+      patchEndpoint,
+      deleteEndpoint);
+  }
+  
+  private EndpointsProvider() {}
 }
