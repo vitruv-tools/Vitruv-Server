@@ -12,7 +12,7 @@ import tools.vitruv.framework.views.ViewType;
 import tools.vitruv.framework.vsum.VirtualModel;
 
 /**
- * A {@link ViewTypeMetamodelEndpoint} provides metamodels {@link EPackages}
+ * A {@link ViewTypeMetamodelEndpoint} provides metamodels {@link EPackage}s
  * that underlie a {@link ViewType}.
  */
 public class ViewTypeMetamodelEndpoint implements GetEndpoint {
