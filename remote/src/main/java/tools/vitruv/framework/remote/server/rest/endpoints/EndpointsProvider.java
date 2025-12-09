@@ -10,17 +10,17 @@ import tools.vitruv.framework.remote.server.http.HttpWrapper;
 import tools.vitruv.framework.remote.server.rest.DeleteEndpoint;
 import tools.vitruv.framework.remote.server.rest.GetEndpoint;
 import tools.vitruv.framework.remote.server.rest.PatchEndpoint;
-import tools.vitruv.framework.remote.server.rest.PathEndointCollector;
+import tools.vitruv.framework.remote.server.rest.PathEndpointCollector;
 import tools.vitruv.framework.remote.server.rest.PostEndpoint;
 import tools.vitruv.framework.remote.server.rest.PutEndpoint;
 import tools.vitruv.framework.vsum.VirtualModel;
 
 public class EndpointsProvider {
-	public static List<PathEndointCollector> getAllEndpoints(VirtualModel virtualModel, JsonMapper mapper) {
+	public static List<PathEndpointCollector> getAllEndpoints(VirtualModel virtualModel, JsonMapper mapper) {
 		var defaultEndpoints = getDefaultEndpoints();
 		
-		List<PathEndointCollector> result = new ArrayList<>();
-		result.add(new PathEndointCollector(
+		List<PathEndpointCollector> result = new ArrayList<>();
+		result.add(new PathEndpointCollector(
 			EndpointPath.HEALTH,
 			new HealthEndpoint(),
 			defaultEndpoints.postEndpoint(),
@@ -28,7 +28,7 @@ public class EndpointsProvider {
 			defaultEndpoints.patchEndpoint(),
 			defaultEndpoints.deleteEndpoint()
 		));
-		result.add(new PathEndointCollector(
+		result.add(new PathEndpointCollector(
 			EndpointPath.IS_VIEW_CLOSED,
 			new IsViewClosedEndpoint(),
 			defaultEndpoints.postEndpoint(),
@@ -36,7 +36,7 @@ public class EndpointsProvider {
 			defaultEndpoints.patchEndpoint(),
 			defaultEndpoints.deleteEndpoint()
 		));
-		result.add(new PathEndointCollector(
+		result.add(new PathEndpointCollector(
 			EndpointPath.IS_VIEW_OUTDATED,
 			new IsViewOutdatedEndpoint(),
 			defaultEndpoints.postEndpoint(),
@@ -44,7 +44,7 @@ public class EndpointsProvider {
 			defaultEndpoints.patchEndpoint(),
 			defaultEndpoints.deleteEndpoint()
 		));
-		result.add(new PathEndointCollector(
+		result.add(new PathEndpointCollector(
 			EndpointPath.VIEW,
 			new UpdateViewEndpoint(mapper),
 			new ViewEndpoint(mapper),
@@ -52,7 +52,7 @@ public class EndpointsProvider {
 			new ChangePropagationEndpoint(mapper),
 			new CloseViewEndpoint()
 		));
-		result.add(new PathEndointCollector(
+		result.add(new PathEndpointCollector(
 			EndpointPath.VIEW_SELECTOR,
 			new ViewSelectorEndpoint(virtualModel, mapper),
 			defaultEndpoints.postEndpoint(),
@@ -60,7 +60,7 @@ public class EndpointsProvider {
 			defaultEndpoints.patchEndpoint(),
 			defaultEndpoints.deleteEndpoint()
 		));
-		result.add(new PathEndointCollector(
+		result.add(new PathEndpointCollector(
 			EndpointPath.VIEW_TYPES,
 			new ViewTypesEndpoint(virtualModel, mapper),
 			defaultEndpoints.postEndpoint(),
@@ -68,11 +68,18 @@ public class EndpointsProvider {
 			defaultEndpoints.patchEndpoint(),
 			defaultEndpoints.deleteEndpoint()
 		));
+		result.add(new PathEndpointCollector(
+			EndpointPath.VIEW_TYPE_METAMODEL,
+			new ViewTypeMetamodelEndpoint(virtualModel, mapper),
+			defaultEndpoints.postEndpoint(), 
+			defaultEndpoints.putEndpoint(),
+			defaultEndpoints.patchEndpoint(),
+			defaultEndpoints.deleteEndpoint()));
 		
 		return result;
 	}
 	
-	private static PathEndointCollector getDefaultEndpoints() {
+	private static PathEndpointCollector getDefaultEndpoints() {
 		var getEndpoint = new GetEndpoint() {
             @Override
             public String process(HttpWrapper wrapper) throws ServerHaltingException {
@@ -103,7 +110,7 @@ public class EndpointsProvider {
                 throw notFound("Put mapping for this request path not found!");
             }
         };
-        return new PathEndointCollector("", getEndpoint, postEndpoint, putEndpoint, patchEndpoint, deleteEndpoint);
+        return new PathEndpointCollector("", getEndpoint, postEndpoint, putEndpoint, patchEndpoint, deleteEndpoint);
 	}
 	
 	private EndpointsProvider() {}

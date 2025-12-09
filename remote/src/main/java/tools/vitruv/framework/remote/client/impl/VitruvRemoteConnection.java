@@ -16,7 +16,12 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Timer;
 import tools.vitruv.change.atomic.root.InsertRootEObject;
@@ -120,6 +125,30 @@ public class VitruvRemoteConnection implements VitruvClient {
         }
         return viewType.createSelector(null);
     }
+
+  /**
+   * Queries the Vitruvius server to obtain the metamodel {@EPackage} from the view type with 
+   * the given name.
+   *
+   * @param viewTypeName - {@link String}
+   * @return {@EPackage}
+   */
+  EPackage getMetamodel(String viewTypeName) {
+    var request = HttpRequest
+        .newBuilder()
+        .uri(createURIFrom(EndpointPath.VIEW_TYPE_METAMODEL))
+        .header(Header.VIEW_TYPE, viewTypeName)
+        .build();
+
+    var response = sendRequest(request);
+    try {
+      return mapper.deserialize(response.body(), EPackage.class);
+    }
+    catch (JsonProcessingException e) {
+      throw new BadClientResponseException(e);
+    }
+
+  }
 
     /**
      * Queries the Vitruvius server to obtain a view selector from the view type with the given

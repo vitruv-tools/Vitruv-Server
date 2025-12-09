@@ -5,7 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 import tools.vitruv.framework.remote.common.rest.constants.ContentType;
 import tools.vitruv.framework.remote.server.exception.ServerHaltingException;
-import tools.vitruv.framework.remote.server.rest.PathEndointCollector;
+import tools.vitruv.framework.remote.server.rest.PathEndpointCollector;
 
 import java.nio.charset.StandardCharsets;
 
@@ -17,9 +17,9 @@ import java.io.IOException;
  * Represents an {@link HttpHandler}.
  */
 class RequestHandler implements HttpHandler {
-    private PathEndointCollector endpoints;
+    private PathEndpointCollector endpoints;
 
-    RequestHandler(PathEndointCollector endpoints) {
+    RequestHandler(PathEndpointCollector endpoints) {
     	this.endpoints = endpoints;
     }
 
