@@ -41,6 +41,8 @@
   </modules>
 
   <properties>
+    <repo.sdq-demo-metamodels.version>1.9.0</repo.sdq-demo-metamodels.version>
+    <repo.sdq-commons.version>2.2.0</repo.sdq-commons.version>
     <vitruv.version>3.2.4-SNAPSHOT</vitruv.version>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.organization>vitruv-tools</sonar.organization>
@@ -119,6 +121,7 @@
         <version>1.16.0</version>
       </dependency>
 
+
       <!-- external test dependencies -->
       <dependency>
         <groupId>org.junit.jupiter</groupId>
@@ -145,12 +148,29 @@
         <artifactId>mockito-core</artifactId>
         <version>5.20.0</version>
       </dependency>
+      <dependency>
+        <groupId>sdq-demo-metamodels</groupId>
+        <artifactId>edu.kit.ipd.sdq.metamodels.families</artifactId>
+        <version>1.9.0.202311201524</version>
+      </dependency>
     </dependencies>
 
   </dependencyManagement>
 
   <repositories>
     <!-- allow snapshots -->
+    <repository>
+      <id>sdq-commons</id>
+      <name>SDQ Commons</name>
+      <url>https://kit-sdq.github.io/updatesite/release/commons/${repo.sdq-commons.version}</url>
+      <layout>p2</layout>
+    </repository>
+    <repository>
+      <id>sdq-demo-metamodels</id>
+      <name>SDQ Demo Metamodels</name>
+      <url>https://kit-sdq.github.io/updatesite/release/metamodels/demo/${repo.sdq-demo-metamodels.version}</url>
+      <layout>p2</layout>
+    </repository>
     <repository>
       <id>ossrh-snapshots</id>
       <name>OSSRH Snapshots</name>

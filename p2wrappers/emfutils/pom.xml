@@ -61,5 +61,9 @@
         </exclusion>
       </exclusions>
     </dependency>
+      <dependency>
+        <groupId>sdq-demo-metamodels</groupId>
+        <artifactId>edu.kit.ipd.sdq.metamodels.families</artifactId>
+    </dependency>
   </dependencies>
 </project>

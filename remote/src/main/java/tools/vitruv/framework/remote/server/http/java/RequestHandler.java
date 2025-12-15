@@ -1,6 +1,8 @@
 package tools.vitruv.framework.remote.server.http.java;
 
-import static java.net.HttpURLConnection.*;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static java.net.HttpURLConnection.HTTP_OK;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -17,7 +19,7 @@ class RequestHandler implements HttpHandler {
   private PathEndpointCollector endpoints;
 
   RequestHandler(PathEndpointCollector endpoints) {
-      this.endpoints = endpoints;
+    this.endpoints = endpoints;
   }
 
   /**
