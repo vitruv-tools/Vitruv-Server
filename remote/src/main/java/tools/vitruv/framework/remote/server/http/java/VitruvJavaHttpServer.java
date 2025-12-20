@@ -7,18 +7,19 @@ import java.util.List;
 import tools.vitruv.framework.remote.server.rest.PathEndointCollector;
 
 public class VitruvJavaHttpServer {
-    private final HttpServer server;
+  private final HttpServer server;
 
-    public VitruvJavaHttpServer(String host, int port, List<PathEndointCollector> endpoints) throws IOException {
-        this.server = HttpServer.create(new InetSocketAddress(host, port), 0);
-        endpoints.forEach(endp -> server.createContext(endp.path(), new RequestHandler(endp)));
-    }
+  public VitruvJavaHttpServer(String host, int port, List<PathEndointCollector> endpoints)
+      throws IOException {
+    this.server = HttpServer.create(new InetSocketAddress(host, port), 0);
+    endpoints.forEach(endp -> server.createContext(endp.path(), new RequestHandler(endp)));
+  }
 
-    public void start() {
-        server.start();
-    }
+  public void start() {
+    server.start();
+  }
 
-    public void stop() {
-        server.stop(0);
-    }
+  public void stop() {
+    server.stop(0);
+  }
 }

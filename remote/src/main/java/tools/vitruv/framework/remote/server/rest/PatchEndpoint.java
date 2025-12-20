@@ -1,4 +1,3 @@
 package tools.vitruv.framework.remote.server.rest;
 
-public interface PatchEndpoint extends RestEndpoint {
-}
+public interface PatchEndpoint extends RestEndpoint {}
