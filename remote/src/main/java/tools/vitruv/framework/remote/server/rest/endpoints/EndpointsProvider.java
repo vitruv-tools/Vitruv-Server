@@ -13,6 +13,7 @@ import tools.vitruv.framework.remote.server.rest.PatchEndpoint;
 import tools.vitruv.framework.remote.server.rest.PathEndointCollector;
 import tools.vitruv.framework.remote.server.rest.PostEndpoint;
 import tools.vitruv.framework.remote.server.rest.PutEndpoint;
+import tools.vitruv.framework.views.changederivation.DefaultStateBasedChangeResolutionStrategy;
 import tools.vitruv.framework.vsum.VirtualModel;
 
 public class EndpointsProvider {
@@ -68,6 +69,13 @@ public class EndpointsProvider {
 			defaultEndpoints.patchEndpoint(),
 			defaultEndpoints.deleteEndpoint()
 		));
+result.add(new PathEndointCollector(
+                EndpointPath.CHANGE_DERIVING,
+                defaultEndpoints.getEndpoint(),
+                defaultEndpoints.postEndpoint(),
+                defaultEndpoints.putEndpoint(),
+                new ChangeDerivingEndpoint(mapper),
+                defaultEndpoints.deleteEndpoint()));
 		
 		return result;
 	}

@@ -7,6 +7,7 @@ public final class EndpointPath {
     public static final String VIEW = "/vsum/view";
     public static final String IS_VIEW_CLOSED = "/vsum/view/closed";
     public static final String IS_VIEW_OUTDATED = "/vsum/view/outdated";
+    public static final String CHANGE_DERIVING = "/vsum/view/derive-changes";
 
     private EndpointPath() throws InstantiationException {
         throw new InstantiationException("Cannot be instantiated");
