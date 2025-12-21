@@ -1,9 +1,11 @@
 package tools.vitruv.framework.remote.server;
 
 import java.io.IOException;
+import java.util.List;
 import tools.vitruv.framework.remote.common.DefaultConnectionSettings;
 import tools.vitruv.framework.remote.common.json.JsonMapper;
 import tools.vitruv.framework.remote.server.http.java.VitruvJavaHttpServer;
+import tools.vitruv.framework.remote.server.rest.PathEndointCollector;
 import tools.vitruv.framework.remote.server.rest.endpoints.EndpointsProvider;
 import tools.vitruv.framework.vsum.VirtualModel;
 
@@ -26,9 +28,9 @@ public class VitruvServer {
    */
   public VitruvServer(VirtualModelInitializer modelInitializer, int port, String hostOrIp)
       throws IOException {
-    var model = modelInitializer.init();
-    var mapper = new JsonMapper(model.getFolder());
-    var endpoints = EndpointsProvider.getAllEndpoints(model, mapper);
+    VirtualModel model = modelInitializer.init();
+    JsonMapper mapper = new JsonMapper(model.getFolder());
+    List<PathEndointCollector> endpoints = EndpointsProvider.getAllEndpoints(model, mapper);
 
     this.server = new VitruvJavaHttpServer(hostOrIp, port, endpoints);
   }

@@ -15,6 +15,12 @@ public class ViewTypesEndpoint implements GetEndpoint {
   private final VirtualModel model;
   private final JsonMapper mapper;
 
+  /**
+   * Creates a new ViewTypesEndpoint.
+   *
+   * @param model The virtual model containing the view types.
+   * @param mapper The JSON mapper to serialize the response.
+   */
   public ViewTypesEndpoint(VirtualModel model, JsonMapper mapper) {
     this.model = model;
     this.mapper = mapper;

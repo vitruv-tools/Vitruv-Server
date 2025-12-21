@@ -42,6 +42,11 @@ public class ChangeDerivingEndpoint implements PatchEndpoint {
       new DefaultStateBasedChangeResolutionStrategy();
   private final Logger logger = LoggerFactory.getLogger(ChangeDerivingEndpoint.class);
 
+  /**
+   * Creates a new ChangeDerivingEndpoint.
+   *
+   * @param mapper The JSON mapper to use.
+   */
   public ChangeDerivingEndpoint(JsonMapper mapper) {
     this.mapper = mapper;
   }

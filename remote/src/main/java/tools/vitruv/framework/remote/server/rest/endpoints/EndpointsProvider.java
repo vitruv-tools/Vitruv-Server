@@ -14,7 +14,16 @@ import tools.vitruv.framework.remote.server.rest.PostEndpoint;
 import tools.vitruv.framework.remote.server.rest.PutEndpoint;
 import tools.vitruv.framework.vsum.VirtualModel;
 
+/** Provides all REST endpoints for the Vitruv server. */
 public class EndpointsProvider {
+
+  /**
+   * Creates and returns all REST endpoints for the Vitruv server.
+   *
+   * @param virtualModel The virtual model to use.
+   * @param mapper The JSON mapper to use.
+   * @return A list of all REST endpoints.
+   */
   public static List<PathEndointCollector> getAllEndpoints(
       VirtualModel virtualModel, JsonMapper mapper) {
     var defaultEndpoints = getDefaultEndpoints();

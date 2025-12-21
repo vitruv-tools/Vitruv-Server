@@ -24,6 +24,11 @@ public class ChangePropagationEndpoint implements PatchEndpoint {
   private static final String ENDPOINT_METRIC_NAME = "vitruv.server.rest.propagation";
   private final JsonMapper mapper;
 
+  /**
+   * Creates a new ChangePropagationEndpoint.
+   *
+   * @param mapper The JSON mapper to use.
+   */
   public ChangePropagationEndpoint(JsonMapper mapper) {
     this.mapper = mapper;
   }

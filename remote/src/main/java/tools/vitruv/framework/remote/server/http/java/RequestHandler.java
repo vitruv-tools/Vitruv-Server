@@ -45,7 +45,7 @@ class RequestHandler implements HttpHandler {
       } else {
         wrapper.sendResponse(HTTP_OK);
       }
-    } catch (Exception exception) {
+    } catch (IOException | ServerHaltingException exception) {
       var statusCode = HTTP_INTERNAL_ERROR;
       if (exception instanceof ServerHaltingException haltingException) {
         statusCode = haltingException.getStatusCode();
