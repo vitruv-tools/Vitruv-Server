@@ -10,11 +10,22 @@ public class ServerHaltingException extends RuntimeException {
 
   private final int statusCode;
 
+  /**
+   * Creates a new {@link ServerHaltingException}.
+   *
+   * @param statusCode the HTTP status code representing the error
+   * @param msg the error message
+   */
   public ServerHaltingException(int statusCode, String msg) {
     super(msg);
     this.statusCode = statusCode;
   }
 
+  /**
+   * Returns the HTTP status code representing the error.
+   *
+   * @return the HTTP status code
+   */
   public int getStatusCode() {
     return statusCode;
   }

@@ -33,6 +33,14 @@ public class RemoteView implements View {
   protected ResourceSet viewSource;
   protected boolean modified = false;
 
+  /**
+   * Creates a new {@link RemoteView}.
+   *
+   * @param uuid the unique identifier of the view
+   * @param viewSource the resource set representing the view's content
+   * @param selector the view selector used to create this view
+   * @param remoteConnection the remote connection to the Vitruvius server
+   */
   RemoteView(
       String uuid,
       ResourceSet viewSource,
@@ -148,7 +156,7 @@ public class RemoteView implements View {
     return selector;
   }
 
-  /** UNSUPPORTED AT THE MOMENT!! */
+  /** UNSUPPORTED AT THE MOMENT!!. */
   @Override
   public ViewType<? extends ViewSelector> getViewType() {
     // The client has no knowledge which view type was used to create the remote
@@ -190,6 +198,7 @@ public class RemoteView implements View {
     return new ChangeDerivingRemoteView(this, changeResolutionStrategy);
   }
 
+  /** Checks that the view is not closed. */
   void checkNotClosed() {
     checkState(!isClosed(), "view is already closed");
   }

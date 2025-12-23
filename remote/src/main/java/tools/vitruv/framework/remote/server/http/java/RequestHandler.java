@@ -16,6 +16,11 @@ import tools.vitruv.framework.remote.server.rest.PathEndointCollector;
 class RequestHandler implements HttpHandler {
   private PathEndointCollector endpoints;
 
+  /**
+   * Creates a new {@link RequestHandler}.
+   *
+   * @param endpoints The endpoint collector providing the endpoints to handle requests.
+   */
   RequestHandler(PathEndointCollector endpoints) {
     this.endpoints = endpoints;
   }

@@ -24,6 +24,11 @@ public class ChangeRecordingRemoteView implements CommittableView {
   private final RemoteView base;
   private ChangeRecorder changeRecorder;
 
+  /**
+   * Creates a new {@link ChangeRecordingRemoteView} based on the given {@link RemoteView}.
+   *
+   * @param base the base remote view
+   */
   public ChangeRecordingRemoteView(RemoteView base) {
     checkArgument(base != null, "base must not be null");
     checkState(!base.isModified(), "view must not be modified");
@@ -126,6 +131,11 @@ public class ChangeRecordingRemoteView implements CommittableView {
     changeRecorder.beginRecording();
   }
 
+  /**
+   * Commits the changes made to the view and its containing elements, along with the provided user.
+   *
+   * @param userInputs the user interactions associated with the changes
+   */
   public void commitChanges(Iterable<UserInteractionBase> userInputs) {
     base.checkNotClosed();
     var recordedChange = changeRecorder.endRecording();
