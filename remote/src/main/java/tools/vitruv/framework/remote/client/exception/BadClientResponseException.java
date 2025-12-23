@@ -2,6 +2,7 @@ package tools.vitruv.framework.remote.client.exception;
 
 /** Exception thrown when the client receives a bad response from the server. */
 public class BadClientResponseException extends RuntimeException {
+  /** Creates a new BadClientResponseException. */
   public BadClientResponseException() {
     super();
   }
