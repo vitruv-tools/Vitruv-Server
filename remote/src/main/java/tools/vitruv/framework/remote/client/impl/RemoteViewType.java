@@ -14,12 +14,25 @@ public class RemoteViewType implements ViewType<ViewSelector> {
   private final VitruvRemoteConnection remoteConnection;
   private final EPackage metamodel;
 
+  /**
+   * Creates a new RemoteViewType.
+   *
+   * @param name the name of the view type
+   * @param remoteConnection the remote connection to the Vitruvius server
+   * @param metamodel the metamodel of the view type
+   */
   RemoteViewType(String name, VitruvRemoteConnection remoteConnection, EPackage metamodel) {
     this.name = name;
     this.remoteConnection = remoteConnection;
     this.metamodel = metamodel;
   }
 
+  /**
+   * Creates a new RemoteViewType without metamodel.
+   *
+   * @param name the name of the view type
+   * @param remoteConnection the remote connection to the Vitruvius server
+   */
   RemoteViewType(String name, VitruvRemoteConnection remoteConnection) {
     this.name = name;
     this.remoteConnection = remoteConnection;

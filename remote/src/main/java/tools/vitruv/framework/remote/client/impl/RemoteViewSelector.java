@@ -23,6 +23,13 @@ public class RemoteViewSelector implements ViewSelector {
   private final VitruvRemoteConnection remoteConnection;
   private final ModifiableViewSelection viewSelection;
 
+  /**
+   * Creates a new {@link RemoteViewSelector}.
+   *
+   * @param uuid the unique identifier of the view
+   * @param selection the selection defining the elements to be included in the view
+   * @param remoteConnection the remote connection to the Vitruvius server
+   */
   public RemoteViewSelector(
       String uuid, Resource selection, VitruvRemoteConnection remoteConnection) {
     this.uuid = uuid;
@@ -77,10 +84,20 @@ public class RemoteViewSelector implements ViewSelector {
         .anyMatch(it -> EcoreUtil.equals(eObject, it) && viewSelection.isViewObjectSelected(it));
   }
 
+  /**
+   * Gets the UUID of the view to be created.
+   *
+   * @return The UUID.
+   */
   String getUUID() {
     return this.uuid;
   }
 
+  /**
+   * Gets the IDs of the selected elements in the selection.
+   *
+   * @return The list of IDs.
+   */
   List<String> getSelectionIds() {
     var ids = new LinkedList<String>();
     viewSelection

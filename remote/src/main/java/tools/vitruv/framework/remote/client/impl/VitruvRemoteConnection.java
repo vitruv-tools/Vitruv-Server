@@ -39,12 +39,24 @@ import tools.vitruv.framework.views.ViewType;
  * server. This enables the ability to perform actions on this remote Vitruvius instance.
  */
 public class VitruvRemoteConnection implements VitruvClient {
+  /** Constant for successful request result. */
   private static final String SUCCESS = "success";
+
+  /** Constant for exception during request processing. */
   private static final String EXCEPTION = "exception";
+
+  /** The constant result. */
   private static final String RESULT = "result";
+
+  /** The method constant. */
   private static final String METHOD = "method";
+
+  /** The endpoint constant. */
   private static final String ENDPOINT = "endpoint";
+
+  /** The metric client name. */
   private static final String METRIC_CLIENT_NAME = "vitruv.client.rest.client";
+
   private final int port;
   private final String hostOrIp;
   private final String protocol;

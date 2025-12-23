@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import tools.vitruv.framework.remote.client.impl.VitruvRemoteConnection;
 import tools.vitruv.framework.remote.common.DefaultConnectionSettings;
 
+/** A factory for creating {@link VitruvClient} instances to connect to a Vitruvius server. */
 public class VitruvClientFactory {
 
   /**

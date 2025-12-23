@@ -11,7 +11,12 @@ import tools.vitruv.framework.remote.server.http.HttpWrapper;
 class HttpExchangeWrapper implements HttpWrapper {
   private final HttpExchange exchange;
 
-  HttpExchangeWrapper(HttpExchange exchange) {
+  /**
+   * Creates a new {@link HttpExchangeWrapper}.
+   *
+   * @param exchange The {@link HttpExchange} to wrap.
+   */
+  public HttpExchangeWrapper(HttpExchange exchange) {
     this.exchange = exchange;
   }
 

@@ -8,8 +8,8 @@ import tools.vitruv.framework.views.View;
 import tools.vitruv.framework.views.ViewSelector;
 
 /**
- * A global cache holding {@link View}s, {@link ViewSelector}s and mappings of the form UUID
- * {@literal <->} {@link EObject}.
+ * A global cache holding {@link View}s, {@link ViewSelector}s and mappings of the form UUID and the
+ * {@link EObject}.
  */
 public class Cache {
   private Cache() throws InstantiationException {
@@ -56,7 +56,7 @@ public class Cache {
    *
    * @param selectorUuid The uuid of the selector.
    * @param selector The selector to add.
-   * @param mapping The mapping of the form String <->EObject.
+   * @param mapping The mapping of the form String and the EObject.
    */
   public static void addSelectorWithMapping(
       String selectorUuid, ViewSelector selector, BiMap<String, EObject> mapping) {

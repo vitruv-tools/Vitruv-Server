@@ -32,6 +32,12 @@ public class ChangeDerivingRemoteView implements CommittableView {
 
   private Map<Resource, Resource> originalResourceMapping;
 
+  /**
+   * Creates a new {@link ChangeDerivingRemoteView}.
+   *
+   * @param base the base remote view
+   * @param resolutionStrategy the strategy used to derive changes
+   */
   ChangeDerivingRemoteView(RemoteView base, StateBasedChangeResolutionStrategy resolutionStrategy) {
     checkArgument(base != null, "base must not be null");
     checkState(!base.isModified(), "view must not be modified");

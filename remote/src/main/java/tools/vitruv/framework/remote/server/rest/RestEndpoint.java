@@ -21,6 +21,7 @@ public interface RestEndpoint {
    * given message.
    *
    * @param msg A message containing the reason of halting the execution.
+   * @return A ServerHaltingException representing the NOT FOUND error.
    */
   default ServerHaltingException notFound(String msg) {
     return new ServerHaltingException(HTTP_BAD_METHOD, msg);
@@ -31,6 +32,7 @@ public interface RestEndpoint {
    * with the given message.
    *
    * @param msg A message containing the reason of halting the execution.
+   * @return A ServerHaltingException representing the INTERNAL SERVER ERROR.
    */
   default ServerHaltingException internalServerError(String msg) {
     return new ServerHaltingException(HTTP_INTERNAL_ERROR, msg);
