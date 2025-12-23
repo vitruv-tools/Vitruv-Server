@@ -1,11 +1,12 @@
 package tools.vitruv.framework.remote.common.apm;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -74,6 +75,9 @@ class VitruvApmControllerTest {
     VitruvStepMeterRegistry secondInstance = getActiveRegistry();
 
     // The same instance should be used
-    assertSame(firstInstance, secondInstance, "Registry instance should be the same when enabling multiple times");
+    assertSame(
+        firstInstance,
+        secondInstance,
+        "Registry instance should be the same when enabling multiple times");
   }
 }

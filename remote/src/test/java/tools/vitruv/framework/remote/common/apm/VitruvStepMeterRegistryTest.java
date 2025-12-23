@@ -1,27 +1,30 @@
 package tools.vitruv.framework.remote.common.apm;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.step.StepRegistryConfig;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class VitruvStepMeterRegistryTest {
   private VitruvStepMeterRegistry registry;
   private Path tempFile;
   private StepRegistryConfig mockConfig;
- 
+
   @BeforeEach
   void setUp() {
     try {
@@ -43,7 +46,7 @@ class VitruvStepMeterRegistryTest {
       fail("Failed to delete temp file: " + e.getMessage());
     }
   }
-  
+
   @Test
   void testMetricsAreWrittenToFile() {
     Timer timer = Timer.builder("test.timer").register(registry);
@@ -71,8 +74,10 @@ class VitruvStepMeterRegistryTest {
 
     try {
       String fileContent = Files.readString(tempFile);
-      assertTrue(fileContent.contains("test.timer1"), "Metric test.timer1 should be present in the file");
-      assertTrue(fileContent.contains("test.timer2"), "Metric test.timer2 should be present in the file");
+      assertTrue(
+          fileContent.contains("test.timer1"), "Metric test.timer1 should be present in the file");
+      assertTrue(
+          fileContent.contains("test.timer2"), "Metric test.timer2 should be present in the file");
     } catch (IOException e) {
       fail("Failed to read temp file: " + e.getMessage());
     }
@@ -104,7 +109,10 @@ class VitruvStepMeterRegistryTest {
 
     try {
       String fileContent = Files.readString(tempFile);
-      assertEquals("Pre-existing content", fileContent, "File content should remain unchanged due to error handling");
+      assertEquals(
+          "Pre-existing content",
+          fileContent,
+          "File content should remain unchanged due to error handling");
     } catch (IOException e) {
       fail("Failed to read temp file: " + e.getMessage());
     }
@@ -115,12 +123,15 @@ class VitruvStepMeterRegistryTest {
     Timer timer = registry.timer("test.timer");
     timer.record(Duration.ofMillis(100));
 
-    assertFalse(registry.getMeters().isEmpty(), "There should be at least one recorded metric before publishing.");
+    assertFalse(
+        registry.getMeters().isEmpty(),
+        "There should be at least one recorded metric before publishing.");
 
     registry.publish();
 
-    boolean hasRemainingMetrics = registry.getMeters().stream()
-        .anyMatch(meter -> meter.getId().getName().equals("test.timer"));
+    boolean hasRemainingMetrics =
+        registry.getMeters().stream()
+            .anyMatch(meter -> meter.getId().getName().equals("test.timer"));
 
     assertTrue(hasRemainingMetrics, "Timer should still be registered.");
   }

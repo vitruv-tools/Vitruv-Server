@@ -1,4 +1,4 @@
 package tools.vitruv.framework.remote.server.rest;
 
-public interface PutEndpoint extends RestEndpoint {
-}
+/** Marker interface for REST endpoints that handle HTTP PUT requests. */
+public interface PutEndpoint extends RestEndpoint {}

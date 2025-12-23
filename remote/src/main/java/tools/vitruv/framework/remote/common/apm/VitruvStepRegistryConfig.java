@@ -2,14 +2,15 @@ package tools.vitruv.framework.remote.common.apm;
 
 import io.micrometer.core.instrument.step.StepRegistryConfig;
 
+/** Configuration for the Vitruvius step meter registry. */
 class VitruvStepRegistryConfig implements StepRegistryConfig {
-	@Override
-	public String get(String arg0) {
-		return null;
-	}
+  @Override
+  public String get(String arg0) {
+    return null;
+  }
 
-	@Override
-	public String prefix() {
-		return "vitruv-step-config";
-	}
+  @Override
+  public String prefix() {
+    return "vitruv-step-config";
+  }
 }
