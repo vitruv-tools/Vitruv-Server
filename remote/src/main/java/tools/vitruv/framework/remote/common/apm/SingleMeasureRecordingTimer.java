@@ -12,8 +12,19 @@ import java.util.concurrent.TimeUnit;
 public class SingleMeasureRecordingTimer extends StepTimer {
   public static record SingleRecordedMeasure(long amount, TimeUnit unit) {}
 
-  private List<SingleRecordedMeasure> recordings = new ArrayList<>();
+  private final List<SingleRecordedMeasure> recordings = new ArrayList<>();
 
+  /**
+   * Creates a new SingleMeasureRecordingTimer.
+   *
+   * @param id the id of the timer
+   * @param clock the clock to use
+   * @param distributionStatisticConfig the distribution statistic configuration
+   * @param pauseDetector the pause detector
+   * @param baseTimeUnit the base time unit
+   * @param stepDurationMillis the step duration in milliseconds
+   * @param supportsAggregablePercentiles whether the timer supports aggregable percentiles
+   */
   public SingleMeasureRecordingTimer(
       Id id,
       Clock clock,
@@ -38,18 +49,28 @@ public class SingleMeasureRecordingTimer extends StepTimer {
     recordings.add(new SingleRecordedMeasure(amount, unit));
   }
 
+  /**
+   * Gets the list of single recorded measurements.
+   *
+   * @return the list of single recorded measurements
+   */
   public List<SingleRecordedMeasure> getRecordings() {
     return List.copyOf(recordings);
   }
 
+  /** Clears the recorded measurements. */
   public void clear() {
     recordings.clear();
   }
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) return true;
-    if (!(obj instanceof SingleMeasureRecordingTimer)) return false;
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof SingleMeasureRecordingTimer)) {
+      return false;
+    }
     return super.equals(obj);
   }
 

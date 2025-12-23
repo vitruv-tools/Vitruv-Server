@@ -70,6 +70,11 @@ public class IdTransformation {
     return URI.createURI(root.toString() + local.toString());
   }
 
+  /**
+   * Transforms all root change URIs in the given list of changes to global IDs.
+   *
+   * @param eChanges the list of changes
+   */
   public void allToGlobal(List<? extends EChange<HierarchicalId>> eChanges) {
     for (var eChange : eChanges) {
       if (eChange instanceof RootEChange<?> change) {
@@ -78,6 +83,11 @@ public class IdTransformation {
     }
   }
 
+  /**
+   * Transforms all root change URIs in the given list of changes to local IDs.
+   *
+   * @param eChanges the list of changes
+   */
   public void allToLocal(List<? extends EChange<HierarchicalId>> eChanges) {
     for (var eChange : eChanges) {
       if (eChange instanceof RootEChange<?> change) {
