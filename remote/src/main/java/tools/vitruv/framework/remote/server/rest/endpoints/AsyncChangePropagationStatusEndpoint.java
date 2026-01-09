@@ -5,6 +5,8 @@ import tools.vitruv.framework.remote.common.rest.constants.ContentType;
 import tools.vitruv.framework.remote.common.rest.constants.Header;
 import tools.vitruv.framework.remote.server.exception.ServerHaltingException;
 import tools.vitruv.framework.remote.server.http.HttpWrapper;
+import tools.vitruv.framework.remote.server.registry.AsyncTaskRegistry;
+import tools.vitruv.framework.remote.server.registry.AsyncTaskStatus;
 import tools.vitruv.framework.remote.server.rest.GetEndpoint;
 
 public class AsyncChangePropagationStatusEndpoint implements GetEndpoint {
@@ -23,10 +25,13 @@ public class AsyncChangePropagationStatusEndpoint implements GetEndpoint {
 			throw notFound("Task ID query parameter is missing!");
 		}
 
-		// TODO: Look up task status from registry
-		// For now, just return placeholder status
+		AsyncTaskStatus status = AsyncTaskRegistry.getInstance().getStatus(taskId);
+		if (status == null) {
+			throw notFound("Task with ID '" + taskId + "' not found!");
+		}
+
 		wrapper.setContentType(ContentType.TEXT_PLAIN);
-		return "Still Working on it! Task ID: " + taskId;
+		return "Task State: " + status.getState() + " | Created: " + status.getCreatedAt();
 	}
 
 }

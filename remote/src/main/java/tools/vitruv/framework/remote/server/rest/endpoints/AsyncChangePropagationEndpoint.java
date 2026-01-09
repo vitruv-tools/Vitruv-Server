@@ -16,6 +16,7 @@ import tools.vitruv.framework.remote.common.rest.constants.ContentType;
 import tools.vitruv.framework.remote.common.rest.constants.Header;
 import tools.vitruv.framework.remote.server.exception.ServerHaltingException;
 import tools.vitruv.framework.remote.server.http.HttpWrapper;
+import tools.vitruv.framework.remote.server.registry.AsyncTaskRegistry;
 import tools.vitruv.framework.remote.server.rest.PostEndpoint;
 
 public class AsyncChangePropagationEndpoint implements PostEndpoint {
@@ -58,6 +59,7 @@ public class AsyncChangePropagationEndpoint implements PostEndpoint {
 
 		// Generate random task ID
 		String taskId = UUID.randomUUID().toString();
+		AsyncTaskRegistry.getInstance().registerTask(taskId);
 
 		wrapper.setContentType(ContentType.TEXT_PLAIN);
 		return taskId;
