@@ -45,11 +45,13 @@ public class AsyncTaskStatus {
     }
 
     public void complete(Object result) {
+        this.state = TaskState.COMPLETED;
         this.result = result;
         this.completedAt = LocalDateTime.now();
     }
 
     public void fail(String errorMessage) {
+        this.state = TaskState.FAILED;
         this.errorMessage = errorMessage;
         this.completedAt = LocalDateTime.now();
     }

@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Registry for managing asynchronous task executions.
- * Tracks task IDs and their current status for long-running operations.
+ * Tracks task IDs and their current status.
  */
 public class AsyncTaskRegistry {
     private static final AsyncTaskRegistry INSTANCE = new AsyncTaskRegistry();
