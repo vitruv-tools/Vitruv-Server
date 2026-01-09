@@ -31,7 +31,14 @@ public class AsyncChangePropagationStatusEndpoint implements GetEndpoint {
 		}
 
 		wrapper.setContentType(ContentType.TEXT_PLAIN);
-		return "Task State: " + status.getState() + " | Created: " + status.getCreatedAt();
+		var response = new StringBuilder("Task State: " + status.getState() + " | Created: " + status.getCreatedAt());
+		if (status.getCompletedAt() != null) {
+			response.append(" | Completed: " + status.getCompletedAt());
+		}
+		if (status.getErrorMessage() != null) {
+			response.append(" | Error: " + status.getErrorMessage());
+		}
+		return response.toString();
 	}
 
 }
