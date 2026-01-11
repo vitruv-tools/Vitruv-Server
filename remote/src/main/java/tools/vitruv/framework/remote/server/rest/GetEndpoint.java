@@ -1,4 +1,4 @@
 package tools.vitruv.framework.remote.server.rest;
 
-public interface GetEndpoint extends RestEndpoint {
-}
+/** Marker interface for REST endpoints that handle HTTP GET requests. */
+public interface GetEndpoint extends RestEndpoint {}
