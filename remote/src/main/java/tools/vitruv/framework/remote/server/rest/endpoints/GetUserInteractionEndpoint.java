@@ -23,7 +23,7 @@ public class GetUserInteractionEndpoint implements GetEndpoint {
 	@Override
 	public String process(HttpWrapper wrapper) throws ServerHaltingException {
 		String taskId = wrapper.getRequestHeader(Header.TASK_ID);
-		
+
 		if (taskId == null || taskId.isEmpty()) {
 			throw notFound("Task ID query parameter is missing!");
 		}
