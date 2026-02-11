@@ -1,5 +1,10 @@
 package tools.vitruv.framework.remote.server.rest.endpoints;
 
+import java.io.IOException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import tools.vitruv.change.interaction.UserInteractionBase;
 import tools.vitruv.framework.remote.common.json.JsonMapper;
 import tools.vitruv.framework.remote.common.rest.constants.ContentType;
 import tools.vitruv.framework.remote.common.rest.constants.Header;
@@ -7,12 +12,12 @@ import tools.vitruv.framework.remote.server.exception.ServerHaltingException;
 import tools.vitruv.framework.remote.server.http.HttpWrapper;
 import tools.vitruv.framework.remote.server.registry.AsyncTaskRegistry;
 import tools.vitruv.framework.remote.server.registry.AsyncTaskStatus;
-import tools.vitruv.framework.remote.server.rest.GetEndpoint;
+import tools.vitruv.framework.remote.server.rest.PostEndpoint;
 
-public class AsyncChangePropagationStatusEndpoint implements GetEndpoint {
+public class UserInteractionResponseEndpoint implements PostEndpoint {
 	private final JsonMapper mapper;
 
-	public AsyncChangePropagationStatusEndpoint(JsonMapper mapper) {
+	public UserInteractionResponseEndpoint(JsonMapper mapper) {
 		this.mapper = mapper;
 	}
 
@@ -20,7 +25,6 @@ public class AsyncChangePropagationStatusEndpoint implements GetEndpoint {
 	@Override
 	public String process(HttpWrapper wrapper) throws ServerHaltingException {
 		String taskId = wrapper.getRequestHeader(Header.TASK_ID);
-
 		if (taskId == null || taskId.isEmpty()) {
 			throw notFound("Task ID query parameter is missing!");
 		}
@@ -30,15 +34,27 @@ public class AsyncChangePropagationStatusEndpoint implements GetEndpoint {
 			throw notFound("Task with ID '" + taskId + "' not found!");
 		}
 
+		if (status.getState() != AsyncTaskStatus.TaskState.WAITING_USER_INTERACTION) {
+			throw new ServerHaltingException(409, "Task with ID '" + taskId + "' is not waiting for user interaction!");
+		}
+
+		String body;
+		try {
+			body = wrapper.getRequestBodyAsString();
+		} catch (IOException e) {
+			throw internalServerError(e.getMessage());
+		}
+
+		UserInteractionBase response;
+		try {
+			response = mapper.deserialize(body, UserInteractionBase.class);
+		} catch (JsonProcessingException e) {
+			throw internalServerError(e.getMessage());
+		}
+
+		status.setInteractionResponse(response);
 		wrapper.setContentType(ContentType.TEXT_PLAIN);
-		var response = new StringBuilder("Task State: " + status.getState() + " | Created: " + status.getCreatedAt());
-		if (status.getCompletedAt() != null) {
-			response.append(" | Completed: " + status.getCompletedAt());
-		}
-		if (status.getErrorMessage() != null) {
-			response.append(" | Error: " + status.getErrorMessage());
-		}
-		return response.toString();
+		return "OK";
 	}
 
 }

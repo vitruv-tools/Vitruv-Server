@@ -49,6 +49,13 @@ public class EndpointsProvider {
 				defaultEndpoints.patchEndpoint(),
 				defaultEndpoints.deleteEndpoint()));
 		result.add(new PathEndointCollector(
+				EndpointPath.VIEW_INTERACTION,
+				new GetUserInteractionEndpoint(mapper),
+				new UserInteractionResponseEndpoint(mapper),
+				defaultEndpoints.putEndpoint(),
+				defaultEndpoints.patchEndpoint(),
+				defaultEndpoints.deleteEndpoint()));
+		result.add(new PathEndointCollector(
 				EndpointPath.VIEW,
 				new UpdateViewEndpoint(mapper),
 				new ViewEndpoint(mapper),

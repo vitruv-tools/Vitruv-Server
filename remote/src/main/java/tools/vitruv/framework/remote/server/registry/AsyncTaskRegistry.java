@@ -31,13 +31,15 @@ public class AsyncTaskRegistry {
     }
 
     /**
-     * Retrieves the status of a task by its ID.
+     * Retrieves the Task by its ID.
      * 
      * @param taskId the unique task identifier
      * @return the AsyncTaskStatus or null if task not found
      */
-    public AsyncTaskStatus getStatus(String taskId) {
-        return tasks.get(taskId);
+    public AsyncTaskStatus getTaskStatus(String taskId) {
+        if (taskExists(taskId))
+            return tasks.get(taskId);
+        return null;
     }
 
     /**

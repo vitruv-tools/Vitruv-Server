@@ -2,6 +2,8 @@ package tools.vitruv.framework.remote.server.registry;
 
 import java.time.LocalDateTime;
 
+import tools.vitruv.change.interaction.UserInteractionBase;
+
 public class AsyncTaskStatus {
     private final String taskId;
     private volatile TaskState state;
@@ -9,6 +11,9 @@ public class AsyncTaskStatus {
     private LocalDateTime completedAt;
     private Object result;
     private String errorMessage;
+    private volatile UserInteractionBase pendingInteraction;
+    private volatile UserInteractionBase interactionResponse;
+    private final Object interactionLock = new Object();
 
     public enum TaskState {
         RUNNING, WAITING_USER_INTERACTION, COMPLETED, FAILED
@@ -58,6 +63,37 @@ public class AsyncTaskStatus {
 
     public void waitForUserInteraction() {
         this.state = TaskState.WAITING_USER_INTERACTION;
+    }
+
+    public void setWaitingForInteraction(UserInteractionBase interaction) {
+        this.pendingInteraction = interaction;
+        this.state = TaskState.WAITING_USER_INTERACTION;
+    }
+
+    public UserInteractionBase getPendingInteraction() {
+        return pendingInteraction;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends UserInteractionBase> T waitForInteractionResponse() throws InterruptedException {
+        synchronized (interactionLock) {
+            while (interactionResponse == null && state == TaskState.WAITING_USER_INTERACTION) {
+                interactionLock.wait();
+            }
+            T response = (T) interactionResponse;
+            // Cleanup for next interaction
+            interactionResponse = null;
+            pendingInteraction = null;
+            this.state = TaskState.RUNNING;
+            return response;
+        }
+    }
+
+    public void setInteractionResponse(UserInteractionBase response) {
+        synchronized (interactionLock) {
+            this.interactionResponse = response;
+            interactionLock.notifyAll();
+        }
     }
 
     public boolean isRunning() {

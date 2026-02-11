@@ -18,6 +18,7 @@ import tools.vitruv.change.composite.description.VitruviusChange;
 import tools.vitruv.framework.remote.common.json.JsonMapper;
 import tools.vitruv.framework.remote.common.rest.constants.ContentType;
 import tools.vitruv.framework.remote.common.rest.constants.Header;
+import tools.vitruv.framework.remote.server.async.ServerInteractionResultProvider;
 import tools.vitruv.framework.remote.server.exception.ServerHaltingException;
 import tools.vitruv.framework.remote.server.http.HttpWrapper;
 import tools.vitruv.framework.remote.server.registry.AsyncTaskRegistry;
@@ -27,8 +28,7 @@ import tools.vitruv.framework.views.impl.ViewCreatingViewType;
 
 public class AsyncChangePropagationEndpoint implements PostEndpoint {
 	private static final String ENDPOINT_METRIC_NAME = "vitruv.server.rest.async.propagation";
-	private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(Math.max(2,
-			Runtime.getRuntime().availableProcessors()));
+	private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
 	private final JsonMapper mapper;
 
 	public AsyncChangePropagationEndpoint(JsonMapper mapper) {
@@ -73,6 +73,10 @@ public class AsyncChangePropagationEndpoint implements PostEndpoint {
 		EXECUTOR.submit(() -> {
 			var propTimer = Timer.start(Metrics.globalRegistry);
 			try {
+				// Set taskId in ThreadLocal so ServerInteractionResultProvider knows we're in
+				// async mode
+				ServerInteractionResultProvider.setCurrentTaskId(taskId);
+
 				var type = (ViewCreatingViewType<?, ?>) view.getViewType();
 				type.commitViewChanges((ModifiableView) view, change);
 				propTimer.stop(Metrics.timer(ENDPOINT_METRIC_NAME, "propagation", "success"));
@@ -80,6 +84,9 @@ public class AsyncChangePropagationEndpoint implements PostEndpoint {
 			} catch (Exception e) {
 				propTimer.stop(Metrics.timer(ENDPOINT_METRIC_NAME, "propagation", "failure"));
 				registry.failTask(taskId, e.getMessage());
+			} finally {
+				// Always cleanup ThreadLocal to prevent memory leaks
+				ServerInteractionResultProvider.clearCurrentTaskId();
 			}
 		});
 

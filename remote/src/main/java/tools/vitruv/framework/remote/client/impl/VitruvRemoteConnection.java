@@ -33,6 +33,7 @@ import tools.vitruv.framework.remote.common.rest.constants.Header;
 import tools.vitruv.framework.remote.common.util.ResourceUtil;
 import tools.vitruv.framework.views.ViewSelector;
 import tools.vitruv.framework.views.ViewType;
+import tools.vitruv.change.interaction.UserInteractionBase;
 
 /**
  * A {@link VitruvRemoteConnection} acts as a {@link HttpClient} to forward
@@ -368,5 +369,46 @@ public class VitruvRemoteConnection implements VitruvClient {
                 .build();
         var response = sendRequest(request);
         return response.body(); // Returns the status message
+    }
+
+    /**
+     * Gets the pending user interaction for the given task ID, if there is one.
+     * 
+     * @param taskId
+     * @return
+     */
+
+    public String getInteraction(String taskId) {
+        var request = HttpRequest.newBuilder()
+                .uri(createURIFrom(EndpointPath.VIEW_INTERACTION))
+                .header(Header.TASK_ID, taskId)
+                .GET()
+                .build();
+        var response = sendRequest(request);
+        return response.body(); // Returns the interaction as JSON or "null"
+    }
+
+    /**
+     * Submits the user interaction response to the Vitruvius server for a pending
+     * user interaction.
+     * 
+     * @param taskId      The task ID of the pending user interaction.
+     * @param interaction The user interaction response to submit.
+     * @return The server's response to the submitted interaction.
+     */
+
+    public String submitInteractionResponse(String taskId, UserInteractionBase interaction) {
+        try {
+            var jsonBody = mapper.serialize(interaction);
+            var request = HttpRequest.newBuilder()
+                    .uri(createURIFrom(EndpointPath.VIEW_INTERACTION))
+                    .header(Header.TASK_ID, taskId)
+                    .POST(BodyPublishers.ofString(jsonBody))
+                    .build();
+            var response = sendRequest(request);
+            return response.body();
+        } catch (IOException e) {
+            throw new BadClientResponseException(e);
+        }
     }
 }
