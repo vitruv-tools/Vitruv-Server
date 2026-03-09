@@ -360,7 +360,7 @@ public class VitruvRemoteConnection implements VitruvClient {
      * @param taskId The task ID returned by startAsyncPropagation.
      * @return The current status of the async task.
      */
-    @Override
+
     public String getAsyncStatus(String taskId) {
         var request = HttpRequest.newBuilder()
                 .uri(createURIFrom(EndpointPath.VIEW_ASYNC))

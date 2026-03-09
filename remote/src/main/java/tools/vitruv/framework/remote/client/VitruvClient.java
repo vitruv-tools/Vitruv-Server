@@ -11,12 +11,4 @@ import tools.vitruv.framework.views.ViewTypeProvider;
  * remotely editable {@link tools.vitruv.framework.views.View}s.
  */
 public interface VitruvClient extends ViewTypeProvider, ViewProvider {
-
-    /**
-     * Queries the status of an asynchronous change propagation task.
-     * 
-     * @param taskId The task ID returned by startAsyncPropagation.
-     * @return The current status of the async task.
-     */
-    String getAsyncStatus(String taskId);
 }
