@@ -23,10 +23,10 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6.0.0
+      uses: actions/checkout@v6.0.2
 
     - name: Setup Java and Maven cache
-      uses: actions/setup-java@v5.0.0
+      uses: actions/setup-java@v5.2.0
       with:
         distribution: 'temurin'
         java-version: '17'
@@ -49,7 +49,7 @@ jobs:
       run: mkdir staging-${{ matrix.os }} && gci -Path . -Recurse -Include *.jar |? { $_.FullName -like '*\target\*.jar' } |% { cp $_.FullName staging-${{ matrix.os }} }
 
     - name: Upload build results
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v7
       with:
         name: build-results-${{ matrix.os }}
         path: staging-*/
@@ -63,10 +63,10 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6.0.0
+      uses: actions/checkout@v6.0.2
 
     - name: Setup Java and Maven cache
-      uses: actions/setup-java@v5.0.0
+      uses: actions/setup-java@v5.2.0
       with:
         distribution: 'temurin'
         java-version: '17'
@@ -91,10 +91,10 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6.0.0
+      uses: actions/checkout@v6.0.2
 
     - name: Setup Java and Maven cache
-      uses: actions/setup-java@v5.0.0
+      uses: actions/setup-java@v5.2.0
       with:
         distribution: 'temurin'
         java-version: '17'
@@ -119,9 +119,9 @@ jobs:
       fail-fast: true
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6.0.0
+        uses: actions/checkout@v6.0.2
       - name: Run checkstyle
-        uses: dbelyaev/action-checkstyle@v3.1.0
+        uses: dbelyaev/action-checkstyle@v3.8.2
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review
@@ -138,10 +138,10 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6.0.0
+      uses: actions/checkout@v6.0.2
 
     - name: Setup Java and Maven cache
-      uses: actions/setup-java@v5.0.0
+      uses: actions/setup-java@v5.2.0
       with:
         distribution: 'temurin'
         java-version: '17'

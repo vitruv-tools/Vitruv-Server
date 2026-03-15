@@ -2,7 +2,6 @@ package tools.vitruv.framework.remote.server.rest.endpoints;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import tools.vitruv.framework.remote.common.json.JsonMapper;
 import tools.vitruv.framework.remote.common.rest.constants.EndpointPath;
 import tools.vitruv.framework.remote.server.exception.ServerHaltingException;
@@ -15,6 +14,13 @@ import tools.vitruv.framework.remote.server.rest.PostEndpoint;
 import tools.vitruv.framework.remote.server.rest.PutEndpoint;
 import tools.vitruv.framework.vsum.VirtualModel;
 
+ /**
+ * Creates and returns all REST endpoints for the Vitruv server.
+ *
+ * @param virtualModel The virtual model to use.
+ * @param mapper The JSON mapper to use.
+ * @return A list of all REST endpoints.
+ */
 public class EndpointsProvider {
 	public static List<PathEndointCollector> getAllEndpoints(VirtualModel virtualModel, JsonMapper mapper) {
 		var defaultEndpoints = getDefaultEndpoints();
@@ -76,6 +82,14 @@ public class EndpointsProvider {
 				defaultEndpoints.putEndpoint(),
 				defaultEndpoints.patchEndpoint(),
 				defaultEndpoints.deleteEndpoint()));
+    result.add(
+        new PathEndointCollector(
+        EndpointPath.CHANGE_DERIVING,
+        defaultEndpoints.getEndpoint(),
+        defaultEndpoints.postEndpoint(),
+        defaultEndpoints.putEndpoint(),
+        new ChangeDerivingEndpoint(mapper),
+        defaultEndpoints.deleteEndpoint()));
 
 		return result;
 	}

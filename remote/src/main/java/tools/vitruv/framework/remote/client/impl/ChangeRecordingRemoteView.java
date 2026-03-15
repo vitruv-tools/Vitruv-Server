@@ -1,13 +1,11 @@
 package tools.vitruv.framework.remote.client.impl;
 
-import java.util.Collection;
-
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.Collection;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import tools.vitruv.change.composite.description.TransactionalChange;
 import tools.vitruv.change.composite.description.VitruviusChangeResolverFactory;
 import tools.vitruv.change.composite.recording.ChangeRecorder;

@@ -1,17 +1,18 @@
 package tools.vitruv.framework.remote.client.impl;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
+
+import edu.kit.ipd.sdq.commons.util.org.eclipse.emf.ecore.resource.ResourceCopier;
+import edu.kit.ipd.sdq.commons.util.org.eclipse.emf.ecore.resource.ResourceSetUtil;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-
-import edu.kit.ipd.sdq.commons.util.org.eclipse.emf.ecore.resource.ResourceCopier;
-import edu.kit.ipd.sdq.commons.util.org.eclipse.emf.ecore.resource.ResourceSetUtil;
 import tools.vitruv.change.atomic.hid.HierarchicalId;
 import tools.vitruv.change.composite.description.VitruviusChange;
 import tools.vitruv.change.composite.description.VitruviusChangeFactory;
@@ -20,9 +21,6 @@ import tools.vitruv.framework.views.ViewSelection;
 import tools.vitruv.framework.views.ViewSelector;
 import tools.vitruv.framework.views.ViewType;
 import tools.vitruv.framework.views.changederivation.StateBasedChangeResolutionStrategy;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkState;
 
 /**
  * A {@link RemoteView} that derives changes based on the changed state of its
