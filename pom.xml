@@ -8,7 +8,7 @@
   <parent>
     <groupId>tools.vitruv</groupId>
     <artifactId>parent</artifactId>
-    <version>3.3.2</version>
+    <version>4.0.0</version>
   </parent>
 
   <!-- Project Information -->
@@ -41,7 +41,7 @@
   </modules>
 
   <properties>
-    <vitruv.version>3.2.4-SNAPSHOT</vitruv.version>
+    <vitruv.version>4.0.1-SNAPSHOT</vitruv.version>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.organization>vitruv-tools</sonar.organization>
     <sonar.projectKey>vitruv-tools_Vitruv-Server</sonar.projectKey>
