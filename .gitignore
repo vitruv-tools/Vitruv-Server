@@ -37,3 +37,16 @@ dependency-reduced-pom.xml
 META-INF
 build.properties
 plugin.properties
+
+# New Environment Files
+.project
+.classpath
+.settings/
+p2wrappers/.project
+p2wrappers/.settings/
+p2wrappers/emfutils/.classpath
+p2wrappers/emfutils/.project
+p2wrappers/emfutils/.settings/
+remote/.classpath
+remote/.project
+remote/.settings/
