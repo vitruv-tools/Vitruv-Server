@@ -23,132 +23,148 @@ import tools.vitruv.framework.views.ViewType;
 import tools.vitruv.framework.views.changederivation.StateBasedChangeResolutionStrategy;
 
 /**
- * A {@link RemoteView} that derives changes based on the changed state of its resources and allows
- * to propagate them back to the Vitruvius server using the {@link #commitChanges} method.
+ * A {@link RemoteView} that derives changes based on the changed state of its
+ * resources and allows to propagate them
+ * back to the Vitruvius server using the {@link #commitChanges} method.
  */
 public class ChangeDerivingRemoteView implements CommittableView {
-  private final RemoteView base;
-  private final StateBasedChangeResolutionStrategy resolutionStrategy;
+    private final RemoteView base;
+    private final StateBasedChangeResolutionStrategy resolutionStrategy;
 
-  private Map<Resource, Resource> originalResourceMapping;
+    private Map<Resource, Resource> originalResourceMapping;
 
-  /**
-   * Creates a new {@link ChangeDerivingRemoteView}.
-   *
-   * @param base the base remote view
-   * @param resolutionStrategy the strategy used to derive changes
-   */
-  ChangeDerivingRemoteView(RemoteView base, StateBasedChangeResolutionStrategy resolutionStrategy) {
-    checkArgument(base != null, "base must not be null");
-    checkState(!base.isModified(), "view must not be modified");
-    checkState(!base.isOutdated(), "view must not be outdated");
-    checkArgument(resolutionStrategy != null, "resolution strategy must not be null");
-    this.base = base;
-    this.resolutionStrategy = resolutionStrategy;
+    ChangeDerivingRemoteView(RemoteView base, StateBasedChangeResolutionStrategy resolutionStrategy) {
+        checkArgument(base != null, "base must not be null");
+        checkState(!base.isModified(), "view must not be modified");
+        checkState(!base.isOutdated(), "view must not be outdated");
+        checkArgument(resolutionStrategy != null, "resolution strategy must not be null");
+        this.base = base;
+        this.resolutionStrategy = resolutionStrategy;
 
-    initializeResourceMapping(base.viewSource);
-  }
-
-  private void initializeResourceMapping(ResourceSet source) {
-    originalResourceMapping =
-        ResourceCopier.copyViewResources(
-            source.getResources(), ResourceSetUtil.withGlobalFactories(new ResourceSetImpl()));
-  }
-
-  @Override
-  public void close() {
-    base.close();
-  }
-
-  @Override
-  public Collection<EObject> getRootObjects() {
-    return base.getRootObjects();
-  }
-
-  @Override
-  public boolean isModified() {
-    return base.isModified();
-  }
-
-  @Override
-  public boolean isOutdated() {
-    return base.isOutdated();
-  }
-
-  @Override
-  public void update() {
-    base.update();
-    initializeResourceMapping(base.viewSource);
-  }
-
-  @Override
-  public boolean isClosed() {
-    return base.isClosed();
-  }
-
-  @Override
-  public void registerRoot(EObject object, URI persistAt) {
-    base.registerRoot(object, persistAt);
-  }
-
-  @Override
-  public void moveRoot(EObject object, URI newLocation) {
-    base.moveRoot(object, newLocation);
-  }
-
-  @Override
-  public ViewSelection getSelection() {
-    return base.getSelection();
-  }
-
-  @Override
-  public ViewType<? extends ViewSelector> getViewType() {
-    return base.getViewType();
-  }
-
-  @Override
-  public CommittableView withChangeRecordingTrait() {
-    return base.withChangeRecordingTrait();
-  }
-
-  @Override
-  public CommittableView withChangeDerivingTrait(
-      StateBasedChangeResolutionStrategy changeResolutionStrategy) {
-    return base.withChangeDerivingTrait(changeResolutionStrategy);
-  }
-
-  /**
-   * Commits the changes made to the view and its containing elements.
-   *
-   * @throws IllegalStateException if called on a closed view
-   * @see #isClosed()
-   * @see #commitChangesAndUpdate()
-   */
-  @Override
-  public void commitChanges() {
-    base.checkNotClosed();
-    var allChanges = new LinkedList<VitruviusChange<HierarchicalId>>();
-    base.viewSource
-        .getResources()
-        .forEach(
-            it -> {
-              var changes = findChanges(originalResourceMapping.get(it), it);
-              if (changes.getEChanges().isEmpty()) {
-                allChanges.add(changes);
-              }
-            });
-    base.remoteConnection.propagateChanges(
-        base.uuid, VitruviusChangeFactory.getInstance().createCompositeChange(allChanges));
-    base.modified = false;
-  }
-
-  private VitruviusChange<HierarchicalId> findChanges(Resource oldState, Resource newState) {
-    if (oldState == null) {
-      return resolutionStrategy.getChangeSequenceForCreated(newState);
-    } else if (newState == null) {
-      return resolutionStrategy.getChangeSequenceForDeleted(oldState);
-    } else {
-      return resolutionStrategy.getChangeSequenceBetween(newState, oldState);
+        initializeResourceMapping(base.viewSource);
     }
-  }
+
+    private void initializeResourceMapping(ResourceSet source) {
+        originalResourceMapping = ResourceCopier.copyViewResources(source.getResources(),
+                ResourceSetUtil.withGlobalFactories(new ResourceSetImpl()));
+    }
+
+    @Override
+    public void close() {
+        base.close();
+    }
+
+    @Override
+    public Collection<EObject> getRootObjects() {
+        return base.getRootObjects();
+    }
+
+    @Override
+    public boolean isModified() {
+        return base.isModified();
+    }
+
+    @Override
+    public boolean isOutdated() {
+        return base.isOutdated();
+    }
+
+    @Override
+    public void update() {
+        base.update();
+        initializeResourceMapping(base.viewSource);
+    }
+
+    @Override
+    public boolean isClosed() {
+        return base.isClosed();
+    }
+
+    @Override
+    public void registerRoot(EObject object, URI persistAt) {
+        base.registerRoot(object, persistAt);
+    }
+
+    @Override
+    public void moveRoot(EObject object, URI newLocation) {
+        base.moveRoot(object, newLocation);
+    }
+
+    @Override
+    public ViewSelection getSelection() {
+        return base.getSelection();
+    }
+
+    @Override
+    public ViewType<? extends ViewSelector> getViewType() {
+        return base.getViewType();
+    }
+
+    @Override
+    public CommittableView withChangeRecordingTrait() {
+        return base.withChangeRecordingTrait();
+    }
+
+    @Override
+    public CommittableView withChangeDerivingTrait(StateBasedChangeResolutionStrategy changeResolutionStrategy) {
+        return base.withChangeDerivingTrait(changeResolutionStrategy);
+    }
+
+    /**
+     * Commits the changes made to the view and its containing elements.
+     *
+     * @throws IllegalStateException if called on a closed view
+     * @see #isClosed()
+     * @see #commitChangesAndUpdate()
+     */
+    @Override
+    public void commitChanges() {
+        base.checkNotClosed();
+        var allChanges = new LinkedList<VitruviusChange<HierarchicalId>>();
+        base.viewSource.getResources().forEach(it -> {
+            var changes = findChanges(originalResourceMapping.get(it), it);
+            if (changes.getEChanges().isEmpty()) {
+                allChanges.add(changes);
+            }
+        });
+        base.remoteConnection.propagateChanges(base.uuid,
+                VitruviusChangeFactory.getInstance().createCompositeChange(allChanges));
+        base.modified = false;
+    }
+
+    /**
+     * Commits the changes made to the view asynchronously and its containing
+     * elements.
+     *
+     * @return A task ID that can be used to query the status of the async
+     *         operation.
+     * @throws IllegalStateException if called on a closed view
+     * @see #isClosed()
+     * @see #commitChanges()
+     */
+    public String commitChangesAsync() {
+        base.checkNotClosed();
+        var allChanges = new LinkedList<VitruviusChange<HierarchicalId>>();
+        base.viewSource.getResources().forEach(it -> {
+            var changes = findChanges(originalResourceMapping.get(it), it);
+            if (changes.getEChanges().isEmpty()) {
+                allChanges.add(changes);
+            }
+        });
+        String taskId = base.remoteConnection.startAsyncPropagation(base.uuid,
+                VitruviusChangeFactory.getInstance().createCompositeChange(allChanges));
+        base.modified = false;
+        return taskId;
+    }
+
+    private VitruviusChange<HierarchicalId> findChanges(Resource oldState, Resource newState) {
+        if (oldState == null) {
+            return resolutionStrategy.getChangeSequenceForCreated(newState);
+        } else if (newState == null) {
+            return resolutionStrategy.getChangeSequenceForDeleted(oldState);
+        } else {
+            return resolutionStrategy.getChangeSequenceBetween(newState, oldState);
+        }
+    }
+
 }
