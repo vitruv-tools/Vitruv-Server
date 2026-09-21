@@ -1,0 +1,49 @@
+server:
+  port: 8000
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: VitruviusServer
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+  datasource:
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: jdbc:postgresql://${SPRING_DATASOURCE_HOST}/vitruvius-server
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: false
+
+logging:
+  file:
+    name: ${LOGS_PATH}
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 50
+  level:
+    root: info
+
+app:
+  vsums:
+    vsum-providers-dir: ./vsum-providers
+    vsum-provider-jar: vsum-provider.jar
+    vsum-provider-lib-dir-name: lib
+    vsum-storage-dir: ./vsum-storage
+  vitruv-server:
+    url: http://localhost:8080
+  propagation:
+    core-pool-size: 2
+    max-pool-size: 4
+    queue-capacity: 50
+    task-ttl-hours: 24

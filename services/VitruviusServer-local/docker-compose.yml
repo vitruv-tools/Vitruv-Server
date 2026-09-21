@@ -1,0 +1,17 @@
+services:
+  vitruvius-server-postgres:
+    image: postgres:17.7-alpine
+    container_name: vitruvius-server-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=vitruvius-server
+    # IMPORTANT: This bind mount keeps VSUM metadata across restarts.
+    # Do NOT delete ./data/... and avoid `docker compose down -v`.
+    # Prefer: docker compose stop / start / up -d
+    # Backup: VitruviusServer/scripts/backup-vsum-data.ps1
+    volumes:
+      - ./data/vitruvius-server-postgres-postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped

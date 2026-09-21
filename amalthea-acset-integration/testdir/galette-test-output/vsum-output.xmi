@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:amalthea="http://vitruv.tools/reactionsparser/amalthea" xmlns:ascet="http://vitruv.tools/reactionsparser/ascet">
+  <amalthea:ComponentContainer>
+    <tasks name="specialname"/>
+  </amalthea:ComponentContainer>
+  <ascet:AscetModule>
+    <tasks xsi:type="ascet:PeriodicTask" name="specialname" period="10.0" delay="20.0"/>
+  </ascet:AscetModule>
+</xmi:XMI>

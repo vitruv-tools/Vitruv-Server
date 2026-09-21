@@ -1,0 +1,807 @@
+openapi: "3.1.0"
+info:
+  title: "VitruviusServer API"
+  description: "VitruviusServer API"
+  version: "1.0.0"
+servers:
+  - url: "https://VitruviusServer"
+paths:
+  /api/v1/vsums:
+    get:
+      summary: "GET api/v1/vsums"
+      description: "Retrieves an array of VSUM information records, containing details like ID, metamodel name, name, and description."
+      operationId: "getVsums"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/VsumInfoResponseBody"
+    post:
+      summary: "POST api/v1/vsums"
+      description: "Creates a new VSUM information record based on the provided metamodel name, name, and description."
+      operationId: "createVsum"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateVsumRequestBody"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/VsumInfoResponseBody"
+
+  /api/v1/vsums/{vsumId}:
+    put:
+      summary: "PUT api/v1/vsums/{vsumId}"
+      description: "Updates an existing VSUM information record (name and description) identified by the provided VSUM ID."
+      operationId: "updateVsumInfo"
+      parameters:
+        - name: "vsumId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateVsumInfoRequestBody"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/VsumInfoResponseBody"
+    delete:
+      summary: "DELETE api/v1/vsums/{vsumId}"
+      description: "Deletes the VSUM information record identified by the provided VSUM ID."
+      operationId: "deleteVsum"
+      parameters:
+        - name: "vsumId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+
+  /api/v1/vsums/{vsumId}/view-types:
+    get:
+      summary: "GET api/v1/vsums/{vsumId}/view-types"
+      description: "Retrieves the available view types associated with the specified VSUM ID."
+      operationId: "getViewTypes"
+      parameters:
+        - name: "vsumId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  type: "string"
+
+  /api/v1/vsums/{vsumId}/view-types/{viewTypeName}/selectors:
+    post:
+      summary: "POST api/v1/vsums/{vsumId}/view-types/{viewTypeName}/selectors"
+      description: "Creates a selector for a specified VSUM and view type, returning a JSON string containing the selector identifier (id) and a list of selectableObjects."
+      operationId: "createSelector"
+      parameters:
+        - name: "vsumId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+        - name: "viewTypeName"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+
+  /api/v1/views:
+    post:
+      summary: "POST api/v1/views"
+      description: "Opens a view for a specified VSUM and selector. Returns a JSON string containing the view ID (id) and the associated encoded resourceSet (an array of objects with uri and content)."
+      operationId: "openView"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OpenViewRequestBody"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "string"
+
+  /api/v1/views/{viewId}:
+    put:
+      summary: "PUT api/v1/views/{viewId}"
+      description: "Commits changes to a specific view by submitting a resourceSet as a JSON string (an array of objects with uri and content). Returns a JSON string representing the VitruviusChange (an array of eChanges, vChanges, and uInteractions)."
+      operationId: "commitChangesOfView"
+      parameters:
+        - name: "viewId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "string"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "string"
+    delete:
+      summary: "DELETE api/v1/views/{viewId}"
+      description: "Closes the specific view identified by its unique ID."
+      operationId: "closeView"
+      parameters:
+        - name: "viewId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+
+  /api/v1/views/{viewId}/apply-update:
+    post:
+      summary: "POST api/v1/views/{viewId}/apply-update"
+      description: "Applies updates synchronously (blocks until propagation completes). For non-blocking propagation, use POST .../apply-update/async and poll GET /v1/tasks/{taskId}."
+      operationId: "update"
+      parameters:
+        - name: "viewId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "string"
+
+  /api/v1/views/{viewId}/apply-update/async:
+    post:
+      summary: "POST api/v1/views/{viewId}/apply-update/async"
+      description: "Starts asynchronous change propagation for a view whose changes were already committed (PUT /v1/views/{viewId}). Returns immediately with a taskId; poll GET /v1/tasks/{taskId} until state is COMPLETED or FAILED. When state is WAITING_USER_INTERACTION, submit a response via POST /v1/tasks/{taskId}/interaction."
+      operationId: "startAsyncUpdate"
+      parameters:
+        - name: "viewId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "202":
+          description: "Accepted — propagation started"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StartAsyncUpdateResponse"
+
+  /api/v1/inconsistencies:
+    get:
+      summary: "GET api/v1/inconsistencies"
+      description: "Lists inconsistencies. Default state=OPEN (at most one open pending propagation per VSUM). Pass state=RESOLVED, FAILED, or ALL for history."
+      operationId: "listOpenInconsistencies"
+      parameters:
+        - name: "state"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+            enum: ["OPEN", "RESOLVED", "FAILED", "ALL"]
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/OpenInconsistencyResponse"
+
+  /api/v1/inconsistencies/{id}:
+    get:
+      summary: "GET api/v1/inconsistencies/{id}"
+      operationId: "getInconsistency"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenInconsistencyResponse"
+        "404":
+          description: "Not found"
+
+  /api/v1/inconsistencies/{id}/context:
+    get:
+      summary: "GET api/v1/inconsistencies/{id}/context"
+      description: "Returns model elements and Vitruvius correspondences for Hub visualization (SystemRoot / AmaltheaAscet)."
+      operationId: "getInconsistencyContext"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InconsistencyContextResponse"
+        "404":
+          description: "Inconsistency not found"
+
+  /api/v1/inconsistencies/{id}/model:
+    get:
+      summary: "GET api/v1/inconsistencies/{id}/model"
+      description: "Returns the latest persisted view resource set for Hub visualization (same shape as open view)."
+      operationId: "getInconsistencyModelSnapshot"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InconsistencyModelSnapshotResponse"
+        "404":
+          description: "Inconsistency or snapshot not found"
+
+  /api/v1/inconsistencies/{id}/comments:
+    get:
+      summary: "GET api/v1/inconsistencies/{id}/comments"
+      operationId: "listInconsistencyComments"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/InconsistencyCommentResponse"
+        "404":
+          description: "Inconsistency not found"
+    post:
+      summary: "POST api/v1/inconsistencies/{id}/comments"
+      operationId: "addInconsistencyComment"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInconsistencyCommentRequest"
+      responses:
+        "201":
+          description: "Created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InconsistencyCommentResponse"
+        "400":
+          description: "Missing body"
+        "404":
+          description: "Inconsistency not found"
+
+  /api/v1/inconsistencies/{id}/view-updates:
+    get:
+      summary: "GET api/v1/inconsistencies/{id}/view-updates"
+      description: "Lists persisted view updates for the inconsistency's VSUM (hub Commits tab)."
+      operationId: "listInconsistencyViewUpdates"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/ViewUpdateSummaryResponse"
+        "404":
+          description: "Inconsistency not found"
+
+  /api/v1/tasks/{taskId}:
+    get:
+      summary: "GET api/v1/tasks/{taskId}"
+      description: "Returns the current status of an async propagation task. Poll until state is COMPLETED or FAILED. When state is WAITING_USER_INTERACTION, the interaction field contains the pending Vitruv user interaction (EMF JSON)."
+      operationId: "getTaskStatus"
+      parameters:
+        - name: "taskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PropagationTaskStatusResponse"
+        "404":
+          description: "Task not found (expired or unknown taskId)"
+
+  /api/v1/tasks/{taskId}/interaction:
+    post:
+      summary: "POST api/v1/tasks/{taskId}/interaction"
+      description: "Submits the user's response to a pending Vitruv user interaction while the task is in state WAITING_USER_INTERACTION. Request body is a JSON string (EMF JSON for a UserInteraction subtype, e.g. ConfirmationUserInteraction with confirmed set)."
+      operationId: "submitTaskInteraction"
+      parameters:
+        - name: "taskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "string"
+              description: "Serialized Vitruv UserInteraction response (EMF JSON)"
+        required: true
+      responses:
+        "204":
+          description: "Interaction accepted — propagation resumes"
+        "404":
+          description: "Task or view not found"
+        "409":
+          description: "Task is not waiting for user interaction"
+
+  /api/v1/tasks/{taskId}/inconsistent:
+    post:
+      summary: "POST api/v1/tasks/{taskId}/inconsistent"
+      description: "Parks a waiting user interaction as the open inconsistency for its VSUM. The propagation worker stays waiting so the hub can later submit POST /v1/tasks/{taskId}/interaction and complete the update. At most one open inconsistency is allowed per VSUM."
+      operationId: "markTaskInconsistent"
+      parameters:
+        - name: "taskId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "Open inconsistency created; worker still waiting for interaction"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenInconsistencyResponse"
+        "404":
+          description: "Task not found"
+        "409":
+          description: "Task is not waiting for user interaction, or VSUM already has another open inconsistency"
+
+  /api/v1/metamodels:
+    get:
+      summary: "GET api/v1/metamodels"
+      description: "Retrieves the names of all currently available metamodels."
+      operationId: "getMetamodelNames"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  type: "string"
+
+  /api/v1/metamodels/{name}/ecore-models:
+    get:
+      summary: "GET api/v1/metamodels/{name}/ecore-models"
+      description: "Retrieves the Ecore models for a specified metamodel as a JSON array string containing the processed Ecore model objects."
+      operationId: "getEcoreModels"
+      parameters:
+        - name: "name"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "string"
+
+  /api/v1/vitruv-server:
+    get:
+      summary: "GET api/v1/vitruv-server"
+      description: "Retrieves information about the status and availability of the Vitruv server."
+      operationId: "getVitruvServerInfo"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/VitruvServerInfo"
+
+components:
+  schemas:
+    VsumInfoResponseBody:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+          nullable: true
+        metamodelName:
+          type: "string"
+          nullable: true
+        name:
+          type: "string"
+          nullable: true
+        description:
+          type: "string"
+          nullable: true
+
+    CreateVsumRequestBody:
+      type: "object"
+      properties:
+        metamodelName:
+          type: "string"
+          nullable: true
+        name:
+          type: "string"
+          nullable: true
+        description:
+          type: "string"
+          nullable: true
+
+    UpdateVsumInfoRequestBody:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          nullable: true
+        description:
+          type: "string"
+          nullable: true
+
+    OpenViewRequestBody:
+      type: "object"
+      properties:
+        vsumId:
+          type: "string"
+          format: "uuid"
+          nullable: true
+        selectorId:
+          type: "string"
+          format: "uuid"
+          nullable: true
+        selectedObjectIds:
+          type: "array"
+          nullable: true
+          items:
+            type: "string"
+            format: "uuid"
+
+    VitruvServerInfo:
+      type: "object"
+      properties:
+        isAvailable:
+          type: "boolean"
+          nullable: true
+
+    StartAsyncUpdateResponse:
+      type: "object"
+      properties:
+        taskId:
+          type: "string"
+          format: "uuid"
+          description: "Identifier for polling GET /v1/tasks/{taskId}"
+
+    AsyncTaskState:
+      type: "string"
+      enum:
+        - "RUNNING"
+        - "WAITING_USER_INTERACTION"
+        - "COMPLETED"
+        - "FAILED"
+        - "INCONSISTENT"
+
+    PropagationTaskStatusResponse:
+      type: "object"
+      properties:
+        taskId:
+          type: "string"
+          format: "uuid"
+        viewId:
+          type: "string"
+          format: "uuid"
+        state:
+          $ref: "#/components/schemas/AsyncTaskState"
+        createdAt:
+          type: "string"
+          format: "date-time"
+          nullable: true
+        completedAt:
+          type: "string"
+          format: "date-time"
+          nullable: true
+        error:
+          type: "string"
+          nullable: true
+        interaction:
+          type: "object"
+          nullable: true
+          description: "Pending Vitruv user interaction (EMF JSON) when state is WAITING_USER_INTERACTION"
+          additionalProperties: true
+        result:
+          type: "string"
+          nullable: true
+          description: "Encoded resource set as a JSON string when state is COMPLETED; parse separately"
+
+    OpenInconsistencyResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        vsumId:
+          type: "string"
+          format: "uuid"
+        taskId:
+          type: "string"
+          format: "uuid"
+        viewId:
+          type: "string"
+          format: "uuid"
+        vsumName:
+          type: "string"
+          nullable: true
+        metamodelName:
+          type: "string"
+          nullable: true
+          description: "VSUM metamodel (e.g. SystemRootVsum, AmaltheaAscet) for hub model filter"
+        title:
+          type: "string"
+        message:
+          type: "string"
+          nullable: true
+        interaction:
+          type: "object"
+          additionalProperties: true
+        state:
+          type: "string"
+          enum: ["OPEN", "RESOLVED", "FAILED"]
+        createdAt:
+          type: "string"
+          format: "date-time"
+        resolvedAt:
+          type: "string"
+          format: "date-time"
+          nullable: true
+        resolvedBy:
+          type: "string"
+          nullable: true
+        resolutionChoice:
+          type: "string"
+          nullable: true
+        resolutionComment:
+          type: "string"
+          nullable: true
+
+    CreateInconsistencyCommentRequest:
+      type: "object"
+      required: ["body"]
+      properties:
+        author:
+          type: "string"
+          nullable: true
+        body:
+          type: "string"
+
+    InconsistencyCommentResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        inconsistencyId:
+          type: "string"
+          format: "uuid"
+        author:
+          type: "string"
+        body:
+          type: "string"
+        createdAt:
+          type: "string"
+          format: "date-time"
+
+    ViewUpdateSummaryResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        vsumId:
+          type: "string"
+          format: "uuid"
+          nullable: true
+        viewTypeName:
+          type: "string"
+          nullable: true
+        selectedObjectEClassNames:
+          type: "array"
+          items:
+            type: "string"
+        timestamp:
+          type: "string"
+          format: "date-time"
+          nullable: true
+        resourceSetLength:
+          type: "integer"
+
+    InconsistencyContextResponse:
+      type: "object"
+      properties:
+        inconsistencyId:
+          type: "string"
+          format: "uuid"
+        vsumId:
+          type: "string"
+          format: "uuid"
+        vsumName:
+          type: "string"
+          nullable: true
+        metamodelName:
+          type: "string"
+          nullable: true
+        viewTypeName:
+          type: "string"
+          nullable: true
+        note:
+          type: "string"
+          nullable: true
+        elements:
+          type: "array"
+          items:
+            type: "object"
+            properties:
+              id:
+                type: "string"
+              displayName:
+                type: "string"
+              eClassName:
+                type: "string"
+              metamodelName:
+                type: "string"
+              uri:
+                type: "string"
+              role:
+                type: "string"
+              parentId:
+                type: "string"
+                nullable: true
+        correspondences:
+          type: "array"
+          items:
+            type: "object"
+            properties:
+              sourceId:
+                type: "string"
+              targetId:
+                type: "string"
+              sourceLabel:
+                type: "string"
+              targetLabel:
+                type: "string"
+
+    InconsistencyModelSnapshotResponse:
+      type: "object"
+      properties:
+        inconsistencyId:
+          type: "string"
+          format: "uuid"
+        vsumId:
+          type: "string"
+          format: "uuid"
+        vsumName:
+          type: "string"
+          nullable: true
+        metamodelName:
+          type: "string"
+          nullable: true
+        viewTypeName:
+          type: "string"
+          nullable: true
+        snapshotTimestamp:
+          type: "string"
+          format: "date-time"
+          nullable: true
+        note:
+          type: "string"
+          nullable: true
+        encodedResourceSet:
+          type: "string"
+          description: "JSON array of view resources (same format as POST /v1/views resourceSet)"

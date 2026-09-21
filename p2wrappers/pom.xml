@@ -7,11 +7,11 @@
 
   <parent>
     <groupId>tools.vitruv</groupId>
-    <artifactId>tools.vitruv.server</artifactId>
+    <artifactId>tools.vitruv.devWebHub.backend</artifactId>
     <version>4.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>tools.vitruv.server.p2wrappers</artifactId>
+  <artifactId>tools.vitruv.devWebHub.backend.p2wrappers</artifactId>
   <packaging>pom</packaging>
 
   <name>p2 Dependency Wrappers</name>

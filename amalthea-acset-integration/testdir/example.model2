@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="ASCII"?>
+<ascet:AscetModule xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ascet="http://vitruv.tools/reactionsparser/ascet">
+  <tasks xsi:type="ascet:PeriodicTask" name="specialname" period="10.0" delay="20.0"/>
+</ascet:AscetModule>

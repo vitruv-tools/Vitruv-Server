@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ASCII"?>
+<correspondence:Correspondences xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:correspondence="http://vitruv.tools/metamodels/change/correspondence/1.0" xmlns:correspondence_1="http://vitruv.tools/metamodels/dsls/reactions/runtime/correspondence/1.0">
+  <correspondences xsi:type="correspondence_1:ReactionsCorrespondence" tag="">
+    <leftEObjects href="./testdir/example.model#/"/>
+    <rightEObjects href="file:/E:/tejas-redkar-abhishek-khetre/amalthea-acset-integration/./testdir/example.model2#/"/>
+  </correspondences>
+  <correspondences xsi:type="correspondence_1:ReactionsCorrespondence" tag="">
+    <leftEObjects href="file:/E:/tejas-redkar-abhishek-khetre/amalthea-acset-integration/./testdir/example.model2#//@tasks.0"/>
+    <rightEObjects href="./testdir/example.model#/"/>
+  </correspondences>
+</correspondence:Correspondences>

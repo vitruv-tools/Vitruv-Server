@@ -1,0 +1,191 @@
+import static edu.neu.ccs.prl.galette.reactions.mir.DoubleInputValidator.getDoubleInputValidatorInstance
+import static edu.neu.ccs.prl.galette.reactions.mir.PositiveDoubleValidator.getPositiveDoubleValidatorInstance
+
+import "http://vitruv.tools/reactionsparser/ascet" as ascet
+import "http://vitruv.tools/reactionsparser/amalthea" as amalthea
+
+reactions: amalthea2ascet
+in reaction to changes in amalthea
+execute actions in ascet
+
+// ComponentContainer (Amalthea root) → AscetModule
+reaction ComponentContainerInsertedAsRoot {
+	after element amalthea::ComponentContainer inserted as root
+	call createAndRegisterRootComponentContainer(newValue)
+}
+
+routine createAndRegisterRootComponentContainer(amalthea::ComponentContainer componentContainer) {
+	match {
+		require absence of ascet::AscetModule corresponding to componentContainer
+	}
+	create {
+		val mRoot = new ascet::AscetModule
+	}
+	update {
+		persistProjectRelative(componentContainer, mRoot, "example.model2")
+		// Bidirectional like SystemRoot System↔Root — avoids losing the link on reload
+		addCorrespondenceBetween(componentContainer, mRoot)
+		addCorrespondenceBetween(mRoot, componentContainer)
+	}
+}
+
+
+// Prefer "deleted in container[tasks]" so we still have the ComponentContainer for lookup.
+// Upstream linked ASCET tasks to the container (not the Amalthea Task); delete finds the
+// matching AscetTask under the corresponding AscetModule by name.
+reaction TaskDeleted {
+	after element amalthea::Task deleted in amalthea::ComponentContainer[tasks]
+	call deleteTask(oldValue, affectedEObject)
+}
+
+routine deleteTask(amalthea::Task task, amalthea::ComponentContainer container) {
+	match {
+		val AscetModule = retrieve ascet::AscetModule corresponding to container
+	}
+	update {
+		val ascettask = AscetModule.tasks.findFirst[t | t.name == task.name]
+		if (ascettask !== null) {
+			removeObject(ascettask)
+			removeCorrespondenceBetween(ascettask, container)
+		}
+	}
+}
+
+reaction TaskCreated {
+	after element amalthea::Task inserted in amalthea::ComponentContainer[tasks]
+		call createAscetTask(newValue, affectedEObject)
+}
+
+routine createAscetTask(amalthea::Task task, amalthea::ComponentContainer container) {
+	update {
+		val Boolean createCorresponding = userInteractor
+			.confirmationDialogBuilder
+			.message("A Task has been created. Create a corresponding ASCET Task?")
+			.positiveButtonText("Yes")
+			.negativeButtonText("No")
+			.startInteraction()
+
+		if (!createCorresponding) {
+			return
+		}
+
+		val String userMsg = "Please decide which corresponding ASCET Task should be created."
+
+		val initTaskOption = "Create InitTask"
+		val periodicTaskOption = "Create PeriodicTask"
+		val softwareTaskOption = "Create SoftwareTask"
+		val timeTableTaskOption = "Create TimeTableTask"
+		val doNothingOption = "Decide Later"
+
+		val String[] options = #[
+			initTaskOption,
+			periodicTaskOption,
+			softwareTaskOption,
+			timeTableTaskOption,
+			doNothingOption
+		]
+
+		val Integer selected = userInteractor
+			.singleSelectionDialogBuilder
+			.message(userMsg)
+			.choices(options)
+			.startInteraction()
+
+		switch (selected) {
+			case 0: {
+				createInitTask(task, container)
+			}
+			case 1: {
+				createPeriodicTask(task, container)
+			}
+			case 2: {
+				createSoftwareTask(task, container)
+			}
+			case 3: {
+				createTimeTableTask(task, container)
+			}
+			case 4: {
+				// no action
+			}
+		}
+	}
+}
+
+routine createInitTask(amalthea::Task task, amalthea::ComponentContainer container) {
+	match {
+		val AscetModule = retrieve ascet::AscetModule corresponding to container
+		require absence of ascet::InitTask corresponding to task
+	}
+	create {
+		val initTask = new ascet::InitTask
+	}
+	update {
+		AscetModule.tasks += initTask
+		initTask.name = task.name
+		// Upstream / UI-stable pairing: ASCET task ↔ ComponentContainer (not Task↔AscetTask)
+		addCorrespondenceBetween(initTask, container)
+	}
+}
+
+routine createPeriodicTask(amalthea::Task task, amalthea::ComponentContainer container) {
+	match {
+		val AscetModule = retrieve ascet::AscetModule corresponding to container
+		require absence of ascet::PeriodicTask corresponding to task
+	}
+	create {
+		val periodicTask = new ascet::PeriodicTask
+	}
+	update {
+		AscetModule.tasks += periodicTask
+		periodicTask.name = task.name
+
+		val periodMessage = "Please enter the period (positive double)"
+		val delayMessage = "Please enter the delay (double)"
+
+		val Double period = Double.parseDouble(userInteractor
+				.textInputDialogBuilder
+				.message(periodMessage)
+				.inputValidator(getPositiveDoubleValidatorInstance())
+				.startInteraction())
+		periodicTask.period = period
+
+		val Double delay = Double.parseDouble(userInteractor
+				.textInputDialogBuilder
+				.message(delayMessage)
+				.inputValidator(getPositiveDoubleValidatorInstance())
+				.startInteraction())
+		periodicTask.delay = delay
+
+		addCorrespondenceBetween(periodicTask, container)
+	}
+}
+
+routine createSoftwareTask(amalthea::Task task, amalthea::ComponentContainer container) {
+	match {
+		val AscetModule = retrieve ascet::AscetModule corresponding to container
+		require absence of ascet::SoftwareTask corresponding to task
+	}
+	create {
+		val softwareTask = new ascet::SoftwareTask
+	}
+	update {
+		AscetModule.tasks += softwareTask
+		softwareTask.name = task.name
+		addCorrespondenceBetween(softwareTask, container)
+	}
+}
+
+routine createTimeTableTask(amalthea::Task task, amalthea::ComponentContainer container) {
+	match {
+		val AscetModule = retrieve ascet::AscetModule corresponding to container
+		require absence of ascet::TimeTableTask corresponding to task
+	}
+	create {
+		val timeTableTask = new ascet::TimeTableTask
+	}
+	update {
+		AscetModule.tasks += timeTableTask
+		timeTableTask.name = task.name
+		addCorrespondenceBetween(timeTableTask, container)
+	}
+}

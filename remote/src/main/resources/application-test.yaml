@@ -1,0 +1,42 @@
+server:
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: VitruviusServer
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+  datasource:
+    username: postgres
+    password: password
+    # Separate DB so create-drop tests never wipe the developer/runtime VSUM list.
+    url: jdbc:postgresql://localhost:5432/vitruvius-server-test
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: false
+
+logging:
+  file:
+    name: ./test-data/logs/vitruvius-server.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 50
+  level:
+    root: info
+
+app:
+  vsums:
+    vsum-providers-dir: ./test-data/vsum-providers
+    vsum-provider-jar: vsum-provider.jar
+    vsum-provider-lib-dir-name: lib
+    vsum-storage-dir: ./test-data/vsum-storage

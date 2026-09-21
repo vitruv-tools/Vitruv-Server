@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="ASCII"?>
+<amalthea:ComponentContainer xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:amalthea="http://vitruv.tools/reactionsparser/amalthea">
+  <tasks name="specialname"/>
+</amalthea:ComponentContainer>
