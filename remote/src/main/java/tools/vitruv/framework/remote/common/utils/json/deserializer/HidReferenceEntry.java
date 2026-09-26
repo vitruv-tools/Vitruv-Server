@@ -12,25 +12,25 @@ import tools.vitruv.change.atomic.hid.HierarchicalId;
  * A {@link ReferenceEntry} for hierarchical IDs (HIDs).
  */
 public class HidReferenceEntry implements ReferenceEntry {
-    private final EObject owner;
-    private final EReference reference;
-    private final String hid;
+  private final EObject owner;
+  private final EReference reference;
+  private final String hid;
 
-    /**
-     * Creates a new {@link HidReferenceEntry}.
-     *
-     * @param owner     the owner EObject
-     * @param reference the EReference
-     * @param hid       the hierarchical ID as a string
-     */
-    public HidReferenceEntry(EObject owner, EReference reference, String hid) {
-        this.owner = owner;
-        this.reference = reference;
-        this.hid = hid;
-    }
+  /**
+   * Creates a new {@link HidReferenceEntry}.
+   *
+   * @param owner     the owner EObject
+   * @param reference the EReference
+   * @param hid       the hierarchical ID as a string
+   */
+  public HidReferenceEntry(EObject owner, EReference reference, String hid) {
+    this.owner = owner;
+    this.reference = reference;
+    this.hid = hid;
+  }
 
-    @Override
-    public void resolve(DatabindContext context, URIHandler handler) {
-        EObjects.setOrAdd(owner, reference, new HierarchicalId(hid));
-    }
+  @Override
+  public void resolve(DatabindContext context, URIHandler handler) {
+    EObjects.setOrAdd(owner, reference, new HierarchicalId(hid));
+  }
 }

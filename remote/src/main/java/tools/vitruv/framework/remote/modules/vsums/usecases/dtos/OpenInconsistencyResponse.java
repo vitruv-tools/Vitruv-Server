@@ -7,20 +7,20 @@ import java.util.Map;
 import java.util.UUID;
 
 public record OpenInconsistencyResponse(
-        UUID id,
-        UUID vsumId,
-        UUID taskId,
-        UUID viewId,
-        String vsumName,
-        String metamodelName,
-        String title,
-        String message,
-        Map<String, Object> interaction,
-        OpenInconsistencyState state,
-        Instant createdAt,
-        Instant resolvedAt,
-        String resolvedBy,
-        String resolutionChoice,
-        String resolutionComment
+    UUID id,
+    UUID vsumId,
+    UUID taskId,
+    UUID viewId,
+    String vsumName,
+    String metamodelName,
+    String title,
+    String message,
+    Map<String, Object> interaction,
+    OpenInconsistencyState state,
+    Instant createdAt,
+    Instant resolvedAt,
+    String resolvedBy,
+    String resolutionChoice,
+    String resolutionComment
 ) {
 }

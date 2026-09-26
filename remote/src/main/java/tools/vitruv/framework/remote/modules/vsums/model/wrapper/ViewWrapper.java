@@ -19,9 +19,9 @@ import java.util.UUID;
  * View-related operations.
  */
 public record ViewWrapper(
-        UUID viewId,
-        View view,
-        ResourceSet resourceSet,
-        VsumWrapper vsumWrapper
+    UUID viewId,
+    View view,
+    ResourceSet resourceSet,
+    VsumWrapper vsumWrapper
 ) {
 }

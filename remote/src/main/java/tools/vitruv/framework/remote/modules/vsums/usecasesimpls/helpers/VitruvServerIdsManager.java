@@ -14,26 +14,26 @@ import java.util.UUID;
 @Component
 public class VitruvServerIdsManager {
 
-    private final static UUID VITRUV_SERVER_VSUM_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
+  private final static UUID VITRUV_SERVER_VSUM_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
 
-    private final Set<UUID> ids = new HashSet<>(List.of(VITRUV_SERVER_VSUM_ID));
+  private final Set<UUID> ids = new HashSet<>(List.of(VITRUV_SERVER_VSUM_ID));
 
-    /**
-     * Adds the specified UUID to the internal set of IDs.
-     *
-     * @param id the UUID to be added
-     */
-    public void addId(UUID id) {
-        ids.add(id);
-    }
+  /**
+   * Adds the specified UUID to the internal set of IDs.
+   *
+   * @param id the UUID to be added
+   */
+  public void addId(UUID id) {
+    ids.add(id);
+  }
 
-    /**
-     * Checks if the specified UUID is present in the internal set of IDs.
-     *
-     * @param id the UUID to check for presence
-     * @return true if the UUID is present in the set, false otherwise
-     */
-    public boolean hasId(UUID id) {
-        return ids.contains(id);
-    }
+  /**
+   * Checks if the specified UUID is present in the internal set of IDs.
+   *
+   * @param id the UUID to check for presence
+   * @return true if the UUID is present in the set, false otherwise
+   */
+  public boolean hasId(UUID id) {
+    return ids.contains(id);
+  }
 }

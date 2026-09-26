@@ -1,20 +1,17 @@
 package tools.vitruv.framework.remote.modules.vsums.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import tools.vitruv.framework.remote.helper.IntegrationTest;
-import tools.vitruv.framework.remote.modules.vsums.model.manager.VsumManager;
-import tools.vitruv.framework.remote.modules.vsums.model.wrapper.VsumWrapper;
-import tools.vitruv.framework.remote.modules.vsums.usecases.dtos.CreateVsumRequestBody;
-import tools.vitruv.framework.remote.modules.vsums.usecases.dtos.OpenViewRequestBody;
-import tools.vitruv.framework.remote.modules.vsums.usecases.dtos.VsumInfoResponseBody;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import tools.vitruv.framework.remote.helper.IntegrationTest;
+import tools.vitruv.framework.remote.modules.vsums.model.manager.VsumManager;
+import tools.vitruv.framework.remote.modules.vsums.usecases.dtos.CreateVsumRequestBody;
+import tools.vitruv.framework.remote.modules.vsums.usecases.dtos.OpenViewRequestBody;
+import tools.vitruv.framework.remote.modules.vsums.usecases.dtos.VsumInfoResponseBody;
 
-import java.lang.reflect.Field;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -82,15 +79,8 @@ class ViewControllerTest {
         mvc.perform(delete("/v1/views/" + viewId2))
                 .andExpect(status().isOk());
 
-        // simulate server shutdown
-        Field vsumsField = VsumManager.class.getDeclaredField("vsums");
-        vsumsField.setAccessible(true);
+        vsumManager.evictVsum(vsumId);
 
-        @SuppressWarnings("unchecked")
-        Map<String, VsumWrapper> vsums = (Map<String, VsumWrapper>) vsumsField.get(vsumManager);
-        vsums.clear();
-
-        // open view again after server shutdown
         val openViewResponseBody3 = openView(vsumId);
         val view3 = objectMapper.readTree(openViewResponseBody3);
         val normalizedResponseResourceSet3 = objectMapper.writeValueAsString(view3.get("resourceSet"));

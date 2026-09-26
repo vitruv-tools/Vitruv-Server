@@ -4,9 +4,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "app.vsums")
 public record VsumProperties(
-        String vsumProvidersDir,
-        String vsumProviderJar,
-        String vsumProviderLibDirName,
-        String vsumStorageDir
+    String vsumProvidersDir,
+    String vsumProviderJar,
+    String vsumProviderLibDirName,
+    String vsumStorageDir
 ) {
 }

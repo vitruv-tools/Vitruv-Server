@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="model" nsURI="http://vitruv.tools/testmetamodels06/model" nsPrefix="model">
+  <eClassifiers xsi:type="ecore:EClass" name="TestAll">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="testAttributes" upperBound="-1"
+        eType="#//tests/TestAttributes" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="testSimpleReferences" upperBound="-1"
+        eType="#//tests/TestSimpleReferences" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="testContainmentReferences"
+        upperBound="-1" eType="#//tests/TestContainmentReferences" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="testDataTypes" upperBound="-1"
+        eType="#//tests/TestDataTypes" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="testInheritance" upperBound="-1"
+        eType="#//tests/TestInheritance" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="testEnums" upperBound="-1"
+        eType="#//tests/TestEnums" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="testOperations" upperBound="-1"
+        eType="#//tests/TestOperations" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="someHelpers" upperBound="-1"
+        eType="#//helpers/somesimplehelpers/SomeHelpers" containment="true"/>
+  </eClassifiers>
+  <eSubpackages name="tests" nsURI="tests" nsPrefix="tests">
+    <eClassifiers xsi:type="ecore:EClass" name="TestAttributes">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testString0To1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testString1To1" lowerBound="1"
+          eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testString0To3" upperBound="3"
+          eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testString2To4" lowerBound="2"
+          upperBound="4" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testNotChangeable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
+          changeable="false"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testDerived" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
+          derived="true"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testUnsettable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
+          unsettable="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="TestSimpleReferences">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="testSimpleReference0To1"
+          eType="#//helpers/somesimplehelpers/SomeHelper01"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="testSimpleReference1To1"
+          lowerBound="1" eType="#//helpers/somesimplehelpers/SomeHelper02"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="testSimpleReference0To3"
+          upperBound="3" eType="#//helpers/somesimplehelpers/SomeHelper03"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="testSimpleReference1To3"
+          lowerBound="1" upperBound="3" eType="#//helpers/somesimplehelpers/SomeHelper04"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="testNotChangeable" eType="#//helpers/somesimplehelpers/SomeHelper05"
+          changeable="false"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="testUnsettable" eType="#//helpers/somesimplehelpers/SomeHelper06"
+          unsettable="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="TestContainmentReferences">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="testContainmentReference0To1"
+          eType="#//helpers/somesimplehelpers/SomeHelper01" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="testContainmentReference1To1"
+          lowerBound="1" eType="#//helpers/somesimplehelpers/SomeHelper01" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="testContainmentReference0To3"
+          upperBound="3" eType="#//helpers/somesimplehelpers/SomeHelper01" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="testContainmentReference1To3"
+          lowerBound="1" upperBound="3" eType="#//helpers/somesimplehelpers/SomeHelper01"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="testNotChangeable" eType="#//helpers/somesimplehelpers/SomeHelper01"
+          changeable="false" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="testUnsettable" eType="#//helpers/somesimplehelpers/SomeHelper01"
+          unsettable="true" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="TestDataTypes">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testBoolean0To1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testChar0To1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EChar"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testByte0To1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EByte"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testShort0To1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EShort"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testInt0To1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testLong0To1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELong"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testBigInteger0To1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigInteger"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testFloat0To1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testDouble0To1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testBigDecimal0To1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testBoolean0ToInfinity"
+          eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testInt0ToInfinity" upperBound="-1"
+          eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testDouble0ToInfinity"
+          upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="TestInheritance">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="someClass01Level1s" upperBound="-1"
+          eType="#//helpers/someinheritancehelpers/SomeClass01Level1" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="someClassInterface01Level1s"
+          upperBound="-1" eType="#//helpers/someinheritancehelpers/SomeClassInterface01Level1"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="someClass01Level3s" upperBound="-1"
+          eType="#//helpers/someinheritancehelpers/SomeClass01Level3" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="TestEnums">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testEnums0To1" eType="#//helpers/someenumhelpers/SomeEnum01"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="testEnums0To3" upperBound="3"
+          eType="#//helpers/someenumhelpers/SomeEnum01"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="TestOperations">
+      <eOperations name="testOperation0To1"/>
+      <eOperations name="testOperation0To3" upperBound="3" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble">
+        <eParameters name="someStringArray" upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+        <eParameters name="someInt" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      </eOperations>
+    </eClassifiers>
+  </eSubpackages>
+  <eSubpackages name="helpers" nsURI="helpers" nsPrefix="helpers">
+    <eSubpackages name="somesimplehelpers" nsURI="somesimplehelpers" nsPrefix="somesimplehelpers">
+      <eClassifiers xsi:type="ecore:EClass" name="SomeHelpers">
+        <eStructuralFeatures xsi:type="ecore:EReference" name="someHelpers01" upperBound="-1"
+            eType="#//helpers/somesimplehelpers/SomeHelper01" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="someHelpers02" upperBound="-1"
+            eType="#//helpers/somesimplehelpers/SomeHelper02" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="someHelpers03" upperBound="-1"
+            eType="#//helpers/somesimplehelpers/SomeHelper03" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="someHelpers04" upperBound="-1"
+            eType="#//helpers/somesimplehelpers/SomeHelper04" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="someHelpers05" upperBound="-1"
+            eType="#//helpers/somesimplehelpers/SomeHelper05" containment="true"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="someHelpers06" upperBound="-1"
+            eType="#//helpers/somesimplehelpers/SomeHelper06" containment="true"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="SomeHelper01">
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="SomeHelper02">
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="SomeHelper03">
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="SomeHelper04">
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="SomeHelper05">
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="SomeHelper06">
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+      </eClassifiers>
+    </eSubpackages>
+    <eSubpackages name="someinheritancehelpers" nsURI="someinheritancehelpers" nsPrefix="someinheritancehelpers">
+      <eClassifiers xsi:type="ecore:EClass" name="SomeClass01Level1">
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="someHelper01Simple"
+            eType="#//helpers/somesimplehelpers/SomeHelper01"/>
+        <eStructuralFeatures xsi:type="ecore:EReference" name="someHelper02Containment"
+            eType="#//helpers/somesimplehelpers/SomeHelper02" containment="true"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="SomeClassAbstract01Level2" abstract="true"
+          eSuperTypes="#//helpers/someinheritancehelpers/SomeClass01Level1"/>
+      <eClassifiers xsi:type="ecore:EClass" name="SomeClass01Level2" eSuperTypes="#//helpers/someinheritancehelpers/SomeClass01Level1"/>
+      <eClassifiers xsi:type="ecore:EClass" name="SomeClassInterface01Level1" abstract="true"
+          interface="true">
+        <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+      </eClassifiers>
+      <eClassifiers xsi:type="ecore:EClass" name="SomeClassInterface01Level2" abstract="true"
+          interface="true" eSuperTypes="#//helpers/someinheritancehelpers/SomeClassInterface01Level1"/>
+      <eClassifiers xsi:type="ecore:EClass" name="SomeClass01Level3" eSuperTypes="#//helpers/someinheritancehelpers/SomeClassAbstract01Level2 #//helpers/someinheritancehelpers/SomeClassInterface01Level2 #//helpers/someinheritancehelpers/SomeClass01Level2"/>
+    </eSubpackages>
+    <eSubpackages name="someenumhelpers" nsURI="someenumhelpers" nsPrefix="someenumhelpers">
+      <eClassifiers xsi:type="ecore:EEnum" name="SomeEnum01">
+        <eLiterals name="SomeLiteral01" value="1"/>
+        <eLiterals name="SomeLiteral02" value="2"/>
+        <eLiterals name="SomeLiteral03" value="3"/>
+      </eClassifiers>
+    </eSubpackages>
+  </eSubpackages>
+</ecore:EPackage>

@@ -19,37 +19,37 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
 
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
+  @Bean
+  public CorsFilter corsFilter() {
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowCredentials(true);
-        // Dev: localhost + LAN peers (two devices on same Wi‑Fi testing the UI).
-        config.setAllowedOriginPatterns(List.of(
-                "http://localhost:5173",
-                "http://127.0.0.1:5173",
-                "http://192.168.*.*:5173",
-                "http://10.*.*.*:5173",
-                "http://172.*.*.*:5173"
-        ));
-        config.setAllowedHeaders(List.of(
-                "Origin",
-                "Content-Type",
-                "Accept",
-                "Authorization",
-                "Access-Control-Allow-Origin"
-        ));
-        config.setAllowedMethods(List.of(
-                "GET",
-                "POST",
-                "PUT",
-                "DELETE",
-                "PATCH",
-                "OPTIONS"
-        ));
+    config.setAllowCredentials(true);
+    // Dev: localhost + LAN peers (two devices on same Wi‑Fi testing the UI).
+    config.setAllowedOriginPatterns(List.of(
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://192.168.*.*:5173",
+        "http://10.*.*.*:5173",
+        "http://172.*.*.*:5173"
+    ));
+    config.setAllowedHeaders(List.of(
+        "Origin",
+        "Content-Type",
+        "Accept",
+        "Authorization",
+        "Access-Control-Allow-Origin"
+    ));
+    config.setAllowedMethods(List.of(
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "OPTIONS"
+    ));
 
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
+    source.registerCorsConfiguration("/**", config);
+    return new CorsFilter(source);
+  }
 }

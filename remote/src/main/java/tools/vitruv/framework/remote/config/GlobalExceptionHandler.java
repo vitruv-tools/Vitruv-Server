@@ -26,17 +26,17 @@ import org.springframework.web.server.ResponseStatusException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<Object> handleResponseStatusException(ResponseStatusException ex) {
-        return ResponseEntity
-                .status(ex.getStatusCode())
-                .body(ex.getReason());
-    }
+  @ExceptionHandler(ResponseStatusException.class)
+  public ResponseEntity<Object> handleResponseStatusException(ResponseStatusException ex) {
+    return ResponseEntity
+        .status(ex.getStatusCode())
+        .body(ex.getReason());
+  }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleGenericException(Exception exception) {
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(exception.getMessage());
-    }
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<Object> handleGenericException(Exception exception) {
+    return ResponseEntity
+        .status(HttpStatus.BAD_REQUEST)
+        .body(exception.getMessage());
+  }
 }

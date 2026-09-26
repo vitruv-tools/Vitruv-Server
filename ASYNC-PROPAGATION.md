@@ -119,7 +119,7 @@ For a **live browser demo** of `WAITING_USER_INTERACTION`, use the dedicated dem
 
 See [`InteractionDemoVsumProvider/README.md`](../vsum-provider-build/vsum-provider/InteractionDemoVsumProvider/README.md) for step-by-step instructions and expected network calls.
 
-## SystemRootVsum — Epic 1 user interactions (Points 1–3)
+## SystemRootVsum — user interactions
 
 Metamodel **`SystemRootVsum`** supports three async user-interaction flows:
 
@@ -152,7 +152,7 @@ Full documentation, known bugs, build/deploy, and provider unit tests:
 
 [`SystemRootVsumProvider/README.md`](../vsum-provider-build/vsum-provider/SystemRootVsumProvider/README.md)
 
-## Inconsistency Hub — park dismiss → resolve (Epic 2 bridge)
+## Inconsistency Hub — park dismiss → resolve
 
 Dismissing the interaction dialog (X) **parks** the waiting task; it does **not** abort the worker.
 
@@ -213,7 +213,7 @@ Metamodel **`AmaltheaAscet`** is the CoCoPath / [UserInteractionDemo](https://gi
 
 Provider wiring matches other async-capable providers: `getInitializer(Path, InteractionResultProvider)` receives `VitruviusInteractionResultProvider` so async Update can pause on `WAITING_USER_INTERACTION`.
 
-Build, deploy, correspondences, storage workarounds, and unit tests:
+Build, deploy, and unit tests:
 
 [`amalthea-acset-integration/README.md`](../amalthea-acset-integration/README.md)
 

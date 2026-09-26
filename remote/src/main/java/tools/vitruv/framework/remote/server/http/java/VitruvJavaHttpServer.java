@@ -1,10 +1,11 @@
 package tools.vitruv.framework.remote.server.http.java;
 
 import com.sun.net.httpserver.HttpServer;
+import tools.vitruv.framework.remote.server.rest.PathEndointCollector;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
-import tools.vitruv.framework.remote.server.rest.PathEndointCollector;
 
 public class VitruvJavaHttpServer {
   private final HttpServer server;
@@ -18,12 +19,16 @@ public class VitruvJavaHttpServer {
     endpoints.forEach(endp -> server.createContext(endp.path(), new RequestHandler(endp)));
   }
 
-  /** Starts the Vitruvius server. */
+  /**
+   * Starts the Vitruvius server.
+   */
   public void start() {
     server.start();
   }
 
-  /** Stops the Vitruvius server. */
+  /**
+   * Stops the Vitruvius server.
+   */
   public void stop() {
     server.stop(0);
   }

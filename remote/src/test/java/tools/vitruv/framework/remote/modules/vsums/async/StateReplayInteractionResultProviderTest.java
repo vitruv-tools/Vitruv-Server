@@ -3,6 +3,7 @@ package tools.vitruv.framework.remote.modules.vsums.async;
 import org.junit.jupiter.api.Test;
 import tools.vitruv.change.interaction.UserInteractionOptions.NotificationType;
 import tools.vitruv.change.interaction.UserInteractionOptions.WindowModality;
+import tools.vitruv.framework.remote.modules.vsums.async.StateReplayInteractionResultProvider;
 
 import java.util.List;
 

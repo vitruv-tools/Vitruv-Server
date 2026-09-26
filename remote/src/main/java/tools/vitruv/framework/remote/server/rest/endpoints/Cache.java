@@ -1,11 +1,12 @@
 package tools.vitruv.framework.remote.server.rest.endpoints;
 
 import com.google.common.collect.BiMap;
-import java.util.HashMap;
-import java.util.Map;
 import org.eclipse.emf.ecore.EObject;
 import tools.vitruv.framework.views.View;
 import tools.vitruv.framework.views.ViewSelector;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A global cache holding {@link View}s, {@link ViewSelector}s and mappings of the form UUID and the
@@ -55,8 +56,8 @@ public class Cache {
    * Adds a selector and its corresponding EObject mapping to the cache.
    *
    * @param selectorUuid The uuid of the selector.
-   * @param selector The selector to add.
-   * @param mapping The mapping of the form String and the EObject.
+   * @param selector     The selector to add.
+   * @param mapping      The mapping of the form String and the EObject.
    */
   public static void addSelectorWithMapping(
       String selectorUuid, ViewSelector selector, BiMap<String, EObject> mapping) {
@@ -78,7 +79,7 @@ public class Cache {
    * Retrieves an EObject from the mapping for the given selector uuid and object uuid.
    *
    * @param selectorUuid The uuid of the selector.
-   * @param objectUuid The uuid of the object.
+   * @param objectUuid   The uuid of the object.
    * @return The EObject with the given uuid.
    */
   public static EObject getEObjectFromMapping(String selectorUuid, String objectUuid) {
@@ -89,7 +90,7 @@ public class Cache {
    * Retrieves an object uuid from the mapping for the given selector uuid and EObject.
    *
    * @param selectorUuid The uuid of the selector.
-   * @param eObject The EObject to get the uuid for.
+   * @param eObject      The EObject to get the uuid for.
    * @return The uuid of the given EObject.
    */
   public static String getUuidFromMapping(String selectorUuid, EObject eObject) {

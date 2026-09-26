@@ -1,6 +1,5 @@
 package tools.vitruv.framework.remote.modules.vsums.model.entities;
 
-import tools.vitruv.framework.remote.common.entities.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import tools.vitruv.framework.remote.common.entities.BaseEntity;
 
 import java.time.Instant;
 import java.util.List;
@@ -37,23 +37,23 @@ import java.util.List;
 @Setter
 public class ViewUpdate extends BaseEntity {
 
-    @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private VsumInfo vsumInfo;
+  @ManyToOne
+  @OnDelete(action = OnDeleteAction.CASCADE)
+  private VsumInfo vsumInfo;
 
-    private String viewTypeName;
+  private String viewTypeName;
 
-    @ElementCollection
-    @CollectionTable(
-            name = "view_updates_selected_objects_eclasses",
-            joinColumns = @JoinColumn(name = "view_update_id")
-    )
-    @Column(name = "selected_object_eclass_name")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<String> selectedObjectEClassNames;
+  @ElementCollection
+  @CollectionTable(
+      name = "view_updates_selected_objects_eclasses",
+      joinColumns = @JoinColumn(name = "view_update_id")
+  )
+  @Column(name = "selected_object_eclass_name")
+  @OnDelete(action = OnDeleteAction.CASCADE)
+  private List<String> selectedObjectEClassNames;
 
-    @Column(columnDefinition = "TEXT")
-    private String encodedResourceSet;
+  @Column(columnDefinition = "TEXT")
+  private String encodedResourceSet;
 
-    private Instant timestamp;
+  private Instant timestamp;
 }

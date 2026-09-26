@@ -14,48 +14,48 @@ import java.util.Collections;
  * Contains utility functions to work with {@link Resource}s.
  */
 public class ResourceUtils {
-    private ResourceUtils() throws InstantiationException {
-        throw new InstantiationException("Cannot be instantiated");
-    }
+  private ResourceUtils() throws InstantiationException {
+    throw new InstantiationException("Cannot be instantiated");
+  }
 
-    /**
-     * Creates a {@link Resource} with the given {@link URI} and given content.
-     *
-     * @param uri       The URI of the resource.
-     * @param content   The content of the resource.
-     * @param parentSet The parent {@link ResourceSet} of the resource.
-     * @return The created {@link Resource}.
-     */
-    public static Resource createResourceWith(URI uri, Collection<? extends EObject> content, ResourceSet parentSet) {
-        var resource = parentSet.createResource(uri);
-        resource.getContents().addAll(content);
-        return resource;
-    }
+  /**
+   * Creates a {@link Resource} with the given {@link URI} and given content.
+   *
+   * @param uri       The URI of the resource.
+   * @param content   The content of the resource.
+   * @param parentSet The parent {@link ResourceSet} of the resource.
+   * @return The created {@link Resource}.
+   */
+  public static Resource createResourceWith(URI uri, Collection<? extends EObject> content, ResourceSet parentSet) {
+    var resource = parentSet.createResource(uri);
+    resource.getContents().addAll(content);
+    return resource;
+  }
 
-    /**
-     * Creates a {@link Resource} with the given {@link URI} and given content.
-     * Uses a new {@link ResourceSet} as parent set.
-     *
-     * @param uri     The URI of the resource.
-     * @param content The content of the resource.
-     * @return The created {@link Resource}.
-     */
-    public static Resource createResourceWith(URI uri, Collection<? extends EObject> content) {
-        return createResourceWith(uri, content, createJsonResourceSet());
-    }
+  /**
+   * Creates a {@link Resource} with the given {@link URI} and given content.
+   * Uses a new {@link ResourceSet} as parent set.
+   *
+   * @param uri     The URI of the resource.
+   * @param content The content of the resource.
+   * @return The created {@link Resource}.
+   */
+  public static Resource createResourceWith(URI uri, Collection<? extends EObject> content) {
+    return createResourceWith(uri, content, createJsonResourceSet());
+  }
 
-    public static Resource createEmptyResource(URI uri) {
-        return createResourceWith(uri, Collections.emptyList());
-    }
+  public static Resource createEmptyResource(URI uri) {
+    return createResourceWith(uri, Collections.emptyList());
+  }
 
-    /**
-     * Returns a {@link ResourceSet} and registers a {@link JsonResourceFactory} as default factory.
-     *
-     * @return The created {@link ResourceSet}.
-     */
-    public static ResourceSet createJsonResourceSet() {
-        var set = new ResourceSetImpl();
-        set.getResourceFactoryRegistry().getExtensionToFactoryMap().put("*", new JsonResourceFactory());
-        return set;
-    }
+  /**
+   * Returns a {@link ResourceSet} and registers a {@link JsonResourceFactory} as default factory.
+   *
+   * @return The created {@link ResourceSet}.
+   */
+  public static ResourceSet createJsonResourceSet() {
+    var set = new ResourceSetImpl();
+    set.getResourceFactoryRegistry().getExtensionToFactoryMap().put("*", new JsonResourceFactory());
+    return set;
+  }
 }

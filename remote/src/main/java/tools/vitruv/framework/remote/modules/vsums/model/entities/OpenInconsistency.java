@@ -1,15 +1,11 @@
 package tools.vitruv.framework.remote.modules.vsums.model.entities;
 
-import tools.vitruv.framework.remote.common.entities.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tools.vitruv.framework.remote.common.entities.BaseEntity;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -26,40 +22,42 @@ import java.util.UUID;
 @Setter
 public class OpenInconsistency extends BaseEntity {
 
-    private UUID vsumId;
+  private UUID vsumId;
 
-    private UUID taskId;
+  private UUID taskId;
 
-    private UUID viewId;
+  private UUID viewId;
 
-    private String vsumName;
+  private String vsumName;
 
-    private String title;
+  private String title;
 
-    @Column(columnDefinition = "TEXT")
-    private String message;
+  @Column(columnDefinition = "TEXT")
+  private String message;
 
-    @Column(columnDefinition = "TEXT")
-    private String interactionJson;
+  @Column(columnDefinition = "TEXT")
+  private String interactionJson;
 
-    /** Resource set JSON captured when the inconsistency was parked (same format as POST /v1/views). */
-    @Column(columnDefinition = "TEXT")
-    private String modelSnapshotEncodedResourceSet;
+  /**
+   * Resource set JSON captured when the inconsistency was parked (same format as POST /v1/views).
+   */
+  @Column(columnDefinition = "TEXT")
+  private String modelSnapshotEncodedResourceSet;
 
-    private String modelSnapshotViewTypeName;
+  private String modelSnapshotViewTypeName;
 
-    @Enumerated(EnumType.STRING)
-    private OpenInconsistencyState state;
+  @Enumerated(EnumType.STRING)
+  private OpenInconsistencyState state;
 
-    private Instant createdAt;
+  private Instant createdAt;
 
-    private Instant resolvedAt;
+  private Instant resolvedAt;
 
-    private String resolvedBy;
+  private String resolvedBy;
 
-    @Column(columnDefinition = "TEXT")
-    private String resolutionChoice;
+  @Column(columnDefinition = "TEXT")
+  private String resolutionChoice;
 
-    @Column(columnDefinition = "TEXT")
-    private String resolutionComment;
+  @Column(columnDefinition = "TEXT")
+  private String resolutionComment;
 }

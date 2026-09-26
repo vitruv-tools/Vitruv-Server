@@ -1,11 +1,11 @@
 package tools.vitruv.framework.remote.modules.vsums.usecasesimpls;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import tools.vitruv.framework.remote.modules.vsums.usecases.strategies.UseCasesStrategySelector;
 import tools.vitruv.framework.remote.modules.vsums.usecases.strategies.ViewUseCasesStrategy;
 import tools.vitruv.framework.remote.modules.vsums.usecases.strategies.VsumUseCasesStrategy;
 import tools.vitruv.framework.remote.modules.vsums.usecasesimpls.helpers.VitruvServerIdsManager;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
@@ -25,32 +25,32 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class UseCasesStrategySelectorImpl implements UseCasesStrategySelector {
-    private final InternalViewStrategyImpl internalViewStrategy;
-    private final InternalVsumStrategyImpl internalVsumStrategy;
-    private final VitruvServerStrategyImpl vitruvServerStrategy;
-    private final VitruvServerIdsManager vitruvServerIdsManager;
+  private final InternalViewStrategyImpl internalViewStrategy;
+  private final InternalVsumStrategyImpl internalVsumStrategy;
+  private final VitruvServerStrategyImpl vitruvServerStrategy;
+  private final VitruvServerIdsManager vitruvServerIdsManager;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public VsumUseCasesStrategy getVsumStrategy(UUID id) {
-        if (vitruvServerIdsManager.hasId(id)) {
-            return vitruvServerStrategy;
-        }
-
-        return internalVsumStrategy;
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public VsumUseCasesStrategy getVsumStrategy(UUID id) {
+    if (vitruvServerIdsManager.hasId(id)) {
+      return vitruvServerStrategy;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ViewUseCasesStrategy getViewStrategy(UUID id) {
-        if (vitruvServerIdsManager.hasId(id)) {
-            return vitruvServerStrategy;
-        }
+    return internalVsumStrategy;
+  }
 
-        return internalViewStrategy;
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ViewUseCasesStrategy getViewStrategy(UUID id) {
+    if (vitruvServerIdsManager.hasId(id)) {
+      return vitruvServerStrategy;
     }
+
+    return internalViewStrategy;
+  }
 }

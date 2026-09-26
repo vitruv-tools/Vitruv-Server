@@ -3,6 +3,8 @@ package tools.vitruv.framework.remote.modules.vsums.async;
 import org.junit.jupiter.api.Test;
 import tools.vitruv.change.interaction.ConfirmationUserInteraction;
 import tools.vitruv.change.interaction.InteractionFactory;
+import tools.vitruv.framework.remote.modules.vsums.async.AsyncTaskState;
+import tools.vitruv.framework.remote.modules.vsums.async.AsyncTaskStatus;
 
 import java.util.UUID;
 
@@ -11,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Non-threaded state transitions and edge cases for {@link AsyncTaskStatus}.
  * Concurrency / wait-notify behaviour is covered separately in
- * {@link AsyncTaskStatusInteractionTest}.
+ * {@link tools.vitruv.framework.remote.modules.vsums.async.AsyncTaskStatusInteractionTest}.
  */
 class AsyncTaskStatusStateTest {
 

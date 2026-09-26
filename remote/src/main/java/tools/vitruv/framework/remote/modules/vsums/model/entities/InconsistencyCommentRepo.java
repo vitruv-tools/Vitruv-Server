@@ -7,5 +7,5 @@ import java.util.UUID;
 
 public interface InconsistencyCommentRepo extends BaseRepo<InconsistencyComment> {
 
-    List<InconsistencyComment> findByInconsistencyIdOrderByCreatedAtAsc(UUID inconsistencyId);
+  List<InconsistencyComment> findByInconsistencyIdOrderByCreatedAtAsc(UUID inconsistencyId);
 }

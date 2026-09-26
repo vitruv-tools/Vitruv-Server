@@ -1,13 +1,14 @@
 package tools.vitruv.framework.remote.modules.vsums.async;
 
-import tools.vitruv.framework.remote.helper.IntegrationTest;
-import tools.vitruv.framework.remote.modules.vsums.model.entities.OpenInconsistency;
-import tools.vitruv.framework.remote.modules.vsums.model.entities.OpenInconsistencyRepo;
-import tools.vitruv.framework.remote.modules.vsums.model.entities.OpenInconsistencyState;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import tools.vitruv.framework.remote.helper.IntegrationTest;
+import tools.vitruv.framework.remote.modules.vsums.async.PropagationTaskRegistry;
+import tools.vitruv.framework.remote.modules.vsums.model.entities.OpenInconsistency;
+import tools.vitruv.framework.remote.modules.vsums.model.entities.OpenInconsistencyRepo;
+import tools.vitruv.framework.remote.modules.vsums.model.entities.OpenInconsistencyState;
 
 import java.time.Instant;
 import java.util.UUID;

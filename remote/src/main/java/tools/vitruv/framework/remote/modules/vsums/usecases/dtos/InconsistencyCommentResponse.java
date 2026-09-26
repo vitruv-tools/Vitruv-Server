@@ -4,10 +4,10 @@ import java.time.Instant;
 import java.util.UUID;
 
 public record InconsistencyCommentResponse(
-        UUID id,
-        UUID inconsistencyId,
-        String author,
-        String body,
-        Instant createdAt
+    UUID id,
+    UUID inconsistencyId,
+    String author,
+    String body,
+    Instant createdAt
 ) {
 }

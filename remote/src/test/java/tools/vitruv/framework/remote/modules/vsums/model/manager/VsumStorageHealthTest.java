@@ -3,6 +3,7 @@ package tools.vitruv.framework.remote.modules.vsums.model.manager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.xml.sax.SAXParseException;
+import tools.vitruv.framework.remote.modules.vsums.model.manager.VsumStorageHealth;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

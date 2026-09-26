@@ -24,24 +24,24 @@ import java.util.UUID;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Getter
 public abstract class BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private UUID id;
 
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        if (!(other instanceof BaseEntity)) return false;
-        if (id == null) return false;
-        return id.equals(((BaseEntity) other).id);
-    }
+  @Override
+  public boolean equals(Object other) {
+    if (this == other) return true;
+    if (!(other instanceof BaseEntity)) return false;
+    if (id == null) return false;
+    return id.equals(((BaseEntity) other).id);
+  }
 
-    @Override
-    public int hashCode() {
-        if (id == null) {
-            throw new IllegalStateException("Entity without id cannot be hashed.");
-        }
-        return id.hashCode();
+  @Override
+  public int hashCode() {
+    if (id == null) {
+      throw new IllegalStateException("Entity without id cannot be hashed.");
     }
+    return id.hashCode();
+  }
 
 }

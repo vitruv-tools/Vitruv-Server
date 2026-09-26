@@ -2,6 +2,7 @@ package tools.vitruv.framework.remote.modules.vsums.model.manager;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import tools.vitruv.framework.remote.modules.vsums.model.manager.VsumStoragePathResolver;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

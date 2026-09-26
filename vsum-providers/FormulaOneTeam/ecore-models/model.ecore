@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="model" nsURI="http://vitruv.tools/formulaoneteam/model" nsPrefix="model">
+  <eClassifiers xsi:type="ecore:EClass" name="FormulaOneTeam">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="cars" upperBound="2" eType="#//FormulaOneCar"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="tires" upperBound="-1"
+        eType="#//tires/Tire" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FormulaOneCar">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="driversName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="tires" lowerBound="4" upperBound="4"
+        eType="#//tires/Tire"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="powerUnit" eType="#//PowerUnit"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="PowerUnit">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="horsePower" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eSubpackages name="tires" nsURI="tires" nsPrefix="tires">
+    <eClassifiers xsi:type="ecore:EClass" name="Tire" abstract="true"/>
+    <eClassifiers xsi:type="ecore:EClass" name="SoftTire" eSuperTypes="#//tires/Tire"/>
+    <eClassifiers xsi:type="ecore:EClass" name="MediumTire" eSuperTypes="#//tires/Tire"/>
+    <eClassifiers xsi:type="ecore:EClass" name="HardTire" eSuperTypes="#//tires/Tire"/>
+  </eSubpackages>
+</ecore:EPackage>

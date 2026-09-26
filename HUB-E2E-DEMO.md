@@ -1,7 +1,5 @@
 # Inconsistency Hub — demo walkthrough
 
-Use this before a supervisor demo or after pulling Hub changes.
-
 ## Prerequisites
 
 | Service | How |
@@ -29,7 +27,7 @@ Invoke-WebRequest http://localhost:5173/ -UseBasicParsing | Select-Object Status
 
 ---
 
-## Epic 2 Hub additions (visualization & resolution)
+## Hub visualization & resolution
 
 - `GET /v1/inconsistencies/{id}/model` — model snapshot for Hub visualization (prefers committed resource set; enriches missing entity from prompt)
 - `GET /v1/inconsistencies/{id}/context` — elements and correspondences for the visualization panel

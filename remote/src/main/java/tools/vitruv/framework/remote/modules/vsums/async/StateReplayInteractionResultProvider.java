@@ -13,57 +13,57 @@ import java.util.Collections;
  */
 public class StateReplayInteractionResultProvider implements InteractionResultProvider {
 
-    @Override
-    public boolean getConfirmationInteractionResult(
-            WindowModality windowModality,
-            String title,
-            String message,
-            String positiveDecisionText,
-            String negativeDecisionText,
-            String cancelDecisionText) {
-        return false;
-    }
+  @Override
+  public boolean getConfirmationInteractionResult(
+      WindowModality windowModality,
+      String title,
+      String message,
+      String positiveDecisionText,
+      String negativeDecisionText,
+      String cancelDecisionText) {
+    return false;
+  }
 
-    @Override
-    public void getNotificationInteractionResult(
-            WindowModality windowModality,
-            String title,
-            String message,
-            String positiveDecisionText,
-            NotificationType notificationType) {
-        // acknowledgement only
-    }
+  @Override
+  public void getNotificationInteractionResult(
+      WindowModality windowModality,
+      String title,
+      String message,
+      String positiveDecisionText,
+      NotificationType notificationType) {
+    // acknowledgement only
+  }
 
-    @Override
-    public String getTextInputInteractionResult(
-            WindowModality windowModality,
-            String title,
-            String message,
-            String positiveDecisionText,
-            String cancelDecisionText,
-            InputValidator inputValidator) {
-        return "";
-    }
+  @Override
+  public String getTextInputInteractionResult(
+      WindowModality windowModality,
+      String title,
+      String message,
+      String positiveDecisionText,
+      String cancelDecisionText,
+      InputValidator inputValidator) {
+    return "";
+  }
 
-    @Override
-    public int getMultipleChoiceSingleSelectionInteractionResult(
-            WindowModality windowModality,
-            String title,
-            String message,
-            String positiveDecisionText,
-            String cancelDecisionText,
-            Iterable<String> choices) {
-        return 0;
-    }
+  @Override
+  public int getMultipleChoiceSingleSelectionInteractionResult(
+      WindowModality windowModality,
+      String title,
+      String message,
+      String positiveDecisionText,
+      String cancelDecisionText,
+      Iterable<String> choices) {
+    return 0;
+  }
 
-    @Override
-    public Iterable<Integer> getMultipleChoiceMultipleSelectionInteractionResult(
-            WindowModality windowModality,
-            String title,
-            String message,
-            String positiveDecisionText,
-            String cancelDecisionText,
-            Iterable<String> choices) {
-        return Collections.emptyList();
-    }
+  @Override
+  public Iterable<Integer> getMultipleChoiceMultipleSelectionInteractionResult(
+      WindowModality windowModality,
+      String title,
+      String message,
+      String positiveDecisionText,
+      String cancelDecisionText,
+      Iterable<String> choices) {
+    return Collections.emptyList();
+  }
 }

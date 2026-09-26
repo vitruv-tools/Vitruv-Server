@@ -1,12 +1,12 @@
 package tools.vitruv.framework.remote.modules.vsums.model.entities;
 
-import tools.vitruv.framework.remote.common.entities.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tools.vitruv.framework.remote.common.entities.BaseEntity;
 
 /**
  * Represents metadata information for a VSUM entity within the system.
@@ -33,9 +33,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class VsumInfo extends BaseEntity {
-    private String metaModelName;
+  private String metaModelName;
 
-    private String name;
+  private String name;
 
-    private String description;
+  private String description;
 }

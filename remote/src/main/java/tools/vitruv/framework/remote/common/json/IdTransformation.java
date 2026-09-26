@@ -1,12 +1,13 @@
 package tools.vitruv.framework.remote.common.json;
 
-import java.nio.file.Path;
-import java.util.List;
 import org.eclipse.emf.common.util.URI;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.atomic.hid.HierarchicalId;
 import tools.vitruv.change.atomic.root.RootEChange;
 import tools.vitruv.change.utils.ProjectMarker;
+
+import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Contains functions to transform IDs used by the Vitruvius framework to identify {@link

@@ -2,22 +2,6 @@ package tools.vitruv.framework.remote.client.impl;
 
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Timer;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Stream;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import tools.vitruv.change.atomic.root.InsertRootEObject;
 import tools.vitruv.change.composite.description.VitruviusChange;
@@ -34,27 +18,52 @@ import tools.vitruv.framework.remote.common.util.ResourceUtil;
 import tools.vitruv.framework.views.ViewSelector;
 import tools.vitruv.framework.views.ViewType;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Stream;
+
 /**
  * A {@link VitruvRemoteConnection} acts as a {@link HttpClient} to forward requests to a Vitruvius
  * server. This enables the ability to perform actions on this remote Vitruvius instance.
  */
 public class VitruvRemoteConnection implements VitruvClient {
-  /** Constant for successful request result. */
+  /**
+   * Constant for successful request result.
+   */
   private static final String SUCCESS = "success";
 
-  /** Constant for exception during request processing. */
+  /**
+   * Constant for exception during request processing.
+   */
   private static final String EXCEPTION = "exception";
 
-  /** The constant result. */
+  /**
+   * The constant result.
+   */
   private static final String RESULT = "result";
 
-  /** The method constant. */
+  /**
+   * The method constant.
+   */
   private static final String METHOD = "method";
 
-  /** The endpoint constant. */
+  /**
+   * The endpoint constant.
+   */
   private static final String ENDPOINT = "endpoint";
 
-  /** The metric client name. */
+  /**
+   * The metric client name.
+   */
   private static final String METRIC_CLIENT_NAME = "vitruv.client.rest.client";
 
   private final int port;
@@ -69,7 +78,7 @@ public class VitruvRemoteConnection implements VitruvClient {
    *
    * @param protocol The protocol of the Vitruvius server.
    * @param hostOrIp The host name of IP address of the Vitruvius server.
-   * @param port of the Vitruvius server.
+   * @param port     of the Vitruvius server.
    */
   public VitruvRemoteConnection(String protocol, String hostOrIp, int port, Path temp) {
     this.client = HttpClient.newHttpClient();
@@ -138,9 +147,9 @@ public class VitruvRemoteConnection implements VitruvClient {
    * @param typeName The name of the view type.
    * @return The selector generated with the view type of the given name.
    * @throws BadServerResponseException If the server answered with a bad response or a connection
-   *     error occurred.
-   * @throws NoSuchElementException If the response headers do not contain the expected selector
-   *     UUID.
+   *                                    error occurred.
+   * @throws NoSuchElementException     If the response headers do not contain the expected selector
+   *                                    UUID.
    */
   RemoteViewSelector getSelector(String typeName) throws BadServerResponseException {
     var request =
@@ -170,10 +179,10 @@ public class VitruvRemoteConnection implements VitruvClient {
    * Queries the Vitruvius server to obtain the view using the given view selector.
    *
    * @param selector The {@link tools.vitruv.framework.views.ViewSelector} which should be used to
-   *     create the view.
+   *                 create the view.
    * @return The view generated with the given view selector.
    * @throws BadServerResponseException If the server answered with a bad response or a connection
-   *     error occurred.
+   *                                    error occurred.
    */
   RemoteView getView(RemoteViewSelector selector) throws BadServerResponseException {
     try {
@@ -200,10 +209,10 @@ public class VitruvRemoteConnection implements VitruvClient {
   /**
    * Queries the Vitruvius server to propagate the given changes for the view with the given UUID.
    *
-   * @param uuid UUID of the changed view.
+   * @param uuid   UUID of the changed view.
    * @param change The changes performed on the affected view.
    * @throws BadServerResponseException If the server answered with a bad response or a connection
-   *     error occurred.
+   *                                    error occurred.
    */
   void propagateChanges(String uuid, VitruviusChange<?> change) throws BadServerResponseException {
     try {
@@ -234,7 +243,7 @@ public class VitruvRemoteConnection implements VitruvClient {
    *
    * @param uuid UUID of the view.
    * @throws BadServerResponseException If the server answered with a bad response or a connection
-   *     error occurred.
+   *                                    error occurred.
    */
   void closeView(String uuid) throws BadServerResponseException {
     var request =
@@ -252,7 +261,7 @@ public class VitruvRemoteConnection implements VitruvClient {
    * @param uuid UUID of the view.
    * @return {@code true} if the view is closed, {@code false} otherwise.
    * @throws BadServerResponseException If the server answered with a bad response or a connection
-   *     error occurred.
+   *                                    error occurred.
    */
   boolean isViewClosed(String uuid) throws BadServerResponseException {
     var request =
@@ -286,7 +295,7 @@ public class VitruvRemoteConnection implements VitruvClient {
    * @param uuid UUID of the view.
    * @return The updated {@link ResourceSet} of the view.
    * @throws BadServerResponseException If the server answered with a bad response or a connection
-   *     error occurred.
+   *                                    error occurred.
    */
   ResourceSet updateView(String uuid) throws BadServerResponseException {
     var request =

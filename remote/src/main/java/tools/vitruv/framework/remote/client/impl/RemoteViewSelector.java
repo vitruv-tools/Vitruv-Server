@@ -1,8 +1,5 @@
 package tools.vitruv.framework.remote.client.impl;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -12,6 +9,10 @@ import tools.vitruv.framework.views.View;
 import tools.vitruv.framework.views.ViewSelection;
 import tools.vitruv.framework.views.ViewSelector;
 import tools.vitruv.framework.views.selection.ElementViewSelection;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A selector for selecting the elements to be represented in a view, but on the Vitruvius client
@@ -26,8 +27,8 @@ public class RemoteViewSelector implements ViewSelector {
   /**
    * Creates a new {@link RemoteViewSelector}.
    *
-   * @param uuid the unique identifier of the view
-   * @param selection the selection defining the elements to be included in the view
+   * @param uuid             the unique identifier of the view
+   * @param selection        the selection defining the elements to be included in the view
    * @param remoteConnection the remote connection to the Vitruvius server
    */
   public RemoteViewSelector(

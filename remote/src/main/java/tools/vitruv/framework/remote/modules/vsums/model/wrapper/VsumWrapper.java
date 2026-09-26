@@ -15,8 +15,8 @@ import tools.vitruv.framework.vsum.VirtualModel;
  * Typically used to group these components for easy handling and interaction within VSUM-related operations.
  */
 public record VsumWrapper(
-        VsumInfo info,
-        VirtualModel virtualModel,
-        JsonMapper jsonMapper
+    VsumInfo info,
+    VirtualModel virtualModel,
+    JsonMapper jsonMapper
 ) {
 }

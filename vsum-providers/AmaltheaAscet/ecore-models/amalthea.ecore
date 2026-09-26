@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="amalthea" nsURI="http://vitruv.tools/reactionsparser/amalthea" nsPrefix="amalthea">
+  <eClassifiers xsi:type="ecore:EClass" name="ComponentContainer">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="tasks" upperBound="-1"
+        eType="#//Task" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Process">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ISR" eSuperTypes="#//Process"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Task" eSuperTypes="#//Process">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="preemption" eType="#//PreemptionType" defaultValueLiteral="cooperative"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="multipleTaskActivationLimit" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="PreemptionType">
+    <eLiterals name="cooperative" literal="cooperative"/>
+    <eLiterals name="preemptive" value="1" literal="preemptive"/>
+  </eClassifiers>
+</ecore:EPackage>

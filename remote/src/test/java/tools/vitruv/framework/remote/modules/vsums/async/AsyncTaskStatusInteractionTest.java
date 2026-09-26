@@ -3,6 +3,9 @@ package tools.vitruv.framework.remote.modules.vsums.async;
 import org.junit.jupiter.api.Test;
 import tools.vitruv.change.interaction.ConfirmationUserInteraction;
 import tools.vitruv.change.interaction.InteractionFactory;
+import tools.vitruv.framework.remote.modules.vsums.async.AsyncTaskState;
+import tools.vitruv.framework.remote.modules.vsums.async.AsyncTaskStatus;
+import tools.vitruv.framework.remote.modules.vsums.async.PropagationInconsistentException;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;

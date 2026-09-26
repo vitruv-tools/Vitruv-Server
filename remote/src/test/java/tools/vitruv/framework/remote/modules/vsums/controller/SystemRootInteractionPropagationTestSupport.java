@@ -2,15 +2,11 @@ package tools.vitruv.framework.remote.modules.vsums.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import tools.vitruv.framework.remote.modules.vsums.async.AsyncTaskState;
-import tools.vitruv.framework.remote.modules.vsums.usecases.dtos.CreateVsumRequestBody;
-import tools.vitruv.framework.remote.modules.vsums.usecases.dtos.OpenViewRequestBody;
-import tools.vitruv.framework.remote.modules.vsums.usecases.dtos.PropagationTaskStatusResponse;
-import tools.vitruv.framework.remote.modules.vsums.usecases.dtos.StartAsyncUpdateResponse;
-import tools.vitruv.framework.remote.modules.vsums.usecases.dtos.VsumInfoResponseBody;
 import lombok.val;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import tools.vitruv.framework.remote.modules.vsums.async.AsyncTaskState;
+import tools.vitruv.framework.remote.modules.vsums.usecases.dtos.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,9 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * Shared REST helpers for SystemRootVsum Epic 1 async user-interaction integration tests.
- */
+/** Shared REST helpers for SystemRootVsum async interaction tests. */
 final class SystemRootInteractionPropagationTestSupport {
 
     record OpenedRootView(UUID viewId, String rootUri) {

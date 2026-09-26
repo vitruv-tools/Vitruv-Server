@@ -25,10 +25,10 @@ import java.util.UUID;
  * in the VSUM framework.
  */
 public record SelectorWrapper(
-        UUID selectorId,
-        ViewSelector selector,
-        Map<UUID, EObject> selectableObjects,
-        JsonResource resource,
-        VsumWrapper vsumWrapper
+    UUID selectorId,
+    ViewSelector selector,
+    Map<UUID, EObject> selectableObjects,
+    JsonResource resource,
+    VsumWrapper vsumWrapper
 ) {
 }

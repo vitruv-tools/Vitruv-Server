@@ -1,7 +1,7 @@
 package tools.vitruv.framework.remote;
 
-import tools.vitruv.framework.remote.helper.IntegrationTest;
 import org.junit.jupiter.api.Test;
+import tools.vitruv.framework.remote.helper.IntegrationTest;
 
 @IntegrationTest
 class VitruviusServerApplicationTests {

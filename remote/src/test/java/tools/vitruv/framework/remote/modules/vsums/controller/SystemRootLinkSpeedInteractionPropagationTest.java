@@ -1,22 +1,20 @@
 package tools.vitruv.framework.remote.modules.vsums.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import tools.vitruv.framework.remote.helper.IntegrationTest;
-import tools.vitruv.framework.remote.modules.vsums.async.AsyncTaskState;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
+import tools.vitruv.framework.remote.helper.IntegrationTest;
+import tools.vitruv.framework.remote.modules.vsums.async.AsyncTaskState;
 
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Epic 1 Point 3: Link under System (model) → communication speed text input (MBits/s).
- */
+/** Link insert under System prompts for communication speed. */
 @IntegrationTest
 @Tag("systemroot-epic1")
 class SystemRootLinkSpeedInteractionPropagationTest {
@@ -27,11 +25,11 @@ class SystemRootLinkSpeedInteractionPropagationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private SystemRootInteractionPropagationTestSupport support;
+    private tools.vitruv.framework.remote.modules.vsums.controller.SystemRootInteractionPropagationTestSupport support;
 
     @BeforeEach
     void setUp() {
-        support = new SystemRootInteractionPropagationTestSupport(mvc, objectMapper);
+        support = new tools.vitruv.framework.remote.modules.vsums.controller.SystemRootInteractionPropagationTestSupport(mvc, objectMapper);
     }
 
     @Test

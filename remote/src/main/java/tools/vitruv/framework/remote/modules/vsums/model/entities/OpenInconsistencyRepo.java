@@ -8,13 +8,13 @@ import java.util.UUID;
 
 public interface OpenInconsistencyRepo extends BaseRepo<OpenInconsistency> {
 
-    List<OpenInconsistency> findByStateOrderByCreatedAtDesc(OpenInconsistencyState state);
+  List<OpenInconsistency> findByStateOrderByCreatedAtDesc(OpenInconsistencyState state);
 
-    List<OpenInconsistency> findAllByOrderByCreatedAtDesc();
+  List<OpenInconsistency> findAllByOrderByCreatedAtDesc();
 
-    Optional<OpenInconsistency> findByVsumIdAndState(UUID vsumId, OpenInconsistencyState state);
+  Optional<OpenInconsistency> findByVsumIdAndState(UUID vsumId, OpenInconsistencyState state);
 
-    Optional<OpenInconsistency> findByTaskIdAndState(UUID taskId, OpenInconsistencyState state);
+  Optional<OpenInconsistency> findByTaskIdAndState(UUID taskId, OpenInconsistencyState state);
 
-    Optional<OpenInconsistency> findByTaskId(UUID taskId);
+  Optional<OpenInconsistency> findByTaskId(UUID taskId);
 }

@@ -1,9 +1,5 @@
 package tools.vitruv.framework.remote.client.impl;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkState;
-
-import java.util.Collection;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
@@ -11,12 +7,13 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import tools.vitruv.framework.views.CommittableView;
-import tools.vitruv.framework.views.View;
-import tools.vitruv.framework.views.ViewSelection;
-import tools.vitruv.framework.views.ViewSelector;
-import tools.vitruv.framework.views.ViewType;
+import tools.vitruv.framework.views.*;
 import tools.vitruv.framework.views.changederivation.StateBasedChangeResolutionStrategy;
+
+import java.util.Collection;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  * A {@link View} which is a copy of a {@link View} from the VSUM of a Vitruvius server.
@@ -36,9 +33,9 @@ public class RemoteView implements View {
   /**
    * Creates a new {@link RemoteView}.
    *
-   * @param uuid the unique identifier of the view
-   * @param viewSource the resource set representing the view's content
-   * @param selector the view selector used to create this view
+   * @param uuid             the unique identifier of the view
+   * @param viewSource       the resource set representing the view's content
+   * @param selector         the view selector used to create this view
    * @param remoteConnection the remote connection to the Vitruvius server
    */
   RemoteView(
@@ -82,7 +79,9 @@ public class RemoteView implements View {
     return remoteConnection.isViewClosed(uuid);
   }
 
-  /** Returns whether the view was modified. */
+  /**
+   * Returns whether the view was modified.
+   */
   @Override
   public boolean isModified() {
     return modified;
@@ -101,7 +100,7 @@ public class RemoteView implements View {
    * and now providing an updated view. This can only be done for an unmodified view.
    *
    * @throws UnsupportedOperationException If called on a modified view.
-   * @throws IllegalStateException If called on a closed view.
+   * @throws IllegalStateException         If called on a closed view.
    * @see #isClosed()
    * @see #isModified()
    */
@@ -125,7 +124,9 @@ public class RemoteView implements View {
     }
   }
 
-  /** Persists the given object at the given {@link URI} and adds it as view root. */
+  /**
+   * Persists the given object at the given {@link URI} and adds it as view root.
+   */
   @Override
   public void registerRoot(EObject object, URI persistAt) {
     checkNotClosed();
@@ -150,13 +151,17 @@ public class RemoteView implements View {
         .ifPresent(resource -> resource.setURI(newLocation));
   }
 
-  /** Returns the {@link ViewSelection} with which this view has been created. */
+  /**
+   * Returns the {@link ViewSelection} with which this view has been created.
+   */
   @Override
   public ViewSelection getSelection() {
     return selector;
   }
 
-  /** UNSUPPORTED AT THE MOMENT!!. */
+  /**
+   * UNSUPPORTED AT THE MOMENT!!.
+   */
   @Override
   public ViewType<? extends ViewSelector> getViewType() {
     // The client has no knowledge which view type was used to create the remote
@@ -170,7 +175,7 @@ public class RemoteView implements View {
    * identified by recording any changes made to the view.
    *
    * @throws UnsupportedOperationException If called on a modified view.
-   * @throws IllegalStateException If called on a closed view.
+   * @throws IllegalStateException         If called on a closed view.
    * @see #isClosed()
    * @see #isModified()
    */
@@ -185,9 +190,9 @@ public class RemoteView implements View {
    * identified by comparing the current view state with its state from the last update.
    *
    * @param changeResolutionStrategy The change resolution strategy to use for view state
-   *     comparison. Must not be <code>null</code>.
+   *                                 comparison. Must not be <code>null</code>.
    * @throws UnsupportedOperationException If called on a modified view.
-   * @throws IllegalStateException If called on a closed view.
+   * @throws IllegalStateException         If called on a closed view.
    * @see #isClosed()
    * @see #isModified()
    */
@@ -198,7 +203,9 @@ public class RemoteView implements View {
     return new ChangeDerivingRemoteView(this, changeResolutionStrategy);
   }
 
-  /** Checks that the view is not closed. */
+  /**
+   * Checks that the view is not closed.
+   */
   void checkNotClosed() {
     checkState(!isClosed(), "view is already closed");
   }

@@ -7,7 +7,7 @@ import java.util.UUID;
  * Unblocks the propagation worker so the VSUM/view can be used again.
  */
 public class PropagationInconsistentException extends RuntimeException {
-    public PropagationInconsistentException(UUID taskId) {
-        super("Propagation halted as inconsistent for task " + taskId);
-    }
+  public PropagationInconsistentException(UUID taskId) {
+    super("Propagation halted as inconsistent for task " + taskId);
+  }
 }
