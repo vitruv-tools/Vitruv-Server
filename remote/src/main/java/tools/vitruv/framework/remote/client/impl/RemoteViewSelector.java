@@ -1,5 +1,7 @@
 package tools.vitruv.framework.remote.client.impl;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,19 +24,26 @@ public class RemoteViewSelector implements ViewSelector {
   private final String uuid;
   private final VitruvRemoteConnection remoteConnection;
   private final ModifiableViewSelection viewSelection;
+  private final RemoteViewType viewType;
 
   /**
    * Creates a new {@link RemoteViewSelector}.
    *
    * @param uuid the unique identifier of the view
    * @param selection the selection defining the elements to be included in the view
+   * @param viewType the view type this selector was obtained from
    * @param remoteConnection the remote connection to the Vitruvius server
    */
   public RemoteViewSelector(
-      String uuid, Resource selection, VitruvRemoteConnection remoteConnection) {
+      String uuid,
+      Resource selection,
+      RemoteViewType viewType,
+      VitruvRemoteConnection remoteConnection) {
+    checkArgument(viewType != null, "view type must not be null");
     this.uuid = uuid;
     this.remoteConnection = remoteConnection;
     this.viewSelection = new ElementViewSelection(selection.getContents());
+    this.viewType = viewType;
   }
 
   /**
@@ -91,6 +100,11 @@ public class RemoteViewSelector implements ViewSelector {
    */
   String getUUID() {
     return this.uuid;
+  }
+
+  /** Returns the view type this selector was obtained from. */
+  RemoteViewType getViewType() {
+    return this.viewType;
   }
 
   /**
