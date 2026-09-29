@@ -53,7 +53,7 @@ public class RemoteViewType implements ViewType<ViewSelector> {
    */
   @Override
   public ViewSelector createSelector(ChangeableViewSource viewSource) {
-    return remoteConnection.getSelector(name);
+    return remoteConnection.getSelector(this);
   }
 
   @Override

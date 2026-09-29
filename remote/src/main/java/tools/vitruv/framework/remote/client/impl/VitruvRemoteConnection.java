@@ -133,20 +133,21 @@ public class VitruvRemoteConnection implements VitruvClient {
   }
 
   /**
-   * Queries the Vitruvius server to obtain a view selector from the view type with the given name.
+   * Queries the Vitruvius server to obtain a view selector for the given view type.
    *
-   * @param typeName The name of the view type.
-   * @return The selector generated with the view type of the given name.
+   * @param viewType The view type to obtain a selector for.
+   * @return The selector generated with the given view type; it remembers the view type so that
+   *     the views it creates can report it.
    * @throws BadServerResponseException If the server answered with a bad response or a connection
    *     error occurred.
    * @throws NoSuchElementException If the response headers do not contain the expected selector
    *     UUID.
    */
-  RemoteViewSelector getSelector(String typeName) throws BadServerResponseException {
+  RemoteViewSelector getSelector(RemoteViewType viewType) throws BadServerResponseException {
     var request =
         HttpRequest.newBuilder()
             .uri(createURIFrom(EndpointPath.VIEW_SELECTOR))
-            .header(Header.VIEW_TYPE, typeName)
+            .header(Header.VIEW_TYPE, viewType.getName())
             .GET()
             .build();
     try {
@@ -156,7 +157,7 @@ public class VitruvRemoteConnection implements VitruvClient {
               response.body(), JsonFieldName.TEMP_VALUE, ResourceUtil.createJsonResourceSet());
       Optional<String> selectorUuid = response.headers().firstValue(Header.SELECTOR_UUID);
       if (selectorUuid.isPresent()) {
-        return new RemoteViewSelector(selectorUuid.get(), resource, this);
+        return new RemoteViewSelector(selectorUuid.get(), resource, viewType, this);
       } else {
         // Handle the case where the value is not present
         throw new NoSuchElementException("Header.SELECTOR_UUID not found in response headers");
@@ -187,7 +188,7 @@ public class VitruvRemoteConnection implements VitruvClient {
       var rSet = mapper.deserialize(response.body(), ResourceSet.class);
       Optional<String> viewUuid = response.headers().firstValue(Header.VIEW_UUID);
       if (viewUuid.isPresent()) {
-        return new RemoteView(viewUuid.get(), rSet, selector, this);
+        return new RemoteView(viewUuid.get(), rSet, selector, selector.getViewType(), this);
       } else {
         // Handle the case where the value is not present
         throw new NoSuchElementException("Header.VIEW_UUID not found in response headers");

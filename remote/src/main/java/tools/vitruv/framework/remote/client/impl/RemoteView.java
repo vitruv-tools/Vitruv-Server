@@ -26,6 +26,7 @@ import tools.vitruv.framework.views.changederivation.StateBasedChangeResolutionS
  */
 public class RemoteView implements View {
   private final ViewSelector selector;
+  private final RemoteViewType viewType;
 
   protected final String uuid;
   protected final VitruvRemoteConnection remoteConnection;
@@ -39,21 +40,25 @@ public class RemoteView implements View {
    * @param uuid the unique identifier of the view
    * @param viewSource the resource set representing the view's content
    * @param selector the view selector used to create this view
+   * @param viewType the view type the selector was obtained from
    * @param remoteConnection the remote connection to the Vitruvius server
    */
   RemoteView(
       String uuid,
       ResourceSet viewSource,
       ViewSelector selector,
+      RemoteViewType viewType,
       VitruvRemoteConnection remoteConnection) {
     checkArgument(uuid != null, "uuid must not be null");
     checkArgument(viewSource != null, "view source must not be null");
     checkArgument(remoteConnection != null, "remote connection must not be null");
     checkArgument(selector != null, "selector must not be null");
+    checkArgument(viewType != null, "view type must not be null");
     this.uuid = uuid;
     this.remoteConnection = remoteConnection;
     this.viewSource = viewSource;
     this.selector = selector;
+    this.viewType = viewType;
 
     addChangeListeners(viewSource);
   }
@@ -156,13 +161,17 @@ public class RemoteView implements View {
     return selector;
   }
 
-  /** UNSUPPORTED AT THE MOMENT!!. */
+  /**
+   * Returns the view type this view was created from.
+   *
+   * <p>This is the client-side {@link RemoteViewType} the view's selector was obtained from, not
+   * the server's view type: it only carries the name the client already chose, and creating a
+   * selector from it asks the server again. No further information about the view type is
+   * requested from or revealed by the server.
+   */
   @Override
   public ViewType<? extends ViewSelector> getViewType() {
-    // The client has no knowledge which view type was used to create the remote
-    // view.
-    // Additionally, the client is not able to create views.
-    throw new UnsupportedOperationException();
+    return viewType;
   }
 
   /**
