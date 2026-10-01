@@ -11,7 +11,7 @@
     <version>4.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>tools.vitruv.devWebHub.backend</artifactId>
+  <artifactId>tools.vitruv.devWebHub.backend.remote</artifactId>
 
   <name>Vitruv V-SUM remote definition</name>
   <description>The package for the V-SUM remote definitions</description>
@@ -26,10 +26,14 @@
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.change.composite</artifactId>
     </dependency>
-    <dependency>
-      <groupId>tools.vitruv</groupId>
-      <artifactId>tools.vitruv.change.interaction</artifactId>
-    </dependency>
+      <dependency>
+          <groupId>tools.vitruv</groupId>
+          <artifactId>tools.vitruv.change.interaction</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>tools.vitruv</groupId>
+          <artifactId>tools.vitruv.change.interaction.model</artifactId>
+      </dependency>
       <dependency>
           <groupId>tools.vitruv</groupId>
           <artifactId>tools.vitruv.change.propagation</artifactId>
@@ -118,6 +122,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-jackson2</artifactId>
         </dependency>
 
         <dependency>

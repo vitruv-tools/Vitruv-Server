@@ -6,6 +6,9 @@ server:
 spring:
   application:
     name: VitruviusServer
+  http:
+    converters:
+      preferred-json-mapper: jackson2
 
   servlet:
     multipart:

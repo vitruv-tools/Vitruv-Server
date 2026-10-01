@@ -93,12 +93,17 @@ public class AmaltheaAscetVsumProvider implements VsumProvider {
         tools.vitruv.dsls.reactions.runtime.correspondence.CorrespondencePackage.eINSTANCE.eClass();
         tools.vitruv.change.correspondence.CorrespondencePackage.eINSTANCE.eClass();
 
-        InternalVirtualModel model = new VirtualModelBuilder()
-                .withStorageFolder(projectPath)
-                .withUserInteractorForResultProvider(interactionResultProvider)
-                .withChangePropagationSpecifications(new Amalthea2ascetChangePropagationSpecification())
-                .withViewType(ViewTypeFactory.createIdentityMappingViewType("default", AmaltheaPackage.eINSTANCE))
-                .buildAndInitialize();
+        InternalVirtualModel model;
+        try {
+            model = new VirtualModelBuilder()
+                    .withStorageFolder(projectPath)
+                    .withUserInteractorForResultProvider(interactionResultProvider)
+                    .withChangePropagationSpecifications(new Amalthea2ascetChangePropagationSpecification())
+                    .withViewType(ViewTypeFactory.createIdentityMappingViewType("default", AmaltheaPackage.eINSTANCE))
+                    .buildAndInitialize();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to initialize VSUM at " + projectPath, e);
+        }
         model.setChangePropagationMode(ChangePropagationMode.TRANSITIVE_CYCLIC);
         return model;
     }

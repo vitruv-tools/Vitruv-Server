@@ -3,7 +3,7 @@ package tools.vitruv.framework.remote.modules.vsums.model.manager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import tools.vitruv.framework.remote.modules.vsums.model.services.VsumProviderLoader;
-import tools.vitruv.framework.remote.vsumprovider.VsumProvider;
+import vitruv.tools.framework.remote.vsumprovider.VsumProvider;
 
 import java.util.List;
 import java.util.Map;

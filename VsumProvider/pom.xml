@@ -9,10 +9,9 @@
     <version>1.1-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vitruv.version>3.2.2</vitruv.version>
+        <vitruv.version>4.0.1-SNAPSHOT</vitruv.version>
     </properties>
 
     <dependencies>
@@ -27,5 +26,19 @@
             <version>${vitruv.version}</version>
         </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>central-portal-snapshots</id>
+            <name>Central Portal Snapshots</name>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
 </project>

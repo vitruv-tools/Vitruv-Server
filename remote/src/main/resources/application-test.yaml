@@ -5,6 +5,9 @@ server:
 spring:
   application:
     name: VitruviusServer
+  http:
+    converters:
+      preferred-json-mapper: jackson2
 
   servlet:
     multipart:
@@ -36,7 +39,7 @@ logging:
 
 app:
   vsums:
-    vsum-providers-dir: ./remote/src/test/resources
+    vsum-providers-dir: ./remote/src/test/resources/vsum-providers
     vsum-provider-jar: vsum-provider.jar
     vsum-provider-lib-dir-name: lib
     vsum-storage-dir: ./remote/src/test/resources/vsum-storage

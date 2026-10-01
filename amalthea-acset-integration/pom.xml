@@ -24,8 +24,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>17</maven.compiler.release>
-        <vitruv.version>3.2.2</vitruv.version>
+        <maven.compiler.release>21</maven.compiler.release>
+        <vitruv.version>4.0.1-SNAPSHOT</vitruv.version>
         <junit.version>5.11.4</junit.version>
     </properties>
 
@@ -83,7 +83,7 @@
             <dependency>
                 <groupId>tools.vitruv</groupId>
                 <artifactId>tools.vitruv.framework.views</artifactId>
-                <version>3.2.4-SNAPSHOT</version>
+                <version>${vitruv.version}</version>
             </dependency>
             <dependency>
                 <groupId>vitruv.tools.framework.remote.vsumprovider</groupId>
@@ -133,4 +133,18 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <repositories>
+        <repository>
+            <id>central-portal-snapshots</id>
+            <name>Central Portal Snapshots</name>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>

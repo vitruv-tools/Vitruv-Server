@@ -41,11 +41,16 @@ public class Test {
      */
     public static void insertTask(Path projectDir) {
         // 2)  build VSUM with user Interaction
-        InternalVirtualModel vsum = new VirtualModelBuilder()
-                .withStorageFolder(projectDir)
-                .withUserInteractorForResultProvider(new CliInteractionResultProviderImpl())
-                .withChangePropagationSpecifications(new Amalthea2ascetChangePropagationSpecification())
-                .buildAndInitialize();
+        InternalVirtualModel vsum;
+        try {
+            vsum = new VirtualModelBuilder()
+                    .withStorageFolder(projectDir)
+                    .withUserInteractorForResultProvider(new CliInteractionResultProviderImpl())
+                    .withChangePropagationSpecifications(new Amalthea2ascetChangePropagationSpecification())
+                    .buildAndInitialize();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to initialize VSUM at " + projectDir, e);
+        }
 
         vsum.setChangePropagationMode(ChangePropagationMode.TRANSITIVE_CYCLIC);
 

@@ -33,8 +33,8 @@ target/
 .flattened-pom.xml
 dependency-reduced-pom.xml
 
-# Eclipse
-META-INF
+# Eclipse metadata at the repository root. Do not ignore src/main/resources/META-INF.
+/META-INF
 build.properties
 plugin.properties
 

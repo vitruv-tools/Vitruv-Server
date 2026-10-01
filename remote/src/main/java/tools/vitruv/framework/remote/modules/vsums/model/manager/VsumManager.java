@@ -10,7 +10,7 @@ import tools.vitruv.framework.remote.modules.vsums.async.VitruviusInteractionRes
 import tools.vitruv.framework.remote.modules.vsums.model.entities.*;
 import tools.vitruv.framework.remote.modules.vsums.model.services.ViewService;
 import tools.vitruv.framework.remote.modules.vsums.model.wrapper.VsumWrapper;
-import tools.vitruv.framework.remote.vsumprovider.VsumProvider;
+import vitruv.tools.framework.remote.vsumprovider.VsumProvider;
 import tools.vitruv.framework.vsum.VirtualModel;
 
 import java.io.IOException;

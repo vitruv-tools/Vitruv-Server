@@ -11,6 +11,7 @@ import ecore.tools.vitruv.methodologisttemplate.model.ascet.AscetModule;
 import ecore.tools.vitruv.methodologisttemplate.model.ascet.AscetTask;
 import ecore.tools.vitruv.methodologisttemplate.model.ascet.PeriodicTask;
 import ecore.tools.vitruv.methodologisttemplate.model.ascet.SoftwareTask;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
@@ -129,11 +130,16 @@ class UserInputPropagationTest {
     }
 
     private static InternalVirtualModel createVsum(Path projectDir, TestUserInteraction user) {
-        InternalVirtualModel vsum = new VirtualModelBuilder()
-                .withStorageFolder(projectDir)
-                .withUserInteractorForResultProvider(new TestUserInteraction.ResultProvider(user))
-                .withChangePropagationSpecifications(new Amalthea2ascetChangePropagationSpecification())
-                .buildAndInitialize();
+        InternalVirtualModel vsum;
+        try {
+            vsum = new VirtualModelBuilder()
+                    .withStorageFolder(projectDir)
+                    .withUserInteractorForResultProvider(new TestUserInteraction.ResultProvider(user))
+                    .withChangePropagationSpecifications(new Amalthea2ascetChangePropagationSpecification())
+                    .buildAndInitialize();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to initialize VSUM at " + projectDir, e);
+        }
         vsum.setChangePropagationMode(ChangePropagationMode.TRANSITIVE_CYCLIC);
         return vsum;
     }
