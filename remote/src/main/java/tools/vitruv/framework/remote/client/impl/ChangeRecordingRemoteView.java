@@ -146,4 +146,25 @@ public class ChangeRecordingRemoteView implements CommittableView {
     base.modified = false;
     changeRecorder.beginRecording();
   }
+
+  /**
+   * Commits the changes made to the view like {@link #commitChanges()}, but lets the server
+   * propagate them asynchronously: the server answers as soon as it has taken the changes down, and
+   * a change waiting for user input does not hold up other changes. Follow the propagation with
+   * {@link tools.vitruv.framework.remote.client.VitruvClient#getTaskStatus(int)} and update the
+   * view once it is {@link tools.vitruv.framework.remote.common.rest.TaskState#DONE}.
+   *
+   * @return the task id the server assigned to the changes
+   * @throws IllegalStateException if called on a closed view
+   */
+  public int commitChangesAsync() {
+    base.checkNotClosed();
+    var recordedChange = changeRecorder.endRecording();
+    var changeResolver = VitruviusChangeResolverFactory.forHierarchicalIds(base.viewSource);
+    var unresolvedChanges = changeResolver.assignIds(recordedChange);
+    int taskId = base.remoteConnection.propagateChangesAsync(base.uuid, unresolvedChanges);
+    base.modified = false;
+    changeRecorder.beginRecording();
+    return taskId;
+  }
 }

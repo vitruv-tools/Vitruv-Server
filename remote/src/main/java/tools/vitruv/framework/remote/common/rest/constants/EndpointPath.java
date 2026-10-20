@@ -23,6 +23,9 @@ public final class EndpointPath {
   /** The endpoint path for deriving changes. */
   public static final String CHANGE_DERIVING = "/vsum/view/derive-changes";
 
+  /** The endpoint path for changes that are propagated asynchronously. */
+  public static final String TASK = "/vsum/task";
+
   private EndpointPath() throws InstantiationException {
     throw new InstantiationException("Cannot be instantiated");
   }

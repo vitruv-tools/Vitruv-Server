@@ -6,6 +6,7 @@ import tools.vitruv.framework.remote.common.json.JsonMapper;
 import tools.vitruv.framework.remote.common.rest.constants.EndpointPath;
 import tools.vitruv.framework.remote.server.exception.ServerHaltingException;
 import tools.vitruv.framework.remote.server.http.HttpWrapper;
+import tools.vitruv.framework.remote.server.propagation.PropagationWorker;
 import tools.vitruv.framework.remote.server.rest.DeleteEndpoint;
 import tools.vitruv.framework.remote.server.rest.GetEndpoint;
 import tools.vitruv.framework.remote.server.rest.PatchEndpoint;
@@ -20,12 +21,21 @@ public class EndpointsProvider {
   /**
    * Creates and returns all REST endpoints for the Vitruv server.
    *
+   * <p>Every endpoint that works on the VSUM or its views holds the given lock while it runs, so it
+   * never overlaps with a step of the propagation worker. The health check and the endpoints for
+   * asynchronously propagated changes do not, so they answer while a change is being propagated.
+   *
    * @param virtualModel The virtual model to use.
    * @param mapper The JSON mapper to use.
+   * @param vsumLock The lock held by everyone who works on the VSUM or its views.
+   * @param propagationWorker The worker that propagates changes asynchronously.
    * @return A list of all REST endpoints.
    */
   public static List<PathEndointCollector> getAllEndpoints(
-      VirtualModel virtualModel, JsonMapper mapper) {
+      VirtualModel virtualModel,
+      JsonMapper mapper,
+      Object vsumLock,
+      PropagationWorker propagationWorker) {
     var defaultEndpoints = getDefaultEndpoints();
 
     List<PathEndointCollector> result = new ArrayList<>();
@@ -40,7 +50,7 @@ public class EndpointsProvider {
     result.add(
         new PathEndointCollector(
             EndpointPath.IS_VIEW_CLOSED,
-            new IsViewClosedEndpoint(),
+            new LockingEndpoint(vsumLock, new IsViewClosedEndpoint()),
             defaultEndpoints.postEndpoint(),
             defaultEndpoints.putEndpoint(),
             defaultEndpoints.patchEndpoint(),
@@ -48,7 +58,7 @@ public class EndpointsProvider {
     result.add(
         new PathEndointCollector(
             EndpointPath.IS_VIEW_OUTDATED,
-            new IsViewOutdatedEndpoint(),
+            new LockingEndpoint(vsumLock, new IsViewOutdatedEndpoint()),
             defaultEndpoints.postEndpoint(),
             defaultEndpoints.putEndpoint(),
             defaultEndpoints.patchEndpoint(),
@@ -56,15 +66,16 @@ public class EndpointsProvider {
     result.add(
         new PathEndointCollector(
             EndpointPath.VIEW,
-            new UpdateViewEndpoint(mapper),
-            new ViewEndpoint(mapper),
+            new LockingEndpoint(vsumLock, new UpdateViewEndpoint(mapper)),
+            new LockingEndpoint(vsumLock, new ViewEndpoint(mapper)),
             defaultEndpoints.putEndpoint(),
-            new ChangePropagationEndpoint(mapper),
-            new CloseViewEndpoint()));
+            // Takes the lock itself, only when it propagates the changes before answering.
+            new ChangePropagationEndpoint(mapper, vsumLock, propagationWorker),
+            new LockingEndpoint(vsumLock, new CloseViewEndpoint())));
     result.add(
         new PathEndointCollector(
             EndpointPath.VIEW_SELECTOR,
-            new ViewSelectorEndpoint(virtualModel, mapper),
+            new LockingEndpoint(vsumLock, new ViewSelectorEndpoint(virtualModel, mapper)),
             defaultEndpoints.postEndpoint(),
             defaultEndpoints.putEndpoint(),
             defaultEndpoints.patchEndpoint(),
@@ -72,7 +83,7 @@ public class EndpointsProvider {
     result.add(
         new PathEndointCollector(
             EndpointPath.VIEW_TYPES,
-            new ViewTypesEndpoint(virtualModel, mapper),
+            new LockingEndpoint(vsumLock, new ViewTypesEndpoint(virtualModel, mapper)),
             defaultEndpoints.postEndpoint(),
             defaultEndpoints.putEndpoint(),
             defaultEndpoints.patchEndpoint(),
@@ -83,7 +94,15 @@ public class EndpointsProvider {
             defaultEndpoints.getEndpoint(),
             defaultEndpoints.postEndpoint(),
             defaultEndpoints.putEndpoint(),
-            new ChangeDerivingEndpoint(mapper),
+            new LockingEndpoint(vsumLock, new ChangeDerivingEndpoint(mapper)),
+            defaultEndpoints.deleteEndpoint()));
+    result.add(
+        new PathEndointCollector(
+            EndpointPath.TASK,
+            new TaskStatusEndpoint(propagationWorker, mapper),
+            new UserInteractionEndpoint(propagationWorker, mapper),
+            defaultEndpoints.putEndpoint(),
+            defaultEndpoints.patchEndpoint(),
             defaultEndpoints.deleteEndpoint()));
 
     return result;
