@@ -2,6 +2,7 @@ package tools.vitruv.framework.remote.server.http.java;
 
 import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import tools.vitruv.framework.remote.common.rest.constants.Header;
@@ -10,6 +11,7 @@ import tools.vitruv.framework.remote.server.http.HttpWrapper;
 /** This is an implementation of the {@link HttpWrapper} for the Java built-in HTTP server. */
 class HttpExchangeWrapper implements HttpWrapper {
   private final HttpExchange exchange;
+  private int responseCode = HttpURLConnection.HTTP_OK;
 
   /**
    * Creates a new {@link HttpExchangeWrapper}.
@@ -28,6 +30,20 @@ class HttpExchangeWrapper implements HttpWrapper {
   @Override
   public void setContentType(String type) {
     exchange.getResponseHeaders().replace(Header.CONTENT_TYPE, List.of(type));
+  }
+
+  @Override
+  public void setResponseCode(int responseCode) {
+    this.responseCode = responseCode;
+  }
+
+  /**
+   * Returns the status code to answer with if the request is processed successfully.
+   *
+   * @return The status code set by the endpoint, 200 (OK) if it set none.
+   */
+  int getResponseCode() {
+    return responseCode;
   }
 
   @Override
