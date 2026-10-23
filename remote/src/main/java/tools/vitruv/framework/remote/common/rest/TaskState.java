@@ -2,12 +2,17 @@ package tools.vitruv.framework.remote.common.rest;
 
 /** The states of a change that is propagated asynchronously, see {@link TaskStatus}. */
 public enum TaskState {
-  /** The change waits to be propagated or is being propagated right now. */
+  /**
+   * The change waits to be propagated or is being propagated right now. It stays queued at least
+   * until the changes sent from the same view before it have been propagated completely or have
+   * failed.
+   */
   QUEUED,
 
   /**
-   * The change needs an answer to a user interaction before it can go on. Its other parts and all
-   * other changes are propagated in the meantime.
+   * The change needs an answer to a user interaction before it can go on. The rest of the change
+   * and the changes sent from the same view after it wait as well, while the changes of other views
+   * are propagated in the meantime.
    */
   WAITING_FOR_INPUT,
 
@@ -18,9 +23,9 @@ public enum TaskState {
   DONE,
 
   /**
-   * The change could not be propagated. Parts of the change that were queued before the failure are
-   * still propagated; while one of them waits for input, the status carries its question, and
-   * answers are taken until nothing of the change is pending anymore.
+   * The change could not be propagated. As with a synchronous propagation, nothing more of it is
+   * propagated after the failure, and the models keep what was propagated before. Answers for it
+   * are rejected.
    */
   FAILED
 }

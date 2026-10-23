@@ -3,10 +3,10 @@ package tools.vitruv.framework.remote.server.propagation;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.time.Duration;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -27,8 +27,6 @@ import tools.vitruv.change.interaction.UserInteractionBase;
 import tools.vitruv.change.propagation.NonDeferrablePropagationException;
 import tools.vitruv.change.propagation.PropagationBlockReason;
 import tools.vitruv.change.propagation.QueuedChange;
-import tools.vitruv.change.propagation.QueuedPropagationStep;
-import tools.vitruv.change.propagation.QueuedPropagationStep.Outcome;
 import tools.vitruv.framework.remote.common.rest.TaskState;
 import tools.vitruv.framework.remote.common.rest.TaskStatus;
 import tools.vitruv.framework.views.impl.ModifiableView;
@@ -43,20 +41,20 @@ import tools.vitruv.framework.vsum.VirtualModel;
  * turns it into a change of the VSUM, enqueues it with {@link
  * VirtualModel#enqueueChange(VitruviusChange)} and propagates the queued changes one step at a
  * time. When a change needs user input, the VSUM sets it aside until the client answers with {@link
- * #registerUserInteractions}, so it does not hold up the other changes.
+ * #registerUserInteractions}, so it does not hold up the changes of other views.
  *
- * <p>Submitted changes are turned into VSUM changes one at a time, in the order they were
- * submitted: a change is only resolved once the change submitted before it has been applied to the
- * VSUM, which the first propagation step of a change does. So a change recorded after another one
- * in the same view is resolved against models that contain the other one. A change that is blocked
- * for another reason than user input before its first step therefore holds back all changes
- * submitted after it; the VSUM only blocks changes like that when someone asks it to, and this
- * server never does.
+ * <p>The changes of one view are propagated in the order they were submitted: a change is only
+ * resolved and enqueued once every change submitted before it for the same view has been propagated
+ * completely or has failed. So it is resolved against models that contain those changes, and the
+ * reactions to it run after theirs and find what they created, such as correspondences. While a
+ * change waits for user input, or is blocked for another reason, the changes submitted after it for
+ * the same view therefore wait as well. Changes of different views do not wait for each other; of
+ * the changes that may be resolved, the one submitted first is resolved first.
  *
  * <p>The worker thread holds the VSUM lock of the server while it resolves a submitted change and
  * while it runs a propagation step, so it never works on the VSUM at the same time as a request.
  * The methods of this class never take that lock, so they return right away, also while a step is
- * running; only {@link #awaitAppliedSubmissions} waits for the worker on purpose.
+ * running; only {@link #awaitFinishedSubmissions} waits for the worker on purpose.
  */
 public class PropagationWorker {
   static final String THREAD_NAME = "vitruv-propagation-worker";
@@ -73,10 +71,10 @@ public class PropagationWorker {
   // change ended. Nothing evicts them yet, which a long-running server will need at some point.
   private final Map<Integer, Task> tasks = new ConcurrentHashMap<>();
 
-  // Submitted changes that have not been applied to the VSUM yet, in the order they were
-  // submitted. Only the first one can have been enqueued already. Guarded by its own monitor, which
-  // also wakes up whoever waits in awaitAppliedSubmissions.
-  private final Deque<Submission> unappliedSubmissions = new ArrayDeque<>();
+  // Submitted changes that have neither been propagated completely nor failed, in the order they
+  // were submitted. Of the changes of one view, only the first one can have been enqueued already.
+  // Guarded by its own monitor, which also wakes up whoever waits in awaitFinishedSubmissions.
+  private final List<Submission> unfinishedSubmissions = new ArrayList<>();
 
   // The tasks whose changes are in the VSUM queue, by the task id the VSUM gave their change. Only
   // the worker thread uses it.
@@ -114,7 +112,7 @@ public class PropagationWorker {
     }
   }
 
-  /** A submitted change that the worker has not applied to the VSUM yet. */
+  /** A submitted change that has neither been propagated completely nor failed yet. */
   private record Submission(
       Task task,
       ModifiableView view,
@@ -162,8 +160,8 @@ public class PropagationWorker {
     }
     running = false;
     wakeUps.release();
-    synchronized (unappliedSubmissions) {
-      unappliedSubmissions.notifyAll();
+    synchronized (unfinishedSubmissions) {
+      unfinishedSubmissions.notifyAll();
     }
     try {
       thread.join(stopTimeout);
@@ -180,7 +178,8 @@ public class PropagationWorker {
 
   /**
    * Submits changes made to a view for asynchronous propagation. Returns right away; the worker
-   * thread resolves the changes against the VSUM and enqueues them later.
+   * thread resolves the changes against the VSUM and enqueues them later, once the changes
+   * submitted for the view before have been propagated completely or have failed.
    *
    * @param view the view the changes were made to
    * @param viewType the type of the view, which resolves the changes
@@ -195,32 +194,45 @@ public class PropagationWorker {
     do {
       task = new Task(ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE));
     } while (tasks.putIfAbsent(task.id, task) != null);
-    synchronized (unappliedSubmissions) {
-      unappliedSubmissions.addLast(new Submission(task, view, viewType, change));
+    synchronized (unfinishedSubmissions) {
+      unfinishedSubmissions.add(new Submission(task, view, viewType, change));
     }
     wakeUps.release();
     return task.id;
   }
 
   /**
-   * Waits until every change submitted for the given view has been applied to the VSUM, or has
-   * failed before. Changes made to the view afterwards can then be resolved against models that
-   * contain the submitted ones, e.g., to propagate them right away.
+   * Waits until every change submitted for the given view has been propagated completely or has
+   * failed, so that a change made to the view afterwards can be propagated right away, in order
+   * after them. A change that waits for user input may wait for a person for an arbitrarily long
+   * time, though, so this method does not wait for one: it throws as soon as one of the changes of
+   * the view waits for input, also if it only starts to while this method waits.
    *
    * @param view the view whose submitted changes to wait for
+   * @throws WaitingForInputException if a change submitted for the view waits for user input
    * @throws InterruptedException if the calling thread is interrupted while waiting
-   * @throws IllegalStateException if changes of the view are still waiting but the worker is not
-   *     running, so they would not be applied
+   * @throws IllegalStateException if changes of the view are still pending but the worker is not
+   *     running, so they would not be propagated
    */
-  public void awaitAppliedSubmissions(ModifiableView view) throws InterruptedException {
-    synchronized (unappliedSubmissions) {
-      while (unappliedSubmissions.stream().anyMatch(it -> it.view() == view)) {
+  public void awaitFinishedSubmissions(ModifiableView view)
+      throws WaitingForInputException, InterruptedException {
+    synchronized (unfinishedSubmissions) {
+      List<Task> pending = unfinishedTasksOf(view);
+      while (!pending.isEmpty()) {
+        Optional<Task> waitingForInput =
+            pending.stream()
+                .filter(it -> statusOf(it).state() == TaskState.WAITING_FOR_INPUT)
+                .findFirst();
+        if (waitingForInput.isPresent()) {
+          throw new WaitingForInputException(waitingForInput.get().id);
+        }
         if (!running) {
           throw new IllegalStateException(
-              "Changes of the view sent for asynchronous propagation have not been applied yet,"
+              "Changes of the view sent for asynchronous propagation have not been propagated yet,"
                   + " and the propagation worker is not running");
         }
-        unappliedSubmissions.wait();
+        unfinishedSubmissions.wait();
+        pending = unfinishedTasksOf(view);
       }
     }
   }
@@ -237,9 +249,9 @@ public class PropagationWorker {
 
   /**
    * Registers answers to user interactions of the change submitted under the given task id, so the
-   * parts of the change that wait for them are propagated again. Answers that arrive before the
+   * part of the change that waits for them is propagated again. Answers that arrive before the
    * change is enqueued are kept until it is. Answers are taken as long as anything of the change is
-   * pending, also after a part of it failed.
+   * pending.
    *
    * @param taskId the id returned by {@link #submit}
    * @param answers the answers, matched to the questions as described at {@link
@@ -265,8 +277,9 @@ public class PropagationWorker {
         virtualModel.registerUserInteractions(
             task.vsumTaskId, answers.toArray(UserInteractionBase[]::new));
       } catch (IllegalArgumentException e) {
-        // The last part of the change was propagated, and the worker has not marked the task as
-        // finished yet. It cannot do so while this monitor is held, so nothing else has the id yet.
+        // The change has been propagated completely or has failed, and the worker has not marked
+        // the task as finished yet. It cannot do so while this monitor is held, so nothing else has
+        // the id yet.
         throw alreadyFinished(taskId);
       }
     }
@@ -276,9 +289,9 @@ public class PropagationWorker {
   private void run() {
     while (running) {
       try {
-        Submission firstUnapplied = firstUnappliedSubmission();
-        if (firstUnapplied != null && firstUnapplied.task().vsumTaskId == NO_TASK) {
-          enqueue(firstUnapplied);
+        Submission resolvable = nextSubmissionToResolve();
+        if (resolvable != null) {
+          enqueue(resolvable);
           continue;
         }
         Optional<QueuedChange> next = nextChangeToPropagate();
@@ -298,10 +311,29 @@ public class PropagationWorker {
     }
   }
 
-  private Submission firstUnappliedSubmission() {
-    synchronized (unappliedSubmissions) {
-      return unappliedSubmissions.peekFirst();
+  /**
+   * Returns the first submitted change that has not been enqueued yet and that no unfinished change
+   * submitted before it for the same view holds back, {@code null} if there is none.
+   */
+  private Submission nextSubmissionToResolve() {
+    synchronized (unfinishedSubmissions) {
+      Set<ModifiableView> viewsWithEarlierChanges =
+          Collections.newSetFromMap(new IdentityHashMap<>());
+      for (Submission submission : unfinishedSubmissions) {
+        if (viewsWithEarlierChanges.add(submission.view())
+            && submission.task().vsumTaskId == NO_TASK) {
+          return submission;
+        }
+      }
+      return null;
     }
+  }
+
+  private List<Task> unfinishedTasksOf(ModifiableView view) {
+    return unfinishedSubmissions.stream()
+        .filter(it -> it.view() == view)
+        .map(Submission::task)
+        .toList();
   }
 
   private void enqueue(Submission submission) {
@@ -316,7 +348,7 @@ public class PropagationWorker {
     } catch (RuntimeException e) {
       fail(task, messageOf(e), e);
       finish(task);
-      markApplied(submission);
+      removeFinishedSubmissions();
       return;
     }
     tasksByVsumTaskId.put(vsumTaskId, task);
@@ -332,8 +364,8 @@ public class PropagationWorker {
 
   /**
    * Returns the change that the next step will take, if any queued change can be propagated. Only
-   * this worker takes steps, and changes are only appended to the queue, so that is the first
-   * queued change.
+   * this worker takes steps, and the VSUM only reorders its queue within a step, while enqueuing
+   * appends to it, so that is the first queued change.
    */
   private Optional<QueuedChange> nextChangeToPropagate() {
     List<QueuedChange> queued = virtualModel.getQueuedChanges();
@@ -344,15 +376,11 @@ public class PropagationWorker {
   }
 
   private void propagateNextStep(QueuedChange next) {
-    boolean taken;
     try {
-      Optional<QueuedPropagationStep> step;
       synchronized (vsumLock) {
-        step = virtualModel.propagateNextQueuedChange();
+        virtualModel.propagateNextQueuedChange();
       }
-      taken = step.isPresent() && step.get().outcome() != Outcome.SKIPPED_BLOCKED;
     } catch (NonDeferrablePropagationException e) {
-      taken = true;
       fail(
           next.rootTaskId(),
           "The change needs user input, but its propagation had already modified models when it"
@@ -360,23 +388,21 @@ public class PropagationWorker {
               + " change instead.",
           e);
     } catch (RuntimeException e) {
-      taken = true;
-      fail(next.rootTaskId(), messageOf(e), e);
-    }
-    Submission firstUnapplied = firstUnappliedSubmission();
-    // The first step that takes a change from the queue applies it to the models, or drops it if
-    // the step fails. Either way, the change submitted next can be resolved now.
-    if (taken && firstUnapplied != null && firstUnapplied.task().vsumTaskId == next.taskId()) {
-      markApplied(firstUnapplied);
+      if (virtualModel.isChangePending(next.rootTaskId())) {
+        // A failed step drops the whole change, so the step went through, and saving the models or
+        // notifying a listener failed afterwards. The rest of the change stays queued and goes on;
+        // failing the task now would let the next change of the view overtake it.
+        LOGGER.error(
+            "Finishing a propagation step of the change with VSUM task id {} failed; the rest of"
+                + " the change stays queued",
+            next.rootTaskId(),
+            e);
+      } else {
+        fail(next.rootTaskId(), messageOf(e), e);
+      }
     }
     finishTasksWithoutPendingParts();
-  }
-
-  private void markApplied(Submission submission) {
-    synchronized (unappliedSubmissions) {
-      unappliedSubmissions.remove(submission);
-      unappliedSubmissions.notifyAll();
-    }
+    removeFinishedSubmissions();
   }
 
   /** Marks every task as finished of which nothing is in the VSUM queue anymore. */
@@ -400,6 +426,19 @@ public class PropagationWorker {
             });
   }
 
+  /**
+   * Forgets the submitted changes that have been propagated completely or have failed, so the
+   * changes submitted after them for the same view can be resolved, and wakes up whoever waits in
+   * {@link #awaitFinishedSubmissions}. They are woken up even if no change finished, since a change
+   * may have started to wait for user input.
+   */
+  private void removeFinishedSubmissions() {
+    synchronized (unfinishedSubmissions) {
+      unfinishedSubmissions.removeIf(it -> it.task().finished);
+      unfinishedSubmissions.notifyAll();
+    }
+  }
+
   private static void finish(Task task) {
     synchronized (task) {
       task.finished = true;
@@ -418,19 +457,20 @@ public class PropagationWorker {
 
   private static void fail(Task task, String error, RuntimeException cause) {
     LOGGER.warn("Propagation of the change with task id {} failed: {}", task.id, error, cause);
-    // Other parts of the change are still propagated and may fail as well; the first error is the
-    // one to report.
-    if (task.error == null) {
-      task.error = error;
-    }
+    task.error = error;
   }
 
   private TaskStatus statusOf(Task task) {
-    if (task.finished) {
-      String error = task.error;
-      return error != null
-          ? new TaskStatus(task.id, TaskState.FAILED, null, error)
-          : new TaskStatus(task.id, TaskState.DONE, null, null);
+    // A task only fails once nothing of its change is queued anymore, so a failed change has no
+    // question left. A failed task gets its error before it is marked finished, so reading finished
+    // first ensures that a finished task without an error is done.
+    boolean finished = task.finished;
+    String error = task.error;
+    if (error != null) {
+      return new TaskStatus(task.id, TaskState.FAILED, null, error);
+    }
+    if (finished) {
+      return new TaskStatus(task.id, TaskState.DONE, null, null);
     }
     int vsumTaskId = task.vsumTaskId;
     List<QueuedChange> queuedParts =
@@ -439,6 +479,8 @@ public class PropagationWorker {
             : virtualModel.getQueuedChanges().stream()
                 .filter(it -> it.rootTaskId() == vsumTaskId)
                 .toList();
+    // The parts of a change are propagated in order, so at most one of them waits for an answer.
+    // The parts after it wait for it with the same block reason, but without a question.
     PendingUserInteraction question =
         queuedParts.stream()
             .filter(it -> it.blockReason() == PropagationBlockReason.USER_INTERACTION)
@@ -446,19 +488,14 @@ public class PropagationWorker {
             .filter(Objects::nonNull)
             .findFirst()
             .orElse(null);
-    String error = task.error;
-    if (error != null) {
-      // Parts of the change that were queued before the failure are still propagated, and their
-      // questions still have to be answered.
-      return new TaskStatus(task.id, TaskState.FAILED, question, error);
-    }
     if (question != null) {
       return new TaskStatus(task.id, TaskState.WAITING_FOR_INPUT, question, null);
     }
     if (queuedParts.stream().anyMatch(QueuedChange::blocked)) {
       return new TaskStatus(task.id, TaskState.BLOCKED, null, null);
     }
-    // Also while a step runs or before the worker has marked a finished change as such.
+    // Also while the change waits for the changes submitted before it for the same view, while a
+    // step runs, or before the worker has marked a finished change as such.
     return new TaskStatus(task.id, TaskState.QUEUED, null, null);
   }
 

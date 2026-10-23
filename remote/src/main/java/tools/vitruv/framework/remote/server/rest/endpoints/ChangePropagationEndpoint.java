@@ -22,6 +22,7 @@ import tools.vitruv.framework.remote.common.rest.constants.Header;
 import tools.vitruv.framework.remote.server.exception.ServerHaltingException;
 import tools.vitruv.framework.remote.server.http.HttpWrapper;
 import tools.vitruv.framework.remote.server.propagation.PropagationWorker;
+import tools.vitruv.framework.remote.server.propagation.WaitingForInputException;
 import tools.vitruv.framework.remote.server.rest.PatchEndpoint;
 import tools.vitruv.framework.views.impl.ModifiableView;
 import tools.vitruv.framework.views.impl.ViewCreatingViewType;
@@ -30,11 +31,12 @@ import tools.vitruv.framework.views.impl.ViewCreatingViewType;
  * This endpoint applies given {@link VitruviusChange}s to the VSUM.
  *
  * <p>By default, the changes are propagated before the endpoint answers, once the changes the view
- * sent for asynchronous propagation before have been applied. If the request carries the header
- * {@code Prefer: respond-async}, the endpoint answers right away with 202 (Accepted), the task id
- * in the {@link Header#TASK_ID} header and the {@link TaskStatus} as body. The {@link
- * PropagationWorker} then propagates the changes in the background, and the client follows them at
- * {@link EndpointPath#TASK}.
+ * sent for asynchronous propagation before have been propagated completely or have failed. If one
+ * of those waits for user input, the endpoint answers 409 (Conflict) right away instead of waiting
+ * for the answer. If the request carries the header {@code Prefer: respond-async}, the endpoint
+ * answers right away with 202 (Accepted), the task id in the {@link Header#TASK_ID} header and the
+ * {@link TaskStatus} as body. The {@link PropagationWorker} then propagates the changes in the
+ * background, and the client follows them at {@link EndpointPath#TASK}.
  */
 public class ChangePropagationEndpoint implements PatchEndpoint {
   private static final String ENDPOINT_METRIC_NAME = "vitruv.server.rest.propagation";
@@ -78,9 +80,18 @@ public class ChangePropagationEndpoint implements PatchEndpoint {
     }
 
     // The change was recorded after the changes the view sent for asynchronous propagation before,
-    // so it can only be resolved once they are in the VSUM.
+    // and the reactions to it may rely on what the reactions to those created, so it is only
+    // propagated once they are done. The request does not wait for a person to answer one of them.
     try {
-      propagationWorker.awaitAppliedSubmissions((ModifiableView) view);
+      propagationWorker.awaitFinishedSubmissions((ModifiableView) view);
+    } catch (WaitingForInputException e) {
+      throw new ServerHaltingException(
+          HTTP_CONFLICT,
+          "Changes rejected: the change with task id "
+              + e.getTaskId()
+              + " that this view sent for asynchronous propagation before waits for user input,"
+              + " and these changes can only be propagated after it. Answer its question first,"
+              + " or send these changes for asynchronous propagation as well.");
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       throw new ServerHaltingException(HTTP_UNAVAILABLE, "Interrupted while waiting: " + e);
