@@ -32,6 +32,14 @@
     </dependency>
     <dependency>
       <groupId>tools.vitruv</groupId>
+      <artifactId>tools.vitruv.change.interaction</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>tools.vitruv</groupId>
+      <artifactId>tools.vitruv.change.propagation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.change.atomic</artifactId>
     </dependency>
     <dependency>

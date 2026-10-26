@@ -1,8 +1,8 @@
 package tools.vitruv.framework.remote.server.rest.endpoints;
 
 import com.google.common.collect.BiMap;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.emf.ecore.EObject;
 import tools.vitruv.framework.views.View;
 import tools.vitruv.framework.views.ViewSelector;
@@ -10,16 +10,20 @@ import tools.vitruv.framework.views.ViewSelector;
 /**
  * A global cache holding {@link View}s, {@link ViewSelector}s and mappings of the form UUID and the
  * {@link EObject}.
+ *
+ * <p>Requests are handled on several threads, and some of them read the cache without holding the
+ * VSUM lock, so the cache is thread-safe. Nothing is found for a {@code null} UUID, e.g., from a
+ * missing header.
  */
 public class Cache {
   private Cache() throws InstantiationException {
     throw new InstantiationException("Cannot be instantiated");
   }
 
-  private static final Map<String, View> viewCache = new HashMap<>();
-  private static final Map<String, ViewSelector> selectorCache = new HashMap<>();
+  private static final Map<String, View> viewCache = new ConcurrentHashMap<>();
+  private static final Map<String, ViewSelector> selectorCache = new ConcurrentHashMap<>();
   private static final Map<String, BiMap<String, EObject>> perSelectorUuidToEObjectMapping =
-      new HashMap<>();
+      new ConcurrentHashMap<>();
 
   /**
    * Adds a view to the cache with the given uuid.
@@ -38,7 +42,7 @@ public class Cache {
    * @return The view with the given uuid.
    */
   public static View getView(String uuid) {
-    return viewCache.get(uuid);
+    return uuid != null ? viewCache.get(uuid) : null;
   }
 
   /**
@@ -48,7 +52,7 @@ public class Cache {
    * @return The removed view.
    */
   public static View removeView(String uuid) {
-    return viewCache.remove(uuid);
+    return uuid != null ? viewCache.remove(uuid) : null;
   }
 
   /**
@@ -71,7 +75,7 @@ public class Cache {
    * @return The selector with the given uuid.
    */
   public static ViewSelector getSelector(String selectorUuid) {
-    return selectorCache.get(selectorUuid);
+    return selectorUuid != null ? selectorCache.get(selectorUuid) : null;
   }
 
   /**
@@ -102,6 +106,9 @@ public class Cache {
    * @param selectorUuid The uuid of the selector.
    */
   public static void removeSelectorAndMapping(String selectorUuid) {
+    if (selectorUuid == null) {
+      return;
+    }
     perSelectorUuidToEObjectMapping.remove(selectorUuid);
     selectorCache.remove(selectorUuid);
   }
