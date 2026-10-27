@@ -2,6 +2,7 @@ package tools.vitruv.framework.remote.common.json;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import org.eclipse.emf.common.util.URI;
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.atomic.hid.HierarchicalId;
@@ -16,20 +17,36 @@ public class IdTransformation {
   private URI root;
 
   /**
-   * Creates a new IdTransformation.
+   * Creates a new IdTransformation. The root is the outermost project folder containing the given
+   * path, or the path itself if it is not contained in a project folder.
    *
    * @param vsumPath the path to the .vsum file of the project
    */
   public IdTransformation(Path vsumPath) {
-    root = URI.createFileURI(ProjectMarker.getProjectRootFolder(vsumPath).toString());
+    Path rootFolder = findProjectRootFolder(vsumPath).orElse(vsumPath);
 
-    var nextToCheck = vsumPath;
-    while ((nextToCheck = nextToCheck.getParent()) != null) {
-      try {
-        root = URI.createFileURI(ProjectMarker.getProjectRootFolder(nextToCheck).toString());
-      } catch (IllegalStateException e) {
+    var nextToCheck = rootFolder.getParent();
+    while (nextToCheck != null) {
+      Optional<Path> outerRootFolder = findProjectRootFolder(nextToCheck);
+      if (outerRootFolder.isEmpty()) {
         break;
       }
+      rootFolder = outerRootFolder.get();
+      nextToCheck = rootFolder.getParent();
+    }
+    root = URI.createFileURI(rootFolder.toString());
+  }
+
+  /**
+   * Finds the project folder containing the given path. {@link ProjectMarker#getProjectRootFolder}
+   * returns an {@link Optional} but throws an {@link IllegalStateException} if there is no project
+   * folder, so both cases are mapped to an empty result.
+   */
+  private static Optional<Path> findProjectRootFolder(Path path) {
+    try {
+      return ProjectMarker.getProjectRootFolder(path);
+    } catch (IllegalStateException noProjectFolder) {
+      return Optional.empty();
     }
   }
 

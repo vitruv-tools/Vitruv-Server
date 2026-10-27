@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -30,6 +31,9 @@ import tools.vitruv.framework.remote.common.json.JsonMapper;
 import tools.vitruv.framework.remote.common.rest.constants.ContentType;
 import tools.vitruv.framework.remote.common.rest.constants.EndpointPath;
 import tools.vitruv.framework.remote.common.rest.constants.Header;
+import tools.vitruv.framework.remote.common.rest.constraints.ConstraintDto;
+import tools.vitruv.framework.remote.common.rest.constraints.ConstraintValidationRequest;
+import tools.vitruv.framework.remote.common.rest.constraints.ConstraintValidationResponse;
 import tools.vitruv.framework.remote.common.util.ResourceUtil;
 import tools.vitruv.framework.views.ViewSelector;
 import tools.vitruv.framework.views.ViewType;
@@ -93,6 +97,35 @@ public class VitruvRemoteConnection implements VitruvClient {
   private boolean isDirectoryEmpty(Path directory) throws IOException {
     try (Stream<Path> entries = Files.list(directory)) {
       return entries.findAny().isEmpty();
+    }
+  }
+
+  @Override
+  public List<ConstraintDto> getConstraints() {
+    var request =
+        HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.CONSTRAINTS)).GET().build();
+    try {
+      var response = sendRequest(request);
+      return mapper.deserializeArrayOf(response.body(), ConstraintDto.class);
+    } catch (IOException e) {
+      throw new BadClientResponseException(e);
+    }
+  }
+
+  @Override
+  public ConstraintValidationResponse validateConstraints(ConstraintValidationRequest request) {
+    Objects.requireNonNull(request, "request");
+    try {
+      var httpRequest =
+          HttpRequest.newBuilder()
+              .uri(createURIFrom(EndpointPath.CONSTRAINTS_VALIDATE))
+              .header(Header.CONTENT_TYPE, ContentType.APPLICATION_JSON)
+              .POST(BodyPublishers.ofString(mapper.serialize(request)))
+              .build();
+      var response = sendRequest(httpRequest);
+      return mapper.deserialize(response.body(), ConstraintValidationResponse.class);
+    } catch (IOException e) {
+      throw new BadClientResponseException(e);
     }
   }
 

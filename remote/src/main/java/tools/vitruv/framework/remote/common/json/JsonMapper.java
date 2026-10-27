@@ -29,6 +29,7 @@ import tools.vitruv.framework.remote.common.json.serializer.VitruviusChangeSeria
  */
 public class JsonMapper {
   private final ObjectMapper mapper = new ObjectMapper();
+  private final IdTransformation transformation;
 
   /**
    * Creates a new JsonMapper.
@@ -36,7 +37,7 @@ public class JsonMapper {
    * @param vsumPath the path to the .vsum file of the project
    */
   public JsonMapper(Path vsumPath) {
-    final var transformation = new IdTransformation(vsumPath);
+    this.transformation = new IdTransformation(vsumPath);
 
     mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
     var module = new EMFModule();
@@ -59,6 +60,16 @@ public class JsonMapper {
     module.setIdentityInfo(new EcoreIdentityInfo("_id"));
 
     mapper.registerModule(module);
+  }
+
+  /**
+   * Returns the transformation this mapper uses to convert absolute resource URIs into URIs
+   * relative to the project root and back.
+   *
+   * @return the id transformation
+   */
+  public IdTransformation getIdTransformation() {
+    return transformation;
   }
 
   /**

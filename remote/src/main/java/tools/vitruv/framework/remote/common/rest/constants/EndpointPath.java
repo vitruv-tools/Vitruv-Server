@@ -23,6 +23,12 @@ public final class EndpointPath {
   /** The endpoint path for deriving changes. */
   public static final String CHANGE_DERIVING = "/vsum/view/derive-changes";
 
+  /** The endpoint path for the constraints of the virtual model. */
+  public static final String CONSTRAINTS = "/vsum/constraints";
+
+  /** The endpoint path for validating constraints of the virtual model. */
+  public static final String CONSTRAINTS_VALIDATE = "/vsum/constraints/validate";
+
   private EndpointPath() throws InstantiationException {
     throw new InstantiationException("Cannot be instantiated");
   }
