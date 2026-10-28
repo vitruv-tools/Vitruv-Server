@@ -5,6 +5,27 @@ import java.io.IOException;
 /** This interface wraps an HTTP request/response from the underlying HTTP server implementation. */
 public interface HttpWrapper {
   /**
+   * Returns the path of the request URI, still URL-encoded.
+   *
+   * @return The raw request path, e.g. {@code /vsum/constraints/a%3A%3Ab}.
+   */
+  String getRequestPath();
+
+  /**
+   * Sets the status code sent when the endpoint returns normally. The default is 200 OK.
+   *
+   * @param statusCode The status code of the response.
+   */
+  void setStatusCode(int statusCode);
+
+  /**
+   * Returns the status code sent when the endpoint returns normally.
+   *
+   * @return The status code of the response.
+   */
+  int getStatusCode();
+
+  /**
    * Returns a response header.
    *
    * @param header Name of the header.

@@ -31,7 +31,10 @@ import tools.vitruv.framework.remote.common.json.JsonMapper;
 import tools.vitruv.framework.remote.common.rest.constants.ContentType;
 import tools.vitruv.framework.remote.common.rest.constants.EndpointPath;
 import tools.vitruv.framework.remote.common.rest.constants.Header;
+import tools.vitruv.framework.remote.common.rest.constraints.ConstraintCreateRequest;
 import tools.vitruv.framework.remote.common.rest.constraints.ConstraintDto;
+import tools.vitruv.framework.remote.common.rest.constraints.ConstraintRevisionDto;
+import tools.vitruv.framework.remote.common.rest.constraints.ConstraintUpdateRequest;
 import tools.vitruv.framework.remote.common.rest.constraints.ConstraintValidationRequest;
 import tools.vitruv.framework.remote.common.rest.constraints.ConstraintValidationResponse;
 import tools.vitruv.framework.remote.common.util.ResourceUtil;
@@ -107,6 +110,79 @@ public class VitruvRemoteConnection implements VitruvClient {
     try {
       var response = sendRequest(request);
       return mapper.deserializeArrayOf(response.body(), ConstraintDto.class);
+    } catch (IOException e) {
+      throw new BadClientResponseException(e);
+    }
+  }
+
+  @Override
+  public Optional<ConstraintDto> getConstraint(String id) {
+    Objects.requireNonNull(id, "id");
+    var request =
+        HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.constraint(id))).GET().build();
+    try {
+      var response = sendRequest(request);
+      return Optional.of(mapper.deserialize(response.body(), ConstraintDto.class));
+    } catch (BadServerResponseException e) {
+      if (e.getStatusCode() == HttpURLConnection.HTTP_NOT_FOUND) {
+        return Optional.empty();
+      }
+      throw e;
+    } catch (IOException e) {
+      throw new BadClientResponseException(e);
+    }
+  }
+
+  @Override
+  public ConstraintDto createConstraint(String language, String source) {
+    try {
+      var request =
+          HttpRequest.newBuilder()
+              .uri(createURIFrom(EndpointPath.CONSTRAINTS))
+              .header(Header.CONTENT_TYPE, ContentType.APPLICATION_JSON)
+              .POST(
+                  BodyPublishers.ofString(
+                      mapper.serialize(new ConstraintCreateRequest(language, source))))
+              .build();
+      return mapper.deserialize(sendRequest(request).body(), ConstraintDto.class);
+    } catch (IOException e) {
+      throw new BadClientResponseException(e);
+    }
+  }
+
+  @Override
+  public ConstraintDto updateConstraint(String id, String source) {
+    Objects.requireNonNull(id, "id");
+    try {
+      var request =
+          HttpRequest.newBuilder()
+              .uri(createURIFrom(EndpointPath.constraint(id)))
+              .header(Header.CONTENT_TYPE, ContentType.APPLICATION_JSON)
+              .PUT(BodyPublishers.ofString(mapper.serialize(new ConstraintUpdateRequest(source))))
+              .build();
+      return mapper.deserialize(sendRequest(request).body(), ConstraintDto.class);
+    } catch (IOException e) {
+      throw new BadClientResponseException(e);
+    }
+  }
+
+  @Override
+  public void deleteConstraint(String id) {
+    Objects.requireNonNull(id, "id");
+    var request =
+        HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.constraint(id))).DELETE().build();
+    sendRequest(request);
+  }
+
+  @Override
+  public String getConstraintRevision() {
+    var request =
+        HttpRequest.newBuilder()
+            .uri(createURIFrom(EndpointPath.CONSTRAINTS_REVISION))
+            .GET()
+            .build();
+    try {
+      return mapper.deserialize(sendRequest(request).body(), ConstraintRevisionDto.class).revision();
     } catch (IOException e) {
       throw new BadClientResponseException(e);
     }
@@ -351,7 +427,7 @@ public class VitruvRemoteConnection implements VitruvClient {
     var timer = Timer.start(Metrics.globalRegistry);
     try {
       var response = client.send(request, BodyHandlers.ofString());
-      if (response.statusCode() != HttpURLConnection.HTTP_OK) {
+      if (response.statusCode() / 100 != 2) {
         timer.stop(
             Metrics.timer(
                 METRIC_CLIENT_NAME,

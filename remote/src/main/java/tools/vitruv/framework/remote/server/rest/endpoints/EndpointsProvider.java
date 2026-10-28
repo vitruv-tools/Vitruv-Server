@@ -89,6 +89,14 @@ public class EndpointsProvider {
         new PathEndointCollector(
             EndpointPath.CONSTRAINTS,
             new ConstraintsEndpoint(virtualModel, mapper),
+            new CreateConstraintEndpoint(virtualModel, mapper),
+            new UpdateConstraintEndpoint(virtualModel, mapper),
+            defaultEndpoints.patchEndpoint(),
+            new DeleteConstraintEndpoint(virtualModel, mapper)));
+    result.add(
+        new PathEndointCollector(
+            EndpointPath.CONSTRAINTS_REVISION,
+            new ConstraintRevisionEndpoint(virtualModel, mapper),
             defaultEndpoints.postEndpoint(),
             defaultEndpoints.putEndpoint(),
             defaultEndpoints.patchEndpoint(),

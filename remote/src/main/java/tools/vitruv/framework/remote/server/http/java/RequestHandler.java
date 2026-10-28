@@ -2,7 +2,6 @@ package tools.vitruv.framework.remote.server.http.java;
 
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
-import static java.net.HttpURLConnection.HTTP_OK;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -46,18 +45,23 @@ class RequestHandler implements HttpHandler {
                 throw new ServerHaltingException(HTTP_NOT_FOUND, "Request method not supported!");
           };
       if (response != null) {
-        wrapper.sendResponse(HTTP_OK, response.getBytes(StandardCharsets.UTF_8));
+        wrapper.sendResponse(wrapper.getStatusCode(), response.getBytes(StandardCharsets.UTF_8));
       } else {
-        wrapper.sendResponse(HTTP_OK);
+        wrapper.sendResponse(wrapper.getStatusCode());
       }
     } catch (IOException | ServerHaltingException exception) {
       var statusCode = HTTP_INTERNAL_ERROR;
+      var body = exception.getMessage();
+      wrapper.setContentType(ContentType.TEXT_PLAIN);
       if (exception instanceof ServerHaltingException haltingException) {
         statusCode = haltingException.getStatusCode();
+        if (haltingException.getJsonBody() != null) {
+          body = haltingException.getJsonBody();
+          wrapper.setContentType(ContentType.APPLICATION_JSON);
+        }
       }
-      wrapper.setContentType(ContentType.TEXT_PLAIN);
       try {
-        wrapper.sendResponse(statusCode, exception.getMessage().getBytes(StandardCharsets.UTF_8));
+        wrapper.sendResponse(statusCode, body.getBytes(StandardCharsets.UTF_8));
       } catch (IOException e) {
         throw new IllegalStateException(
             "Sending a response (" + statusCode + " " + exception.getMessage() + ") failed.", e);
