@@ -12,6 +12,37 @@ public interface HttpWrapper {
   String getRequestPath();
 
   /**
+   * Returns the query of the request URI, still URL-encoded.
+   *
+   * @return The raw query without {@code ?}, e.g. {@code id=a%3A%3Ab&id=c}, or {@code null} if the
+   *     request has none.
+   */
+  default String getRequestQuery() {
+    return null;
+  }
+
+  /**
+   * Starts a response that stays open and sends Server-Sent Events. The endpoint must return
+   * {@code null} afterwards; the response is sent through the returned stream until it is closed.
+   *
+   * @return the open event stream
+   * @throws IOException if the response cannot be started
+   * @throws UnsupportedOperationException if this server does not support event streams
+   */
+  default EventStream openEventStream() throws IOException {
+    throw new UnsupportedOperationException("Event streams are not supported");
+  }
+
+  /**
+   * Checks whether the response was turned into an event stream by {@link #openEventStream()}.
+   *
+   * @return {@code true} if the response is an open event stream
+   */
+  default boolean isEventStream() {
+    return false;
+  }
+
+  /**
    * Sets the status code sent when the endpoint returns normally. The default is 200 OK.
    *
    * @param statusCode The status code of the response.

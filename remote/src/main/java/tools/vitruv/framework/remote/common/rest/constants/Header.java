@@ -23,6 +23,9 @@ public final class Header {
   /** The Location header key, carrying the path of a created constraint. */
   public static final String LOCATION = "Location";
 
+  /** The Accept header key, selecting the format of models (JSON or XMI). */
+  public static final String ACCEPT = "Accept";
+
   private Header() throws InstantiationException {
     throw new InstantiationException("Cannot be instantiated");
   }

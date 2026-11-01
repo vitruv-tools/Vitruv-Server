@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcoreFactory;
@@ -37,6 +38,7 @@ import tools.vitruv.framework.remote.client.exception.BadServerResponseException
 import tools.vitruv.framework.remote.client.impl.VitruvRemoteConnection;
 import tools.vitruv.framework.remote.common.rest.constraints.ConstraintDto;
 import tools.vitruv.framework.remote.common.rest.constraints.ConstraintResultDto;
+import tools.vitruv.framework.remote.common.rest.constraints.ConstraintStatusDto;
 import tools.vitruv.framework.remote.common.rest.constraints.ConstraintValidationRequest;
 import tools.vitruv.framework.remote.common.rest.constraints.ConstraintValidationResponse;
 import tools.vitruv.framework.remote.common.rest.constraints.ViolationDto;
@@ -130,6 +132,28 @@ class ConstraintEndpointsTest {
     assertEquals("INVARIANT", first.kind());
     assertEquals("CRITICAL", first.severity());
     assertEquals("test", first.language());
+    assertEquals(List.of("ecore", "other"), first.metamodels());
+    assertEquals(List.of(), constraints.get(1).metamodels());
+  }
+
+  @Test
+  void listsTheMetamodelsOfConstraintsAsJson() throws Exception {
+    HttpResponse<String> response =
+        HttpClient.newHttpClient()
+            .send(
+                HttpRequest.newBuilder(URI.create(baseUrl + "/vsum/constraints")).GET().build(),
+                BodyHandlers.ofString());
+
+    JsonNode first = new ObjectMapper().readTree(response.body()).get(0);
+    assertEquals("ecore", first.get("metamodels").get(0).asText());
+    assertEquals("other", first.get("metamodels").get(1).asText());
+  }
+
+  @Test
+  void readsAnswersWithoutMetamodels() {
+    ConstraintDto dto = new ConstraintDto("c", "c", null, "INVARIANT", "WARNING", null, null, null);
+
+    assertEquals(List.of(), dto.metamodels());
   }
 
   @Test
@@ -149,6 +173,69 @@ class ConstraintEndpointsTest {
     assertEquals("/seeded.ecore", violation.resource());
     assertEquals("Bad must be lowercase", violation.message());
     assertEquals("SATISFIED", resultFor(response, HAS_PACKAGES).status());
+  }
+
+  @Test
+  void returnsTheStatusOfAllConstraints() throws Exception {
+    HttpResponse<String> response = get("/vsum/constraints/status");
+
+    assertEquals(200, response.statusCode());
+    JsonNode json = new ObjectMapper().readTree(response.body());
+    assertFalse(json.get("satisfied").asBoolean());
+    assertEquals("VIOLATED", json.get("constraints").get(LOWERCASE).asText());
+    assertEquals("SATISFIED", json.get("constraints").get(HAS_PACKAGES).asText());
+    List<String> order = new ArrayList<>();
+    json.get("constraints").fieldNames().forEachRemaining(order::add);
+    assertEquals(List.of(LOWERCASE, HAS_PACKAGES), order);
+    assertEquals(response.headers().firstValue("ETag").orElseThrow(), json.get("revision").asText());
+    assertFalse(json.has("results"), "no violations are sent");
+  }
+
+  @Test
+  void returnsTheStatusOfSelectedConstraints() throws Exception {
+    HttpResponse<String> response =
+        get("/vsum/constraints/status?id=" + LOWERCASE.replace(":", "%3A"));
+
+    JsonNode constraints = new ObjectMapper().readTree(response.body()).get("constraints");
+    assertEquals(1, constraints.size());
+    assertEquals("VIOLATED", constraints.get(LOWERCASE).asText());
+  }
+
+  @Test
+  void rejectsUnknownAndEmptyIdsInTheStatus() throws Exception {
+    assertEquals(404, get("/vsum/constraints/status?id=unknown").statusCode());
+    assertEquals(400, get("/vsum/constraints/status?id=").statusCode());
+  }
+
+  @Test
+  void returnsTheStatusViaClient() {
+    ConstraintStatusDto all = client.getConstraintStatus(null);
+    ConstraintStatusDto selected = client.getConstraintStatus(List.of(HAS_PACKAGES));
+    ConstraintStatusDto none = client.getConstraintStatus(List.of());
+
+    assertFalse(all.satisfied());
+    assertEquals("VIOLATED", all.constraints().get(LOWERCASE));
+    assertEquals(client.getConstraintRevision(), all.revision());
+    assertTrue(selected.satisfied());
+    assertEquals(List.of(HAS_PACKAGES), List.copyOf(selected.constraints().keySet()));
+    assertTrue(none.constraints().isEmpty());
+    assertTrue(none.satisfied());
+    BadServerResponseException unknown =
+        assertThrows(
+            BadServerResponseException.class, () -> client.getConstraintStatus(List.of("x")));
+    assertEquals(404, unknown.getStatusCode());
+  }
+
+  @Test
+  void statusEqualsTheValidation() {
+    ConstraintValidationResponse validation =
+        client.validateConstraints(new ConstraintValidationRequest(null, false));
+    ConstraintStatusDto status = client.getConstraintStatus(null);
+
+    assertEquals(validation.satisfied(), status.satisfied());
+    for (ConstraintResultDto result : validation.results()) {
+      assertEquals(result.status(), status.constraints().get(result.constraintId()));
+    }
   }
 
   @Test
@@ -262,6 +349,11 @@ class ConstraintEndpointsTest {
     assertEquals(400, post("/vsum/constraints/validate", "{not json").statusCode());
   }
 
+  private HttpResponse<String> get(String path) throws Exception {
+    return http.send(
+        HttpRequest.newBuilder(URI.create(baseUrl + path)).GET().build(), BodyHandlers.ofString());
+  }
+
   private HttpResponse<String> post(String path, String body) throws Exception {
     HttpRequest request =
         HttpRequest.newBuilder(URI.create(baseUrl + path))
@@ -352,7 +444,8 @@ class ConstraintEndpointsTest {
             ConstraintKind.INVARIANT,
             ConstraintSeverity.CRITICAL,
             "test",
-            "name starts lowercase");
+            "name starts lowercase",
+            Set.of("other"));
 
     @Override
     public List<ConstraintDescriptor> getConstraints() {

@@ -1,5 +1,6 @@
 package tools.vitruv.framework.remote.common.rest.constraints;
 
+import java.util.List;
 import tools.vitruv.framework.vsum.constraints.ConstraintDescriptor;
 
 /**
@@ -12,6 +13,8 @@ import tools.vitruv.framework.vsum.constraints.ConstraintDescriptor;
  * @param severity the default severity of violations, e.g. {@code CRITICAL}
  * @param language the constraint language, e.g. {@code vitruvocl}
  * @param source the textual source of the constraint, may be {@code null}
+ * @param metamodels the names of the metamodels the constraint reads, the metamodel of the context
+ *     type first; empty if unknown, never {@code null}
  */
 public record ConstraintDto(
     String id,
@@ -20,7 +23,13 @@ public record ConstraintDto(
     String kind,
     String severity,
     String language,
-    String source) {
+    String source,
+    List<String> metamodels) {
+
+  /** Makes the metamodels immutable; answers of servers without metamodels yield an empty list. */
+  public ConstraintDto {
+    metamodels = metamodels == null ? List.of() : List.copyOf(metamodels);
+  }
 
   /**
    * Creates the transfer object for the given constraint.
@@ -36,6 +45,7 @@ public record ConstraintDto(
         descriptor.kind().name(),
         descriptor.severity().name(),
         descriptor.language(),
-        descriptor.source());
+        descriptor.source(),
+        List.copyOf(descriptor.metamodels()));
   }
 }

@@ -3,26 +3,33 @@ package tools.vitruv.framework.remote.client.impl;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Timer;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.StringJoiner;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import tools.vitruv.change.atomic.root.InsertRootEObject;
 import tools.vitruv.change.composite.description.VitruviusChange;
 import tools.vitruv.change.utils.ProjectMarker;
+import tools.vitruv.framework.remote.client.Subscription;
 import tools.vitruv.framework.remote.client.VitruvClient;
 import tools.vitruv.framework.remote.client.exception.BadClientResponseException;
 import tools.vitruv.framework.remote.client.exception.BadServerResponseException;
@@ -34,9 +41,13 @@ import tools.vitruv.framework.remote.common.rest.constants.Header;
 import tools.vitruv.framework.remote.common.rest.constraints.ConstraintCreateRequest;
 import tools.vitruv.framework.remote.common.rest.constraints.ConstraintDto;
 import tools.vitruv.framework.remote.common.rest.constraints.ConstraintRevisionDto;
+import tools.vitruv.framework.remote.common.rest.constraints.ConstraintStatusDto;
 import tools.vitruv.framework.remote.common.rest.constraints.ConstraintUpdateRequest;
 import tools.vitruv.framework.remote.common.rest.constraints.ConstraintValidationRequest;
 import tools.vitruv.framework.remote.common.rest.constraints.ConstraintValidationResponse;
+import tools.vitruv.framework.remote.common.rest.models.MetamodelDto;
+import tools.vitruv.framework.remote.common.rest.models.ModelBatchRequest;
+import tools.vitruv.framework.remote.common.rest.models.ModelDto;
 import tools.vitruv.framework.remote.common.util.ResourceUtil;
 import tools.vitruv.framework.views.ViewSelector;
 import tools.vitruv.framework.views.ViewType;
@@ -203,6 +214,118 @@ public class VitruvRemoteConnection implements VitruvClient {
     } catch (IOException e) {
       throw new BadClientResponseException(e);
     }
+  }
+
+  @Override
+  public ConstraintStatusDto getConstraintStatus(Collection<String> constraintIds) {
+    if (constraintIds != null && constraintIds.isEmpty()) {
+      // an empty selection validates nothing, as for validateConstraints
+      return new ConstraintStatusDto(getConstraintRevision(), true, Map.of());
+    }
+    String path = EndpointPath.CONSTRAINTS_STATUS;
+    if (constraintIds != null) {
+      StringJoiner query = new StringJoiner("&", "?", "");
+      for (String id : constraintIds) {
+        query.add("id=" + URLEncoder.encode(id, StandardCharsets.UTF_8).replace("+", "%20"));
+      }
+      path += query.toString();
+    }
+    var request = HttpRequest.newBuilder().uri(createURIFrom(path)).GET().build();
+    try {
+      return mapper.deserialize(sendRequest(request).body(), ConstraintStatusDto.class);
+    } catch (IOException e) {
+      throw new BadClientResponseException(e);
+    }
+  }
+
+  @Override
+  public Subscription subscribeConstraintEvents(Consumer<ConstraintStatusDto> listener) {
+    Objects.requireNonNull(listener, "listener");
+    var request =
+        HttpRequest.newBuilder()
+            .uri(createURIFrom(EndpointPath.CONSTRAINTS_EVENTS))
+            .header(Header.ACCEPT, ContentType.TEXT_EVENT_STREAM)
+            .GET()
+            .build();
+    HttpResponse<InputStream> response;
+    try {
+      response = client.send(request, BodyHandlers.ofInputStream());
+    } catch (IOException e) {
+      throw new BadServerResponseException(e);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new BadServerResponseException(e);
+    }
+    if (response.statusCode() != HttpURLConnection.HTTP_OK) {
+      try (InputStream body = response.body()) {
+        throw new BadServerResponseException(
+            new String(body.readAllBytes(), StandardCharsets.UTF_8), response.statusCode());
+      } catch (IOException e) {
+        throw new BadServerResponseException(e);
+      }
+    }
+    return ConstraintEventSubscription.start(response.body(), mapper, listener);
+  }
+
+  @Override
+  public List<ModelDto> getModelDescriptors() {
+    var request = HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.MODELS)).GET().build();
+    try {
+      return mapper.deserializeArrayOf(sendRequest(request).body(), ModelDto.class);
+    } catch (IOException e) {
+      throw new BadClientResponseException(e);
+    }
+  }
+
+  @Override
+  public ResourceSet getModelContents(Collection<String> ids) {
+    try {
+      var request =
+          HttpRequest.newBuilder()
+              .uri(createURIFrom(EndpointPath.MODELS_BATCH))
+              .header(Header.CONTENT_TYPE, ContentType.APPLICATION_JSON)
+              .POST(
+                  BodyPublishers.ofString(
+                      mapper.serialize(
+                          new ModelBatchRequest(ids == null ? null : List.copyOf(ids)))))
+              .build();
+      return mapper.deserialize(sendRequest(request).body(), ResourceSet.class);
+    } catch (IOException e) {
+      throw new BadClientResponseException(e);
+    }
+  }
+
+  @Override
+  public String getModelXmi(String id) {
+    Objects.requireNonNull(id, "id");
+    return getXmi(EndpointPath.model(id));
+  }
+
+  @Override
+  public List<MetamodelDto> getMetamodelDescriptors() {
+    var request =
+        HttpRequest.newBuilder().uri(createURIFrom(EndpointPath.METAMODELS)).GET().build();
+    try {
+      return mapper.deserializeArrayOf(sendRequest(request).body(), MetamodelDto.class);
+    } catch (IOException e) {
+      throw new BadClientResponseException(e);
+    }
+  }
+
+  @Override
+  public String getMetamodelXmi(String nsUri) {
+    Objects.requireNonNull(nsUri, "nsUri");
+    return getXmi(EndpointPath.metamodel(nsUri));
+  }
+
+  private String getXmi(String path) {
+    var request =
+        HttpRequest.newBuilder()
+            .uri(createURIFrom(path))
+            .header(Header.ACCEPT, ContentType.APPLICATION_XMI)
+            .GET()
+            .build();
+    return sendRequest(request).body();
   }
 
   /**

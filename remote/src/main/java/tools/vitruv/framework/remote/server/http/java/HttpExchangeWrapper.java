@@ -4,13 +4,16 @@ import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
+import tools.vitruv.framework.remote.common.rest.constants.ContentType;
 import tools.vitruv.framework.remote.common.rest.constants.Header;
+import tools.vitruv.framework.remote.server.http.EventStream;
 import tools.vitruv.framework.remote.server.http.HttpWrapper;
 
 /** This is an implementation of the {@link HttpWrapper} for the Java built-in HTTP server. */
 class HttpExchangeWrapper implements HttpWrapper {
   private final HttpExchange exchange;
   private int statusCode = HttpURLConnection.HTTP_OK;
+  private boolean eventStream;
 
   /**
    * Creates a new {@link HttpExchangeWrapper}.
@@ -24,6 +27,11 @@ class HttpExchangeWrapper implements HttpWrapper {
   @Override
   public String getRequestPath() {
     return exchange.getRequestURI().getRawPath();
+  }
+
+  @Override
+  public String getRequestQuery() {
+    return exchange.getRequestURI().getRawQuery();
   }
 
   @Override
@@ -54,6 +62,21 @@ class HttpExchangeWrapper implements HttpWrapper {
   @Override
   public String getRequestBodyAsString() throws IOException {
     return new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+  }
+
+  @Override
+  public EventStream openEventStream() throws IOException {
+    exchange.getResponseHeaders().set(Header.CONTENT_TYPE, ContentType.TEXT_EVENT_STREAM);
+    exchange.getResponseHeaders().set("Cache-Control", "no-cache");
+    // length 0: the body is sent in chunks until the stream is closed
+    exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+    eventStream = true;
+    return new ExchangeEventStream(exchange);
+  }
+
+  @Override
+  public boolean isEventStream() {
+    return eventStream;
   }
 
   @Override

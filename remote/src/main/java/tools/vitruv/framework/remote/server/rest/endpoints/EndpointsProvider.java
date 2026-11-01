@@ -22,10 +22,11 @@ public class EndpointsProvider {
    *
    * @param virtualModel The virtual model to use.
    * @param mapper The JSON mapper to use.
+   * @param broadcaster The broadcaster of constraint events of the virtual model.
    * @return A list of all REST endpoints.
    */
   public static List<PathEndointCollector> getAllEndpoints(
-      VirtualModel virtualModel, JsonMapper mapper) {
+      VirtualModel virtualModel, JsonMapper mapper, ConstraintEventBroadcaster broadcaster) {
     var defaultEndpoints = getDefaultEndpoints();
 
     List<PathEndointCollector> result = new ArrayList<>();
@@ -97,6 +98,46 @@ public class EndpointsProvider {
         new PathEndointCollector(
             EndpointPath.CONSTRAINTS_REVISION,
             new ConstraintRevisionEndpoint(virtualModel, mapper),
+            defaultEndpoints.postEndpoint(),
+            defaultEndpoints.putEndpoint(),
+            defaultEndpoints.patchEndpoint(),
+            defaultEndpoints.deleteEndpoint()));
+    result.add(
+        new PathEndointCollector(
+            EndpointPath.MODELS,
+            new ModelsEndpoint(virtualModel, mapper),
+            defaultEndpoints.postEndpoint(),
+            defaultEndpoints.putEndpoint(),
+            defaultEndpoints.patchEndpoint(),
+            defaultEndpoints.deleteEndpoint()));
+    result.add(
+        new PathEndointCollector(
+            EndpointPath.MODELS_BATCH,
+            defaultEndpoints.getEndpoint(),
+            new ModelBatchEndpoint(virtualModel, mapper),
+            defaultEndpoints.putEndpoint(),
+            defaultEndpoints.patchEndpoint(),
+            defaultEndpoints.deleteEndpoint()));
+    result.add(
+        new PathEndointCollector(
+            EndpointPath.METAMODELS,
+            new MetamodelsEndpoint(virtualModel, mapper),
+            defaultEndpoints.postEndpoint(),
+            defaultEndpoints.putEndpoint(),
+            defaultEndpoints.patchEndpoint(),
+            defaultEndpoints.deleteEndpoint()));
+    result.add(
+        new PathEndointCollector(
+            EndpointPath.CONSTRAINTS_EVENTS,
+            new ConstraintEventsEndpoint(broadcaster),
+            defaultEndpoints.postEndpoint(),
+            defaultEndpoints.putEndpoint(),
+            defaultEndpoints.patchEndpoint(),
+            defaultEndpoints.deleteEndpoint()));
+    result.add(
+        new PathEndointCollector(
+            EndpointPath.CONSTRAINTS_STATUS,
+            new ConstraintStatusEndpoint(virtualModel, mapper),
             defaultEndpoints.postEndpoint(),
             defaultEndpoints.putEndpoint(),
             defaultEndpoints.patchEndpoint(),

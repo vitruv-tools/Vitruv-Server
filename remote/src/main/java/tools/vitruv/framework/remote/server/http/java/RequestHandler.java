@@ -44,6 +44,10 @@ class RequestHandler implements HttpHandler {
             default ->
                 throw new ServerHaltingException(HTTP_NOT_FOUND, "Request method not supported!");
           };
+      if (wrapper.isEventStream()) {
+        // the response stays open and is sent through the event stream
+        return;
+      }
       if (response != null) {
         wrapper.sendResponse(wrapper.getStatusCode(), response.getBytes(StandardCharsets.UTF_8));
       } else {

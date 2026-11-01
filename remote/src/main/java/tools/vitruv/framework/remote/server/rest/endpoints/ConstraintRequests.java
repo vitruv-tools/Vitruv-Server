@@ -13,9 +13,12 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import tools.vitruv.framework.remote.common.json.JsonMapper;
 import tools.vitruv.framework.remote.common.rest.constants.ContentType;
 import tools.vitruv.framework.remote.common.rest.constants.EndpointPath;
@@ -37,13 +40,65 @@ import tools.vitruv.framework.vsum.constraints.UnsupportedConstraintLanguageExce
  * revision of the constraints, JSON bodies and the mapping of errors to status codes.
  *
  * <p>The id of a constraint is the URL-encoded path segment below {@code /vsum/constraints/}. The
- * segments {@code validate} and {@code revision} are reserved for their own endpoints.
+ * segments {@code validate}, {@code revision}, {@code status} and {@code events} are reserved for
+ * their own endpoints.
  */
 final class ConstraintRequests {
   private static final int HTTP_UNPROCESSABLE_ENTITY = 422;
   private static final String PATH_PREFIX = EndpointPath.CONSTRAINTS + "/";
 
   private ConstraintRequests() {}
+
+  /**
+   * Checks that the given ids belong to constraints of the virtual model.
+   *
+   * @param model the virtual model
+   * @param constraintIds the ids, {@code null} for all constraints
+   * @throws ServerHaltingException with 400 for an empty id and with 404 for an unknown one
+   */
+  static void checkKnownIds(VirtualModel model, List<String> constraintIds) {
+    if (constraintIds == null) {
+      return;
+    }
+    Set<String> knownIds =
+        model.getConstraints().stream().map(ConstraintDescriptor::id).collect(Collectors.toSet());
+    for (String id : constraintIds) {
+      if (id == null || id.isBlank()) {
+        throw new ServerHaltingException(HTTP_BAD_REQUEST, "Constraint ids must not be empty");
+      }
+      if (!knownIds.contains(id)) {
+        throw new ServerHaltingException(HTTP_NOT_FOUND, "Constraint " + id + " not found");
+      }
+    }
+  }
+
+  /**
+   * Gets the values of a parameter in the query of the request, e.g. the ids of {@code
+   * ?id=a&id=b}.
+   *
+   * @param wrapper the request
+   * @param name the name of the parameter
+   * @return the decoded values in their order, {@code null} if the parameter is not given
+   */
+  static List<String> queryValues(HttpWrapper wrapper, String name) {
+    String query = wrapper.getRequestQuery();
+    if (query == null || query.isEmpty()) {
+      return null;
+    }
+    List<String> values = new ArrayList<>();
+    for (String parameter : query.split("&")) {
+      int separator = parameter.indexOf('=');
+      String key = separator < 0 ? parameter : parameter.substring(0, separator);
+      if (decode(key).equals(name)) {
+        values.add(separator < 0 ? "" : decode(parameter.substring(separator + 1)));
+      }
+    }
+    return values.isEmpty() ? null : values;
+  }
+
+  private static String decode(String value) {
+    return URLDecoder.decode(value, StandardCharsets.UTF_8);
+  }
 
   /**
    * Gets the id of the constraint addressed by the request path.

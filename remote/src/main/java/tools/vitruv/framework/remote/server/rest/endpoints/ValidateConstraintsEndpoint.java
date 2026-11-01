@@ -1,15 +1,11 @@
 package tools.vitruv.framework.remote.server.rest.endpoints;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
-import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Timer;
 import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import tools.vitruv.framework.remote.common.json.JsonMapper;
 import tools.vitruv.framework.remote.common.rest.constants.ContentType;
 import tools.vitruv.framework.remote.common.rest.constraints.ConstraintValidationRequest;
@@ -18,7 +14,6 @@ import tools.vitruv.framework.remote.server.exception.ServerHaltingException;
 import tools.vitruv.framework.remote.server.http.HttpWrapper;
 import tools.vitruv.framework.remote.server.rest.PostEndpoint;
 import tools.vitruv.framework.vsum.VirtualModel;
-import tools.vitruv.framework.vsum.constraints.ConstraintDescriptor;
 
 /**
  * This endpoint validates constraints of the virtual model. The optional body is a {@link
@@ -49,7 +44,7 @@ public class ValidateConstraintsEndpoint implements PostEndpoint {
   @Override
   public String process(HttpWrapper wrapper) throws ServerHaltingException {
     ConstraintValidationRequest request = readRequest(wrapper);
-    checkConstraintIds(request.constraintIds());
+    ConstraintRequests.checkKnownIds(model, request.constraintIds());
 
     var timer = Timer.start(Metrics.globalRegistry);
     String outcome = "failure";
@@ -85,21 +80,5 @@ public class ValidateConstraintsEndpoint implements PostEndpoint {
       throw new ServerHaltingException(HTTP_BAD_REQUEST, "Could not read request body");
     }
     return request != null ? request : new ConstraintValidationRequest(null, false);
-  }
-
-  private void checkConstraintIds(List<String> constraintIds) {
-    if (constraintIds == null) {
-      return;
-    }
-    Set<String> knownIds =
-        model.getConstraints().stream().map(ConstraintDescriptor::id).collect(Collectors.toSet());
-    for (String id : constraintIds) {
-      if (id == null || id.isBlank()) {
-        throw new ServerHaltingException(HTTP_BAD_REQUEST, "Constraint ids must not be empty");
-      }
-      if (!knownIds.contains(id)) {
-        throw new ServerHaltingException(HTTP_NOT_FOUND, "Constraint " + id + " not found");
-      }
-    }
   }
 }
