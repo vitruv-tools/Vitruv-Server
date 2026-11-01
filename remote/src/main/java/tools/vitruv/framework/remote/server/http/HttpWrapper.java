@@ -36,6 +36,14 @@ public interface HttpWrapper {
   void setContentType(String type);
 
   /**
+   * Sets the status code to answer with if the request is processed successfully. Defaults to 200
+   * (OK). Errors are reported with the status code of their exception instead.
+   *
+   * @param responseCode The status code of a successful response.
+   */
+  void setResponseCode(int responseCode);
+
+  /**
    * Sends an HTTP response without a body.
    *
    * @param responseCode The status code of the response.

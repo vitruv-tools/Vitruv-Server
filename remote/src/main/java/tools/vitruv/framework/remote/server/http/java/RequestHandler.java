@@ -2,7 +2,6 @@ package tools.vitruv.framework.remote.server.http.java;
 
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
-import static java.net.HttpURLConnection.HTTP_OK;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -46,9 +45,9 @@ class RequestHandler implements HttpHandler {
                 throw new ServerHaltingException(HTTP_NOT_FOUND, "Request method not supported!");
           };
       if (response != null) {
-        wrapper.sendResponse(HTTP_OK, response.getBytes(StandardCharsets.UTF_8));
+        wrapper.sendResponse(wrapper.getResponseCode(), response.getBytes(StandardCharsets.UTF_8));
       } else {
-        wrapper.sendResponse(HTTP_OK);
+        wrapper.sendResponse(wrapper.getResponseCode());
       }
     } catch (IOException | ServerHaltingException exception) {
       var statusCode = HTTP_INTERNAL_ERROR;

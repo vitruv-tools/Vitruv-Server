@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,12 +22,14 @@ import java.util.stream.Stream;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import tools.vitruv.change.atomic.root.InsertRootEObject;
 import tools.vitruv.change.composite.description.VitruviusChange;
+import tools.vitruv.change.interaction.UserInteractionBase;
 import tools.vitruv.change.utils.ProjectMarker;
 import tools.vitruv.framework.remote.client.VitruvClient;
 import tools.vitruv.framework.remote.client.exception.BadClientResponseException;
 import tools.vitruv.framework.remote.client.exception.BadServerResponseException;
 import tools.vitruv.framework.remote.common.json.JsonFieldName;
 import tools.vitruv.framework.remote.common.json.JsonMapper;
+import tools.vitruv.framework.remote.common.rest.TaskStatus;
 import tools.vitruv.framework.remote.common.rest.constants.ContentType;
 import tools.vitruv.framework.remote.common.rest.constants.EndpointPath;
 import tools.vitruv.framework.remote.common.rest.constants.Header;
@@ -231,6 +234,77 @@ public class VitruvRemoteConnection implements VitruvClient {
   }
 
   /**
+   * Sends the given changes for the view with the given UUID to the Vitruvius server for
+   * asynchronous propagation. The server answers as soon as it has taken the changes down and
+   * propagates them in the background.
+   *
+   * @param uuid UUID of the changed view.
+   * @param change The changes performed on the affected view.
+   * @return The task id the server assigned to the changes, for {@link #getTaskStatus(int)}.
+   * @throws BadServerResponseException If the server answered with a bad response or a connection
+   *     error occurred.
+   */
+  int propagateChangesAsync(String uuid, VitruviusChange<?> change)
+      throws BadServerResponseException {
+    try {
+      change
+          .getEChanges()
+          .forEach(
+              it -> {
+                if (it instanceof InsertRootEObject<?>) {
+                  ((InsertRootEObject<?>) it).setResource(null);
+                }
+              });
+      var jsonBody = mapper.serialize(change);
+      var request =
+          HttpRequest.newBuilder()
+              .uri(createURIFrom(EndpointPath.VIEW))
+              .header(Header.CONTENT_TYPE, ContentType.APPLICATION_JSON)
+              .header(Header.VIEW_UUID, uuid)
+              .header(Header.PREFER, Header.RESPOND_ASYNC)
+              .method("PATCH", BodyPublishers.ofString(jsonBody))
+              .build();
+      var response = sendRequest(request, HttpURLConnection.HTTP_ACCEPTED);
+      return mapper.deserialize(response.body(), TaskStatus.class).taskId();
+    } catch (IOException e) {
+      throw new BadClientResponseException(e);
+    }
+  }
+
+  @Override
+  public TaskStatus getTaskStatus(int taskId) {
+    var request =
+        HttpRequest.newBuilder()
+            .uri(createURIFrom(EndpointPath.TASK))
+            .header(Header.TASK_ID, Integer.toString(taskId))
+            .GET()
+            .build();
+    try {
+      var response = sendRequest(request);
+      return mapper.deserialize(response.body(), TaskStatus.class);
+    } catch (IOException e) {
+      throw new BadClientResponseException(e);
+    }
+  }
+
+  @Override
+  public TaskStatus registerUserInteractions(int taskId, List<UserInteractionBase> answers) {
+    try {
+      var request =
+          HttpRequest.newBuilder()
+              .uri(createURIFrom(EndpointPath.TASK))
+              .header(Header.CONTENT_TYPE, ContentType.APPLICATION_JSON)
+              .header(Header.TASK_ID, Integer.toString(taskId))
+              .POST(BodyPublishers.ofString(mapper.serialize(answers)))
+              .build();
+      var response = sendRequest(request);
+      return mapper.deserialize(response.body(), TaskStatus.class);
+    } catch (IOException e) {
+      throw new BadClientResponseException(e);
+    }
+  }
+
+  /**
    * Queries the Vitruvius server to close the view with the given.
    *
    * @param uuid UUID of the view.
@@ -315,10 +389,14 @@ public class VitruvRemoteConnection implements VitruvClient {
   }
 
   private HttpResponse<String> sendRequest(HttpRequest request) {
+    return sendRequest(request, HttpURLConnection.HTTP_OK);
+  }
+
+  private HttpResponse<String> sendRequest(HttpRequest request, int expectedStatusCode) {
     var timer = Timer.start(Metrics.globalRegistry);
     try {
       var response = client.send(request, BodyHandlers.ofString());
-      if (response.statusCode() != HttpURLConnection.HTTP_OK) {
+      if (response.statusCode() != expectedStatusCode) {
         timer.stop(
             Metrics.timer(
                 METRIC_CLIENT_NAME,
