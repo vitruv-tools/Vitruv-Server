@@ -118,6 +118,21 @@ class ConstraintEventBroadcasterTest {
   }
 
   @Test
+  void keepsSendingHeartbeatsWhenASubscriberFailsUnexpectedly() throws Exception {
+    broadcaster = new ConstraintEventBroadcaster(model, mapper, 20);
+    EventStream failing = mock(EventStream.class);
+    doThrow(new IllegalStateException("broken")).when(failing).comment(anyString());
+    EventStream healthy = mock(EventStream.class);
+
+    broadcaster.subscribe(failing);
+    broadcaster.subscribe(healthy);
+
+    verify(failing, timeout(TIMEOUT_MILLIS)).close();
+    verify(healthy, timeout(TIMEOUT_MILLIS).atLeast(3)).comment("heartbeat");
+    assertEquals(1, broadcaster.getSubscriberCount());
+  }
+
+  @Test
   void dropsUnreachableSubscribersAndRestoresTheSetting() throws Exception {
     when(model.isConstraintValidationAfterPropagation()).thenReturn(false);
     broadcaster = new ConstraintEventBroadcaster(model, mapper, NO_HEARTBEAT);

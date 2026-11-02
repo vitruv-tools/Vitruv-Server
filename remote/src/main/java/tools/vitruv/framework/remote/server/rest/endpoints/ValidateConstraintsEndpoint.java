@@ -1,6 +1,7 @@
 package tools.vitruv.framework.remote.server.rest.endpoints;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.micrometer.core.instrument.Metrics;
@@ -14,6 +15,7 @@ import tools.vitruv.framework.remote.server.exception.ServerHaltingException;
 import tools.vitruv.framework.remote.server.http.HttpWrapper;
 import tools.vitruv.framework.remote.server.rest.PostEndpoint;
 import tools.vitruv.framework.vsum.VirtualModel;
+import tools.vitruv.framework.vsum.constraints.UnknownConstraintException;
 
 /**
  * This endpoint validates constraints of the virtual model. The optional body is a {@link
@@ -58,6 +60,9 @@ public class ValidateConstraintsEndpoint implements PostEndpoint {
     try {
       response = exporter.validate(request.constraintIds(), request.includesModels());
       outcome = "success";
+    } catch (UnknownConstraintException e) {
+      // deleted since the ids were checked
+      throw new ServerHaltingException(HTTP_NOT_FOUND, e.getMessage());
     } catch (RuntimeException e) {
       throw internalServerError("Constraint validation failed: " + e.getMessage());
     } finally {

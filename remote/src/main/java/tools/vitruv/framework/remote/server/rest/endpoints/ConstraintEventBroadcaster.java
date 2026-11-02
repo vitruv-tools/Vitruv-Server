@@ -164,19 +164,24 @@ public final class ConstraintEventBroadcaster implements ConstraintValidationLis
     for (EventStream subscriber : subscribers) {
       try {
         subscriber.send(event, id, data);
-      } catch (IOException e) {
+      } catch (IOException | RuntimeException e) {
         drop(subscriber);
       }
     }
   }
 
   private void sendHeartbeat() {
-    for (EventStream subscriber : subscribers) {
-      try {
-        subscriber.comment("heartbeat");
-      } catch (IOException e) {
-        drop(subscriber);
+    // an exception would cancel all further heartbeats, so it is logged instead
+    try {
+      for (EventStream subscriber : subscribers) {
+        try {
+          subscriber.comment("heartbeat");
+        } catch (IOException | RuntimeException e) {
+          drop(subscriber);
+        }
       }
+    } catch (RuntimeException e) {
+      LOGGER.error("Sending the keep-alive comments failed", e);
     }
   }
 
