@@ -18,12 +18,14 @@ import tools.vitruv.framework.vsum.VirtualModel;
 /**
  * This endpoint validates constraints of the virtual model. The optional body is a {@link
  * ConstraintValidationRequest}; without body, all constraints are validated and no models are
- * returned.
+ * returned. The query parameter {@code includeModels} ({@code ?includeModels} or {@code
+ * ?includeModels=true|false}) overrides the field of the same name in the body.
  *
  * <p>Responds with 404 for unknown constraint ids and with 400 for malformed requests.
  */
 public class ValidateConstraintsEndpoint implements PostEndpoint {
   private static final String ENDPOINT_METRIC_NAME = "vitruv.server.rest.constraints.validation";
+  private static final String INCLUDE_MODELS = "includeModels";
 
   private final VirtualModel model;
   private final JsonMapper mapper;
@@ -43,7 +45,11 @@ public class ValidateConstraintsEndpoint implements PostEndpoint {
 
   @Override
   public String process(HttpWrapper wrapper) throws ServerHaltingException {
-    ConstraintValidationRequest request = readRequest(wrapper);
+    ConstraintValidationRequest body = readRequest(wrapper);
+    ConstraintValidationRequest request =
+        ConstraintRequests.queryFlag(wrapper, INCLUDE_MODELS)
+            .map(include -> new ConstraintValidationRequest(body.constraintIds(), include))
+            .orElse(body);
     ConstraintRequests.checkKnownIds(model, request.constraintIds());
 
     var timer = Timer.start(Metrics.globalRegistry);

@@ -5,7 +5,6 @@ import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
@@ -41,8 +40,7 @@ final class ModelRequests {
     if (segment.isEmpty() || segment.contains("/")) {
       throw new ServerHaltingException(HTTP_NOT_FOUND, "Path " + path + " not found");
     }
-    // keep a literal "+", URLDecoder would turn it into a space
-    return Optional.of(URLDecoder.decode(segment.replace("+", "%2B"), StandardCharsets.UTF_8));
+    return Optional.of(ConstraintRequests.decodePathSegment(segment));
   }
 
   /**

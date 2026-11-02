@@ -48,7 +48,7 @@ The body of `POST /vsum/constraints/validate` is optional:
 ```
 
 - `constraintIds`: the constraints to validate; omitted or `null` validates all constraints, an empty list none
-- `includeModels`: also return the models containing violating elements (default `false`)
+- `includeModels`: also return the models containing violating elements (default `false`); can also be given as query parameter, `POST /vsum/constraints/validate?includeModels` or `?includeModels=true|false`, which takes precedence over the body
 
 Response:
 
@@ -157,3 +157,7 @@ answers `200` with the updated constraint. The new source must define a constrai
 Every response of `/vsum/constraints*` (except `validate`) carries the current revision of the constraints as `ETag` header. It changes whenever a constraint is created, updated or deleted, and only then, also across restarts. Clients can poll `GET /vsum/constraints/revision` (`{ "revision": "\"…\"" }`) to detect changes made by others. `PUT` and `DELETE` accept an `If-Match` header with a revision and answer `412` if the constraints changed since.
 
 The Java client offers `getConstraint`, `createConstraint`, `updateConstraint`, `deleteConstraint` and `getConstraintRevision`; errors are thrown as `BadServerResponseException` with the status code.
+
+## Postman
+
+[`postman/Vitruv-Server.postman_collection.json`](postman/Vitruv-Server.postman_collection.json) contains a request for every model and constraint endpoint. Set the collection variable `baseUrl` to the address of the server; `constraintId`, `modelId` and `nsUri` are encoded for the paths automatically.

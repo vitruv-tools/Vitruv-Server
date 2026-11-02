@@ -97,7 +97,56 @@ final class ConstraintRequests {
   }
 
   private static String decode(String value) {
-    return URLDecoder.decode(value, StandardCharsets.UTF_8);
+    try {
+      return URLDecoder.decode(value, StandardCharsets.UTF_8);
+    } catch (IllegalArgumentException e) {
+      throw invalidEncoding(value);
+    }
+  }
+
+  /**
+   * Decodes a URL-encoded path segment, keeping a literal {@code +}, which {@link URLDecoder}
+   * would turn into a space.
+   *
+   * @param segment the encoded segment
+   * @return the decoded segment
+   * @throws ServerHaltingException with 400 if the segment contains an invalid percent-encoding
+   */
+  static String decodePathSegment(String segment) {
+    try {
+      return URLDecoder.decode(segment.replace("+", "%2B"), StandardCharsets.UTF_8);
+    } catch (IllegalArgumentException e) {
+      throw invalidEncoding(segment);
+    }
+  }
+
+  private static ServerHaltingException invalidEncoding(String value) {
+    return new ServerHaltingException(HTTP_BAD_REQUEST, "Invalid URL encoding: " + value);
+  }
+
+  /**
+   * Gets whether a boolean parameter in the query of the request is set, e.g. {@code
+   * ?includeModels} or {@code ?includeModels=true}.
+   *
+   * @param wrapper the request
+   * @param name the name of the parameter
+   * @return the value, empty if the parameter is not given
+   * @throws ServerHaltingException with 400 if the value is neither {@code true} nor {@code false}
+   */
+  static Optional<Boolean> queryFlag(HttpWrapper wrapper, String name) {
+    List<String> values = queryValues(wrapper, name);
+    if (values == null) {
+      return Optional.empty();
+    }
+    String value = values.get(values.size() - 1);
+    if (value.isEmpty() || value.equalsIgnoreCase("true")) {
+      return Optional.of(true);
+    }
+    if (value.equalsIgnoreCase("false")) {
+      return Optional.of(false);
+    }
+    throw new ServerHaltingException(
+        HTTP_BAD_REQUEST, "The parameter " + name + " must be true or false");
   }
 
   /**
@@ -116,9 +165,7 @@ final class ConstraintRequests {
     if (segment.isEmpty() || segment.contains("/")) {
       throw new ServerHaltingException(HTTP_NOT_FOUND, "Path " + path + " not found");
     }
-    // keep a literal "+", URLDecoder would turn it into a space
-    return Optional.of(
-        URLDecoder.decode(segment.replace("+", "%2B"), StandardCharsets.UTF_8));
+    return Optional.of(decodePathSegment(segment));
   }
 
   /**

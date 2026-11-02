@@ -349,6 +349,43 @@ class ConstraintEndpointsTest {
     assertEquals(400, post("/vsum/constraints/validate", "{not json").statusCode());
   }
 
+  @Test
+  void returnsModelsWhenRequestedInTheQuery() throws Exception {
+    JsonNode withFlag =
+        new ObjectMapper()
+            .readTree(post("/vsum/constraints/validate?includeModels", "").body());
+    JsonNode withTrue =
+        new ObjectMapper()
+            .readTree(post("/vsum/constraints/validate?includeModels=true", "").body());
+    JsonNode overridden =
+        new ObjectMapper()
+            .readTree(
+                post("/vsum/constraints/validate?includeModels=false", "{\"includeModels\": true}")
+                    .body());
+
+    assertEquals(1, withFlag.get("models").size());
+    assertEquals(1, withTrue.get("models").size());
+    assertTrue(
+        overridden.get("models") == null || overridden.get("models").isNull(),
+        "the query overrides the body");
+    assertEquals(
+        400, post("/vsum/constraints/validate?includeModels=maybe", "").statusCode());
+  }
+
+  @Test
+  void rejectsInvalidPercentEncodings() throws Exception {
+    for (String path :
+        List.of("/vsum/constraints/%zz", "/vsum/models/%zz", "/vsum/constraints/status?id=%zz")) {
+      var connection =
+          (java.net.HttpURLConnection) new java.net.URL(baseUrl + path).openConnection();
+      try {
+        assertEquals(400, connection.getResponseCode(), path);
+      } finally {
+        connection.disconnect();
+      }
+    }
+  }
+
   private HttpResponse<String> get(String path) throws Exception {
     return http.send(
         HttpRequest.newBuilder(URI.create(baseUrl + path)).GET().build(), BodyHandlers.ofString());

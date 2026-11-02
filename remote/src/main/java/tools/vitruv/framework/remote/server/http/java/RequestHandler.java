@@ -53,7 +53,8 @@ class RequestHandler implements HttpHandler {
       } else {
         wrapper.sendResponse(wrapper.getStatusCode());
       }
-    } catch (IOException | ServerHaltingException exception) {
+    } catch (IOException | RuntimeException exception) {
+      // every failure is answered, so clients never wait for a response of a dropped connection
       var statusCode = HTTP_INTERNAL_ERROR;
       var body = exception.getMessage();
       wrapper.setContentType(ContentType.TEXT_PLAIN);
@@ -63,6 +64,9 @@ class RequestHandler implements HttpHandler {
           body = haltingException.getJsonBody();
           wrapper.setContentType(ContentType.APPLICATION_JSON);
         }
+      }
+      if (body == null) {
+        body = exception.getClass().getSimpleName();
       }
       try {
         wrapper.sendResponse(statusCode, body.getBytes(StandardCharsets.UTF_8));
