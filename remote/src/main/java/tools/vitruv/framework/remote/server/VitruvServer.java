@@ -6,6 +6,7 @@ import tools.vitruv.framework.remote.common.DefaultConnectionSettings;
 import tools.vitruv.framework.remote.common.json.JsonMapper;
 import tools.vitruv.framework.remote.server.http.java.VitruvJavaHttpServer;
 import tools.vitruv.framework.remote.server.rest.PathEndointCollector;
+import tools.vitruv.framework.remote.server.rest.endpoints.ConstraintEventBroadcaster;
 import tools.vitruv.framework.remote.server.rest.endpoints.EndpointsProvider;
 import tools.vitruv.framework.vsum.VirtualModel;
 
@@ -17,6 +18,7 @@ import tools.vitruv.framework.vsum.VirtualModel;
  */
 public class VitruvServer {
   private final VitruvJavaHttpServer server;
+  private final ConstraintEventBroadcaster constraintEvents;
 
   /**
    * Creates a new {@link VitruvServer} using the given {@link VirtualModelInitializer}. Sets host
@@ -30,7 +32,9 @@ public class VitruvServer {
       throws IOException {
     VirtualModel model = modelInitializer.init();
     JsonMapper mapper = new JsonMapper(model.getFolder());
-    List<PathEndointCollector> endpoints = EndpointsProvider.getAllEndpoints(model, mapper);
+    this.constraintEvents = new ConstraintEventBroadcaster(model, mapper);
+    List<PathEndointCollector> endpoints =
+        EndpointsProvider.getAllEndpoints(model, mapper, constraintEvents);
 
     this.server = new VitruvJavaHttpServer(hostOrIp, port, endpoints);
   }
@@ -62,8 +66,9 @@ public class VitruvServer {
     server.start();
   }
 
-  /** Stops the Vitruvius server. */
+  /** Stops the Vitruvius server and closes the subscriptions to constraint events. */
   public void stop() {
+    constraintEvents.close();
     server.stop();
   }
 }

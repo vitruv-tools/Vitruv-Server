@@ -1,0 +1,232 @@
+{
+  "info": {
+    "name": "Vitruv-Server",
+    "description": "Model and constraint endpoints of a running Vitruv-Server. Set the variable baseUrl to the address of the server; constraintId is a constraint id such as shop::Item::cheap (URL-encoded in paths).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "constraintId", "value": "shop::Item::cheap" },
+    { "key": "modelId", "value": "/vsum/models/items.shop" },
+    { "key": "nsUri", "value": "http://vitruv.tools/shop" },
+    { "key": "revision", "value": "*" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": { "method": "GET", "url": "{{baseUrl}}/health" }
+    },
+    {
+      "name": "Models",
+      "item": [
+        {
+          "name": "List models",
+          "request": { "method": "GET", "url": "{{baseUrl}}/vsum/models" }
+        },
+        {
+          "name": "Get model as JSON",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/vsum/models/{{modelIdEncoded}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vsum", "models", "{{modelIdEncoded}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.variables.set('modelIdEncoded', encodeURIComponent(pm.variables.get('modelId')));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get model as XMI",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/xmi+xml" }],
+            "url": {
+              "raw": "{{baseUrl}}/vsum/models/{{modelIdEncoded}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vsum", "models", "{{modelIdEncoded}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.variables.set('modelIdEncoded', encodeURIComponent(pm.variables.get('modelId')));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get several models",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{ \"ids\": [\"{{modelId}}\"] }" },
+            "url": "{{baseUrl}}/vsum/models/batch"
+          }
+        },
+        {
+          "name": "List metamodels",
+          "request": { "method": "GET", "url": "{{baseUrl}}/vsum/metamodels" }
+        },
+        {
+          "name": "Get metamodel as Ecore",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/vsum/metamodels/{{nsUriEncoded}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vsum", "metamodels", "{{nsUriEncoded}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.variables.set('nsUriEncoded', encodeURIComponent(pm.variables.get('nsUri')));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Constraints",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.variables.set('constraintIdEncoded', encodeURIComponent(pm.variables.get('constraintId')));"
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "name": "List constraints",
+          "request": { "method": "GET", "url": "{{baseUrl}}/vsum/constraints" }
+        },
+        {
+          "name": "Get constraint",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/vsum/constraints/{{constraintIdEncoded}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vsum", "constraints", "{{constraintIdEncoded}}"]
+            }
+          }
+        },
+        {
+          "name": "Create constraint",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"language\": \"vitruvocl\",\n  \"source\": \"context shop::Item inv cheap: self.price < 1000\"\n}"
+            },
+            "url": "{{baseUrl}}/vsum/constraints"
+          }
+        },
+        {
+          "name": "Update constraint",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "If-Match", "value": "{{revision}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"source\": \"context shop::Item inv cheap: self.price < 500\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vsum/constraints/{{constraintIdEncoded}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vsum", "constraints", "{{constraintIdEncoded}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete constraint",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "If-Match", "value": "{{revision}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/vsum/constraints/{{constraintIdEncoded}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vsum", "constraints", "{{constraintIdEncoded}}"]
+            }
+          }
+        },
+        {
+          "name": "Get revision",
+          "request": { "method": "GET", "url": "{{baseUrl}}/vsum/constraints/revision" }
+        },
+        {
+          "name": "Validate all constraints",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/vsum/constraints/validate"
+          }
+        },
+        {
+          "name": "Validate selected constraints with models",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"constraintIds\": [\"{{constraintId}}\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vsum/constraints/validate?includeModels=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["vsum", "constraints", "validate"],
+              "query": [{ "key": "includeModels", "value": "true" }]
+            }
+          }
+        },
+        {
+          "name": "Status of all constraints",
+          "request": { "method": "GET", "url": "{{baseUrl}}/vsum/constraints/status" }
+        },
+        {
+          "name": "Status of selected constraints",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/vsum/constraints/status?id={{constraintIdEncoded}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vsum", "constraints", "status"],
+              "query": [{ "key": "id", "value": "{{constraintIdEncoded}}" }]
+            }
+          }
+        },
+        {
+          "name": "Subscribe to events (SSE)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "text/event-stream" }],
+            "url": "{{baseUrl}}/vsum/constraints/events",
+            "description": "Server-Sent Events: 'validation' and 'constraints'. Postman shows the events as they arrive."
+          }
+        }
+      ]
+    }
+  ]
+}

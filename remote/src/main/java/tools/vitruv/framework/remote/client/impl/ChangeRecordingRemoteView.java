@@ -4,6 +4,10 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import tools.vitruv.change.composite.description.TransactionalChange;
@@ -22,6 +26,8 @@ import tools.vitruv.framework.views.changederivation.StateBasedChangeResolutionS
  */
 public class ChangeRecordingRemoteView implements CommittableView {
   private final RemoteView base;
+  // annotations of this view; they are not transmitted to the server
+  private final Map<Class<?>, Object> annotations = new HashMap<>();
   private ChangeRecorder changeRecorder;
 
   /**
@@ -78,6 +84,21 @@ public class ChangeRecordingRemoteView implements CommittableView {
   @Override
   public boolean isClosed() {
     return base.isClosed();
+  }
+
+  @Override
+  public <T> void setAnnotation(Class<T> type, T value) {
+    annotations.put(type, value);
+  }
+
+  @Override
+  public <T> Optional<T> getAnnotation(Class<T> type) {
+    return Optional.ofNullable(type.cast(annotations.get(type)));
+  }
+
+  @Override
+  public Map<Class<?>, Object> getAnnotations() {
+    return Collections.unmodifiableMap(annotations);
   }
 
   @Override
