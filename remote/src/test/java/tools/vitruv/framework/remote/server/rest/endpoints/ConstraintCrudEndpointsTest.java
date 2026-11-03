@@ -54,7 +54,9 @@ import tools.vitruv.framework.vsum.constraints.InvalidConstraintException;
 import tools.vitruv.framework.vsum.constraints.UnknownConstraintException;
 import tools.vitruv.framework.vsum.internal.InternalVirtualModel;
 
-/** Round trip through a real {@link VitruvServer} for creating, updating and deleting constraints. */
+/**
+ * Round trip through a real {@link VitruvServer} for creating, updating and deleting constraints.
+ */
 class ConstraintCrudEndpointsTest {
   private static final String EXTENSION = "ecore";
   private static final String LANGUAGE = "prefix";
@@ -204,7 +206,10 @@ class ConstraintCrudEndpointsTest {
   void conflictsAndUnsupportedLanguagesAreRejected() throws Exception {
     assertEquals(
         409,
-        send("POST", "/vsum/constraints", "{\"language\": \"prefix\", \"source\": \"noUppercaseB=C\"}")
+        send(
+                "POST",
+                "/vsum/constraints",
+                "{\"language\": \"prefix\", \"source\": \"noUppercaseB=C\"}")
             .statusCode());
     assertEquals(
         422,
@@ -230,7 +235,10 @@ class ConstraintCrudEndpointsTest {
     assertEquals(405, send("DELETE", "/vsum/constraints", null).statusCode());
     assertEquals(
         405,
-        send("POST", "/vsum/constraints/" + BUILT_IN, "{\"language\": \"prefix\", \"source\": \"a=b\"}")
+        send(
+                "POST",
+                "/vsum/constraints/" + BUILT_IN,
+                "{\"language\": \"prefix\", \"source\": \"a=b\"}")
             .statusCode());
     assertEquals(404, send("GET", "/vsum/constraints/a/b", null).statusCode());
     assertEquals(404, send("GET", "/vsum/constraintsX", null).statusCode());
@@ -421,7 +429,8 @@ class ConstraintCrudEndpointsTest {
       String prefix = descriptor.source().substring(descriptor.source().indexOf('=') + 1);
       return context.getModelResources().stream()
           .flatMap(resource -> resource.getContents().stream())
-          .filter(root -> root instanceof EPackage ePackage && ePackage.getName().startsWith(prefix))
+          .filter(
+              root -> root instanceof EPackage ePackage && ePackage.getName().startsWith(prefix))
           .map(root -> new ConstraintViolation(root, ConstraintSeverity.MAJOR, prefix))
           .toList();
     }

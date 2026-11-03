@@ -7,8 +7,8 @@ import tools.vitruv.framework.remote.server.rest.GetEndpoint;
 import tools.vitruv.framework.vsum.VirtualModel;
 
 /**
- * This endpoint returns the revision of the constraints of the virtual model, so clients can cheaply
- * detect whether the constraints changed.
+ * This endpoint returns the revision of the constraints of the virtual model, so clients can
+ * cheaply detect whether the constraints changed.
  */
 public class ConstraintRevisionEndpoint implements GetEndpoint {
   private final VirtualModel model;

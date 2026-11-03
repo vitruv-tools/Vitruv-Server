@@ -178,7 +178,7 @@ class ConstraintEventsTest {
   @Test
   void restoresTheValidationSettingAndClosesSubscriptionsWhenStopping() throws Exception {
     BlockingQueue<ConstraintStatusDto> events = new LinkedBlockingQueue<>();
-    Subscription subscription = client.subscribeConstraintEvents(events::add);
+    final Subscription subscription = client.subscribeConstraintEvents(events::add);
     next(events);
     assertTrue(virtualModel.isConstraintValidationAfterPropagation());
 

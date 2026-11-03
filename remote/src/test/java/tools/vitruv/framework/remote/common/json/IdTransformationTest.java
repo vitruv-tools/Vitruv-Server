@@ -38,7 +38,8 @@ class IdTransformationTest {
   @Test
   void pathWithoutProjectFolderIsRoot() {
     URI local =
-        new IdTransformation(folder).toLocal(URI.createFileURI(folder.resolve("a.model").toString()));
+        new IdTransformation(folder)
+            .toLocal(URI.createFileURI(folder.resolve("a.model").toString()));
 
     assertEquals("/a.model", local.toString());
   }

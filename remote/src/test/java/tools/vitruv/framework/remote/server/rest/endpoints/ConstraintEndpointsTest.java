@@ -187,7 +187,8 @@ class ConstraintEndpointsTest {
     List<String> order = new ArrayList<>();
     json.get("constraints").fieldNames().forEachRemaining(order::add);
     assertEquals(List.of(LOWERCASE, HAS_PACKAGES), order);
-    assertEquals(response.headers().firstValue("ETag").orElseThrow(), json.get("revision").asText());
+    assertEquals(
+        response.headers().firstValue("ETag").orElseThrow(), json.get("revision").asText());
     assertFalse(json.has("results"), "no violations are sent");
   }
 
@@ -210,8 +211,8 @@ class ConstraintEndpointsTest {
   @Test
   void returnsTheStatusViaClient() {
     ConstraintStatusDto all = client.getConstraintStatus(null);
-    ConstraintStatusDto selected = client.getConstraintStatus(List.of(HAS_PACKAGES));
-    ConstraintStatusDto none = client.getConstraintStatus(List.of());
+    final ConstraintStatusDto selected = client.getConstraintStatus(List.of(HAS_PACKAGES));
+    final ConstraintStatusDto none = client.getConstraintStatus(List.of());
 
     assertFalse(all.satisfied());
     assertEquals("VIOLATED", all.constraints().get(LOWERCASE));
@@ -255,7 +256,7 @@ class ConstraintEndpointsTest {
     assertEquals(200, response.statusCode());
     JsonNode json = new ObjectMapper().readTree(response.body());
     JsonNode violation = json.get("results").get(0).get("violations").get(0);
-    String uuid = violation.get("uuid").asText();
+    final String uuid = violation.get("uuid").asText();
     JsonNode models = json.get("models");
     assertEquals(1, models.size());
     assertEquals(violation.get("resource").asText(), models.get(0).get("uri").asText());

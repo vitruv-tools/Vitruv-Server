@@ -33,7 +33,10 @@ import tools.vitruv.framework.vsum.constraints.ConstraintValidationListener.Trig
 import tools.vitruv.framework.vsum.constraints.ConstraintValidationReport;
 import tools.vitruv.framework.vsum.constraints.ConstraintValidationResult;
 
-/** The events, keep-alive comments and subscriber handling of the {@link ConstraintEventBroadcaster}. */
+/**
+ * The events, keep-alive comments and subscriber handling of the {@link
+ * ConstraintEventBroadcaster}.
+ */
 class ConstraintEventBroadcasterTest {
   private static final long TIMEOUT_MILLIS = 5000;
   private static final long NO_HEARTBEAT = TimeUnit.HOURS.toMillis(1);
@@ -181,7 +184,9 @@ class ConstraintEventBroadcasterTest {
     broadcaster = null;
   }
 
-  /** Subscribes a recording stream; the validation for the new subscriber is not sent by the mock. */
+  /**
+   * Subscribes a recording stream; the validation for the new subscriber is not sent by the mock.
+   */
   private RecordingStream subscribe() {
     RecordingStream stream = new RecordingStream();
     broadcaster.subscribe(stream);

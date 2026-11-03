@@ -193,7 +193,9 @@ public class VitruvRemoteConnection implements VitruvClient {
             .GET()
             .build();
     try {
-      return mapper.deserialize(sendRequest(request).body(), ConstraintRevisionDto.class).revision();
+      return mapper
+          .deserialize(sendRequest(request).body(), ConstraintRevisionDto.class)
+          .revision();
     } catch (IOException e) {
       throw new BadClientResponseException(e);
     }

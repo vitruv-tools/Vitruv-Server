@@ -9,7 +9,8 @@ import java.util.Map;
  * that poll the consistency of the virtual model.
  *
  * @param revision the revision of the constraints, as in the {@code ETag} of the constraint
- *     endpoints; it changes when constraints are created, updated or deleted, not when models change
+ *     endpoints; it changes when constraints are created, updated or deleted, not when models
+ *     change
  * @param satisfied whether all listed constraints are satisfied
  * @param constraints the status per constraint id: {@code SATISFIED}, {@code VIOLATED} or {@code
  *     ERROR}, in the order of the constraints of the virtual model

@@ -36,7 +36,8 @@ import tools.vitruv.framework.vsum.constraints.ConstraintValidationResult;
  * model; clients that cannot be reached are dropped. A comment is sent regularly to keep idle
  * connections open.
  */
-public final class ConstraintEventBroadcaster implements ConstraintValidationListener, AutoCloseable {
+public final class ConstraintEventBroadcaster
+    implements ConstraintValidationListener, AutoCloseable {
   static final String VALIDATION_EVENT = "validation";
   static final String CONSTRAINTS_EVENT = "constraints";
   private static final Logger LOGGER = LogManager.getLogger(ConstraintEventBroadcaster.class);
