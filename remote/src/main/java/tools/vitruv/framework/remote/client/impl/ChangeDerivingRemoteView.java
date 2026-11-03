@@ -6,8 +6,11 @@ import static com.google.common.base.Preconditions.checkState;
 import edu.kit.ipd.sdq.commons.util.org.eclipse.emf.ecore.resource.ResourceCopier;
 import edu.kit.ipd.sdq.commons.util.org.eclipse.emf.ecore.resource.ResourceSetUtil;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -29,6 +32,8 @@ import tools.vitruv.framework.views.changederivation.StateBasedChangeResolutionS
 public class ChangeDerivingRemoteView implements CommittableView {
   private final RemoteView base;
   private final StateBasedChangeResolutionStrategy resolutionStrategy;
+  // annotations of this view; they are not transmitted to the server
+  private final Map<Class<?>, Object> annotations = new HashMap<>();
 
   private Map<Resource, Resource> originalResourceMapping;
 
@@ -84,6 +89,21 @@ public class ChangeDerivingRemoteView implements CommittableView {
   @Override
   public boolean isClosed() {
     return base.isClosed();
+  }
+
+  @Override
+  public <T> void setAnnotation(Class<T> type, T value) {
+    annotations.put(type, value);
+  }
+
+  @Override
+  public <T> Optional<T> getAnnotation(Class<T> type) {
+    return Optional.ofNullable(type.cast(annotations.get(type)));
+  }
+
+  @Override
+  public Map<Class<?>, Object> getAnnotations() {
+    return Collections.unmodifiableMap(annotations);
   }
 
   @Override
