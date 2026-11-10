@@ -2,26 +2,35 @@
 
 if [ $# -lt 2 ];
 then
-    echo "usage: $0 <release-version> <new-snapshot-version>" >&2
+    echo "usage: $0 <release-version> <new-snapshot-version> [<vitruv-release-version> [<vitruv-development-version>]]" >&2
     echo "" >&2
-    echo "release-version     : Version of the next release, e.g., 3.1.0" >&2
-    echo "new-snapshot-version: Version of the upcoming nightly releases without the -SNAPSHOT suffix, e.g., 3.2.0" >&2
+    echo "release-version           : Version of the next release, e.g., 3.1.0" >&2
+    echo "new-snapshot-version      : Version of the upcoming nightly releases without the -SNAPSHOT suffix, e.g., 3.2.0" >&2
+    echo "vitruv-release-version    : Released Vitruv and Vitruv Change version to build the release with, e.g., 3.1.0" >&2
+    echo "                            (default: release-version)" >&2
+    echo "vitruv-development-version: Vitruv and Vitruv Change version to use after the release, e.g., 3.1.0 or 3.2.0-SNAPSHOT" >&2
+    echo "                            (default: new-snapshot-version with the -SNAPSHOT suffix)" >&2
     return 1
 fi
 
-vitruv_property_name="vitruv.version"
+vitruv_property_names="vitruv.version vitruv-change.version"
+vitruv_release_version="${3:-$1}"
+vitruv_development_version="${4:-$2-SNAPSHOT}"
 
 git switch -C prepare-release/$1 || exit 1
 
 set_version_and_commit() {
     ./mvnw versions:set -DnewVersion=$1 -DgenerateBackupPoms=false || return 1
-    ./mvnw versions:set-property -Dproperty=$vitruv_property_name -DnewVersion=$1 -DgenerateBackupPoms=false || return 1
+    for property_name in $vitruv_property_names
+    do
+        ./mvnw versions:set-property -Dproperty=$property_name -DnewVersion=$2 -DgenerateBackupPoms=false || return 1
+    done
 
     git add pom.xml || return 1
     git add "**/pom.xml" 2> /dev/null || return 1
 
-    git commit -m "$2" || return 1
+    git commit -m "$3" || return 1
 }
 
-set_version_and_commit "$1" "[Release] Version $1"
-set_version_and_commit "$2-SNAPSHOT" "[Release] Update version to $2-SNAPSHOT"
+set_version_and_commit "$1" "$vitruv_release_version" "[Release] Version $1"
+set_version_and_commit "$2-SNAPSHOT" "$vitruv_development_version" "[Release] Update version to $2-SNAPSHOT"
